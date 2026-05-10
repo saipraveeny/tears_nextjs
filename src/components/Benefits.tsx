@@ -46,30 +46,13 @@ const Benefits = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   
-  // 3 sets for loop
-  const displayBenefits = [...benefits, ...benefits, ...benefits];
-  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 332 : 292;
-
-  useEffect(() => {
-    // Start in the middle
-    if (carouselRef.current) {
-      carouselRef.current.scrollTo({ left: benefits.length * itemWidth, behavior: "auto" });
-    }
-  }, []);
+  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 336 : 296;
 
   const handleScroll = () => {
     if (!carouselRef.current) return;
     const { scrollLeft } = carouselRef.current;
-    
-    // Teleport
-    if (scrollLeft <= 50) {
-      carouselRef.current.scrollTo({ left: benefits.length * itemWidth + scrollLeft, behavior: "auto" });
-    } else if (scrollLeft >= (benefits.length * 2) * itemWidth) {
-      carouselRef.current.scrollTo({ left: benefits.length * itemWidth + (scrollLeft % itemWidth), behavior: "auto" });
-    }
-
-    const newIndex = Math.round(scrollLeft / itemWidth) % benefits.length;
-    if (newIndex !== activeIndex) {
+    const newIndex = Math.round(scrollLeft / itemWidth);
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < benefits.length) {
       setActiveIndex(newIndex);
     }
   };
@@ -82,7 +65,12 @@ const Benefits = () => {
 
   const scrollNext = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      }
     }
   };
 
@@ -90,7 +78,7 @@ const Benefits = () => {
     if (isHovered) return;
     const interval = setInterval(scrollNext, 4000);
     return () => clearInterval(interval);
-  }, [isHovered]);
+  }, [isHovered, activeIndex]);
 
   return (
     <section id="benefits" className="benefits" ref={ref}>
@@ -121,37 +109,27 @@ const Benefits = () => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {displayBenefits.map((benefit, index) => {
-              const isActive = index % benefits.length === activeIndex;
-              const isNext = (index % benefits.length) === (activeIndex + 1) % benefits.length;
-
-              return (
+            {benefits.map((benefit, index) => (
+              <motion.div
+                key={index}
+                className={`snap-item benefit-card glass ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => {
+                  if (carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 336 : 296;
+                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
+                  }
+                }}
+              >
                 <motion.div
-                  key={index}
-                  className="snap-item"
-                  initial={false}
+                  className="benefit-icon-wrapper"
+                  style={{ "--icon-color": benefit.color } as React.CSSProperties}
                 >
-                  <div className={`benefit-card glass ${isActive ? 'active' : ''}`}
-                       style={{
-                         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                         transform: `scale(${isActive ? 1 : 0.85}) rotateY(${isActive ? 0 : (isNext ? -15 : 15)}deg)`,
-                         opacity: isActive ? 1 : 0.5,
-                         filter: `blur(${isActive ? 0 : 2}px)`,
-                         zIndex: isActive ? 10 : 1
-                       }}
-                  >
-                    <motion.div
-                      className="benefit-icon-wrapper"
-                      style={{ "--icon-color": benefit.color } as React.CSSProperties}
-                    >
-                      {benefit.icon}
-                    </motion.div>
-                    <h3 className="benefit-title">{benefit.title}</h3>
-                    <p className="benefit-description">{benefit.description}</p>
-                  </div>
+                  {benefit.icon}
                 </motion.div>
-              );
-            })}
+                <h3 className="benefit-title">{benefit.title}</h3>
+                <p className="benefit-description">{benefit.description}</p>
+              </motion.div>
+            ))}
           </div>
 
           <button className="carousel-nav-btn next" onClick={scrollNext}>

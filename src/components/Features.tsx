@@ -46,30 +46,13 @@ const Features = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   
-  // 3 sets for a seamless loop
-  const displayFeatures = [...features, ...features, ...features];
-  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 332 : 292;
-
-  useEffect(() => {
-    // Start in the middle
-    if (carouselRef.current) {
-      carouselRef.current.scrollTo({ left: features.length * itemWidth, behavior: "auto" });
-    }
-  }, []);
+  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 336 : 296;
 
   const handleScroll = () => {
     if (!carouselRef.current) return;
     const { scrollLeft } = carouselRef.current;
-    
-    // Silent teleport
-    if (scrollLeft <= 50) {
-      carouselRef.current.scrollTo({ left: features.length * itemWidth + scrollLeft, behavior: "auto" });
-    } else if (scrollLeft >= (features.length * 2) * itemWidth) {
-      carouselRef.current.scrollTo({ left: features.length * itemWidth + (scrollLeft % itemWidth), behavior: "auto" });
-    }
-
-    const newIndex = Math.round(scrollLeft / itemWidth) % features.length;
-    if (newIndex !== activeIndex) {
+    const newIndex = Math.round(scrollLeft / itemWidth);
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < features.length) {
       setActiveIndex(newIndex);
     }
   };
@@ -82,7 +65,12 @@ const Features = () => {
 
   const scrollNext = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      }
     }
   };
 
@@ -90,7 +78,7 @@ const Features = () => {
     if (isHovered) return;
     const interval = setInterval(scrollNext, 4000);
     return () => clearInterval(interval);
-  }, [isHovered]);
+  }, [isHovered, activeIndex]);
 
   return (
     <section id="features" className="features" ref={ref}>
@@ -121,38 +109,27 @@ const Features = () => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {displayFeatures.map((feature, index) => {
-              const isActive = index % features.length === activeIndex;
-              const isPrev = (index % features.length) === (activeIndex - 1 + features.length) % features.length;
-              const isNext = (index % features.length) === (activeIndex + 1) % features.length;
-
-              return (
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => {
+                  if (carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 336 : 296;
+                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
+                  }
+                }}
+              >
                 <motion.div
-                  key={index}
-                  className="snap-item"
-                  initial={false}
+                  className="feature-icon-wrapper"
+                  style={{ "--icon-color": feature.color } as any}
                 >
-                  <div className={`feature-card glass ${isActive ? 'active' : ''}`}
-                       style={{
-                         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                         transform: `scale(${isActive ? 1 : 0.85}) rotateY(${isActive ? 0 : (isNext ? -15 : 15)}deg)`,
-                         opacity: isActive ? 1 : 0.5,
-                         filter: `blur(${isActive ? 0 : 2}px)`,
-                         zIndex: isActive ? 10 : 1
-                       }}
-                  >
-                    <motion.div
-                      className="feature-icon-wrapper"
-                      style={{ "--icon-color": feature.color } as any}
-                    >
-                      {feature.icon}
-                    </motion.div>
-                    <h3 className="feature-title">{feature.title}</h3>
-                    <p className="feature-description">{feature.description}</p>
-                  </div>
+                  {feature.icon}
                 </motion.div>
-              );
-            })}
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </motion.div>
+            ))}
           </div>
 
           <button className="carousel-nav-btn next" onClick={scrollNext}>

@@ -2294,7 +2294,6 @@
 .carousel-wrapper {
   position: relative;
   width: 100%;
-  perspective: 1200px; /* Essential for 3D card effects */
 }
 
 .carousel-nav-btn {
@@ -2305,8 +2304,8 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2320,27 +2319,25 @@
 .carousel-nav-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-50%) scale(1.1);
-  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .carousel-nav-btn.prev {
-  left: 2rem;
+  left: 0;
 }
 
 .carousel-nav-btn.next {
-  right: 2rem;
+  right: 0;
 }
 
 .snap-carousel {
-  --item-width: 300px;
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  gap: 2rem;
-  padding: 2rem calc(50% - (var(--item-width) / 2));
-  -ms-overflow-style: none;
+  gap: 1.5rem;
+  padding: 1rem 0;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .snap-carousel::-webkit-scrollbar {
@@ -2348,14 +2345,18 @@
 }
 
 .snap-item {
-  scroll-snap-align: center;
-  flex-shrink: 0;
-  width: var(--item-width);
-  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-  opacity: 0.5;
-  transform: scale(0.9);
-  filter: blur(1px);
-  cursor: pointer; /* Allow clicking to navigate */
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  width: 320px;
+}
+
+@media (max-width: 768px) {
+  .snap-item {
+    width: 280px;
+  }
+  .carousel-nav-btn {
+    display: none; /* Hide arrows on mobile for cleaner look */
+  }
 }
 
 .snap-item.active {
