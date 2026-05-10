@@ -6,8 +6,11 @@ import Providers from "@/components/Providers";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import AuthModal from "@/components/AuthModal";
+import AssetPreloader from "@/components/AssetPreloader";
 
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Tears - Premium Hot Sauce",
@@ -33,9 +36,12 @@ export default function RootLayout({
         
         <Providers>
           <AuthModal />
+          <AssetPreloader />
           <Navigation logo={logo} />
           <main>{children}</main>
           <Footer logo={logo} />
+          <SpeedInsights />
+          <Analytics />
         </Providers>
       </body>
     </html>
