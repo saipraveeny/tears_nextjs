@@ -201,8 +201,8 @@ const PartnerWithUs = () => {
                             key={type}
                             onClick={() => { setFormData({...formData, businessType: type}); setIsDropdownOpen(false); }}
                             style={{ padding: "15px 20px", cursor: "pointer", color: formData.businessType === type ? "#ff3b30" : "#fff", background: formData.businessType === type ? "rgba(255,59,48,0.1)" : "transparent", transition: "all 0.2s" }}
-                            onMouseEnter={(e) => e.target.style.background = "rgba(255,255,255,0.05)"}
-                            onMouseLeave={(e) => e.target.style.background = formData.businessType === type ? "rgba(255,59,48,0.1)" : "transparent"}
+                            onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                            onMouseLeave={(e) => e.currentTarget.style.background = formData.businessType === type ? "rgba(255,59,48,0.1)" : "transparent"}
                           >
                             {type}
                           </div>
