@@ -2332,14 +2332,14 @@
 
 @media (max-width: 768px) {
   .premium-carousel-container {
-    height: 520px;
+    height: 300px;
   }
   .premium-carousel-track {
     gap: 0.5rem; /* Tightest gap to maximize side card visibility */
   }
   .premium-card-wrapper {
-    flex: 0 0 220px; /* Narrower width to show more of sides */
-    height: 400px; /* Taller card height */
+    flex: 0 0 250px; /* Narrower width to show more of sides */
+    height: 250px; /* Taller card height */
   }
   .premium-card-wrapper > div {
     height: 100%; /* Ensure card content fills the taller wrapper */
