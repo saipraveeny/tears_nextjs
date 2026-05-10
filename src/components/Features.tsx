@@ -59,6 +59,10 @@ const Features = () => {
     return () => clearInterval(interval);
   }, [isHovered, items]);
 
+  // To ensure perfect centering, we only render a window of 3 items
+  // This makes index 1 ALWAYS the absolute center of the track
+  const visibleItems = [items[items.length - 1], items[0], items[1]];
+
   return (
     <section id="features" className="features" ref={ref}>
       <div className="container">
@@ -89,14 +93,13 @@ const Features = () => {
             className="premium-carousel-track"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={(e, { offset, velocity }) => {
+            onDragEnd={(e, { offset }) => {
               if (offset.x < -50) scrollNext();
               else if (offset.x > 50) scrollPrev();
             }}
           >
-            <AnimatePresence mode="popLayout">
-              {items.map((feature, index) => {
-                // In our rotation, the center card is always index 1
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleItems.map((feature, index) => {
                 const isActive = index === 1; 
                 
                 return (
@@ -105,8 +108,8 @@ const Features = () => {
                     key={feature.title}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ 
-                      opacity: isActive ? 1 : 0.4,
-                      scale: isActive ? 1.15 : 0.85,
+                      opacity: isActive ? 1 : 0.3,
+                      scale: isActive ? 1.1 : 0.85,
                       filter: isActive ? 'blur(0px)' : 'blur(8px)',
                     }}
                     exit={{ opacity: 0, scale: 0.8 }}

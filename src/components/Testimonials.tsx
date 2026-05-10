@@ -52,6 +52,8 @@ const Testimonials = () => {
     return () => clearInterval(interval);
   }, [isHovered, items]);
 
+  const visibleItems = [items[items.length - 1], items[0], items[1]];
+
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
       <Star
@@ -92,13 +94,13 @@ const Testimonials = () => {
             className="premium-carousel-track"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={(e, { offset, velocity }) => {
+            onDragEnd={(e, { offset }) => {
               if (offset.x < -50) scrollNext();
               else if (offset.x > 50) scrollPrev();
             }}
           >
-            <AnimatePresence mode="popLayout">
-              {items.map((testimonial, index) => {
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleItems.map((testimonial, index) => {
                 const isActive = index === 1; 
                 
                 return (
@@ -107,8 +109,8 @@ const Testimonials = () => {
                     key={testimonial.name}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ 
-                      opacity: isActive ? 1 : 0.4,
-                      scale: isActive ? 1.15 : 0.85,
+                      opacity: isActive ? 1 : 0.3,
+                      scale: isActive ? 1.1 : 0.85,
                       filter: isActive ? 'blur(0px)' : 'blur(8px)',
                     }}
                     exit={{ opacity: 0, scale: 0.8 }}

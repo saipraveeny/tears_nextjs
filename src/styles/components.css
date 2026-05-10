@@ -2334,6 +2334,9 @@
   .premium-carousel-container {
     height: 440px;
   }
+  .premium-carousel-track {
+    gap: 1rem; /* Tighter gap for better peeking on mobile */
+  }
   .premium-card-wrapper {
     flex: 0 0 280px;
   }
