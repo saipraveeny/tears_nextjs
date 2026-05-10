@@ -352,30 +352,38 @@
   margin-bottom: 4rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .products-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
-    padding: 0 10px;
+    padding: 0 5px;
   }
-  
-  .product-card {
-    padding: 12px !important;
-    border-radius: 16px !important;
+
+  .product-image {
+    height: 140px !important;
+    border-radius: 1rem !important;
+  }
+
+  .product-content {
+    padding: 12px 8px !important;
   }
 
   .product-name {
     font-size: 0.95rem !important;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .product-price {
-    font-size: 1rem !important;
+    font-size: 1.1rem !important;
+    margin-bottom: 8px;
+    display: block;
   }
-  
-  .product-description, 
-  .product-rating, 
-  .product-heat, 
+
+  .product-description,
+  .heat-label,
   .product-features {
     display: none !important;
   }

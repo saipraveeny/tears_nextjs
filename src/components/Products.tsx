@@ -220,7 +220,7 @@ const Products: React.FC<ProductsProps> = ({
                         }}
                       >
                         <ShoppingCart size={18} />
-                        Add to Cart
+                        <span className="cart-btn-text">Add to Cart</span>
                       </motion.button>
                     ) : (
                       <div className="coming-soon-badge-full">

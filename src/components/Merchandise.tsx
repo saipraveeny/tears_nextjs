@@ -275,7 +275,7 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                         }}
                       >
                         <ShoppingCart size={18} />
-                        Add to Cart
+                        <span className="cart-btn-text">Add to Cart</span>
                       </motion.button>
                     ) : (
                       <div
