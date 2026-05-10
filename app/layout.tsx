@@ -23,15 +23,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* Highcharts CDN for Admin Dashboard */}
-        <Script src="https://code.highcharts.com/highcharts.js" strategy="lazyOnload" />
-        <Script src="https://code.highcharts.com/highcharts-more.js" strategy="lazyOnload" />
-        <Script src="https://code.highcharts.com/modules/exporting.js" strategy="lazyOnload" />
-        <Script src="https://code.highcharts.com/modules/export-data.js" strategy="lazyOnload" />
-        <Script src="https://code.highcharts.com/modules/accessibility.js" strategy="lazyOnload" />
-      </head>
       <body>
+        {/* Highcharts scripts for Admin Dashboard */}
+        <Script src="https://code.highcharts.com/highcharts.js" />
+        <Script src="https://code.highcharts.com/highcharts-more.js" />
+        <Script src="https://code.highcharts.com/modules/exporting.js" />
+        <Script src="https://code.highcharts.com/modules/export-data.js" />
+        <Script src="https://code.highcharts.com/modules/accessibility.js" />
+        
         <Providers>
           <AuthModal />
           <Navigation logo={logo} />
