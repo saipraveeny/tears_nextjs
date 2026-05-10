@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Zap, Leaf, Droplets, Shield } from "lucide-react";
@@ -42,26 +42,44 @@ const Features = () => {
     },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!carouselRef.current) return;
+      const { scrollLeft } = carouselRef.current;
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
+      const newIndex = Math.round(scrollLeft / itemWidth);
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < features.length) {
+        setActiveIndex(newIndex);
+      }
+    };
+    
+    const el = carouselRef.current;
+    if (el) el.addEventListener("scroll", handleScroll);
+    return () => {
+      if (el) el.removeEventListener("scroll", handleScroll);
+    };
+  }, [activeIndex, features.length]);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      if (carouselRef.current) {
+        let nextIndex = activeIndex + 1;
+        if (nextIndex >= features.length) nextIndex = 0;
+        
+        const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
+        carouselRef.current.scrollTo({
+          left: nextIndex * itemWidth,
+          behavior: "smooth"
+        });
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [activeIndex, isHovered, features.length]);
 
   return (
     <section id="features" className="features">
@@ -80,30 +98,29 @@ const Features = () => {
           </p>
         </motion.div>
 
-        <div className="carousel-container" ref={ref}>
-          <div className="carousel-track">
-            {[...features, ...features].map((feature, index) => (
+        <div 
+          className="snap-carousel" 
+          ref={carouselRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={() => setIsHovered(true)}
+          onTouchEnd={() => setIsHovered(false)}
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
+            >
               <motion.div
-                key={index}
-                className="feature-card glass"
-                style={{ width: "300px", flexShrink: 0 }}
-                whileHover={{
-                  y: -10,
-                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
-                }}
+                className="feature-icon-wrapper"
+                style={{ "--icon-color": feature.color } as any}
               >
-                <motion.div
-                  className="feature-icon-wrapper"
-                  style={{ "--icon-color": feature.color } as any}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  {feature.icon}
-                </motion.div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-description">{feature.description}</p>
+                {feature.icon}
               </motion.div>
-            ))}
-          </div>
+              <h3 className="feature-title">{feature.title}</h3>
+              <p className="feature-description">{feature.description}</p>
+            </motion.div>
+          ))}
         </div>
 
         <motion.div

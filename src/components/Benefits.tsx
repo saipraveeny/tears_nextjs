@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Heart, Shield, Zap, Leaf } from "lucide-react";
@@ -42,26 +42,44 @@ const Benefits = () => {
     },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-      },
-    },
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!carouselRef.current) return;
+      const { scrollLeft } = carouselRef.current;
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
+      const newIndex = Math.round(scrollLeft / itemWidth);
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < benefits.length) {
+        setActiveIndex(newIndex);
+      }
+    };
+    
+    const el = carouselRef.current;
+    if (el) el.addEventListener("scroll", handleScroll);
+    return () => {
+      if (el) el.removeEventListener("scroll", handleScroll);
+    };
+  }, [activeIndex, benefits.length]);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      if (carouselRef.current) {
+        let nextIndex = activeIndex + 1;
+        if (nextIndex >= benefits.length) nextIndex = 0;
+        
+        const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
+        carouselRef.current.scrollTo({
+          left: nextIndex * itemWidth,
+          behavior: "smooth"
+        });
+      }
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [activeIndex, isHovered, benefits.length]);
 
   return (
     <section id="benefits" className="benefits">
@@ -80,37 +98,30 @@ const Benefits = () => {
           </p>
         </motion.div>
 
-        <motion.div
-          className="carousel-container"
-          ref={ref}
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.6 }}
+        <div 
+          className="snap-carousel" 
+          ref={carouselRef}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={() => setIsHovered(true)}
+          onTouchEnd={() => setIsHovered(false)}
         >
-          <div className="carousel-track">
-            {[...benefits, ...benefits].map((benefit, index) => (
+          {benefits.map((benefit, index) => (
+            <motion.div
+              key={index}
+              className={`snap-item benefit-card glass ${index === activeIndex ? 'active' : ''}`}
+            >
               <motion.div
-                key={index}
-                className="benefit-card glass"
-                style={{ width: "300px", flexShrink: 0 }}
-                whileHover={{
-                  y: -10,
-                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
-                }}
+                className="benefit-icon-wrapper"
+                style={{ "--icon-color": benefit.color } as React.CSSProperties}
               >
-                <motion.div
-                  className="benefit-icon-wrapper"
-                  style={{ "--icon-color": benefit.color } as React.CSSProperties}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  {benefit.icon}
-                </motion.div>
-                <h3 className="benefit-title">{benefit.title}</h3>
-                <p className="benefit-description">{benefit.description}</p>
+                {benefit.icon}
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
+              <h3 className="benefit-title">{benefit.title}</h3>
+              <p className="benefit-description">{benefit.description}</p>
+            </motion.div>
+          ))}
+        </div>
 
         <motion.div
           className="benefits-stats"
