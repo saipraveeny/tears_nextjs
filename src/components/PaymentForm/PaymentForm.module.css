@@ -1,0 +1,24 @@
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form input,
+.form textarea {
+  transition: all 0.3s ease;
+}
+
+.form input:focus,
+.form textarea:focus {
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
