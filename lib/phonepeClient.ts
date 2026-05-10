@@ -30,10 +30,9 @@ class PhonePeClient {
     }
   }
 
-  generateOrderId(prefix = "TEARS") {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = crypto.randomBytes(3).toString("hex").toUpperCase();
-    return `${prefix}-${timestamp}-${random}`;
+  generateOrderId(prefix = "TRS") {
+    const unique = Date.now().toString(36).slice(-6).toUpperCase();
+    return `${prefix}-${unique}`;
   }
 
   async getAccessToken(): Promise<string> {

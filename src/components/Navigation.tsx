@@ -5,16 +5,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, User, LogOut, Package, Shield } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../hooks/useCart";
 import { NAV_ITEMS } from "../utils/constants";
 
 interface NavigationProps {
   logo?: string;
-  cartCount?: number;
-  onCartClick?: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ logo, cartCount = 0, onCartClick }) => {
+const Navigation: React.FC<NavigationProps> = ({ logo }) => {
   const { currentUser, openAuthModal, logout } = useAuth();
+  const { cart, setIsCartOpen } = useCart();
+  
+  const cartCount = cart.reduce((total, item) => total + item.qty, 0);
+  const onCartClick = () => setIsCartOpen(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

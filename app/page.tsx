@@ -11,8 +11,6 @@ import Recipes from "@/components/Recipes";
 import Contact from "@/components/Contact";
 import { useCart } from "@/hooks/useCart";
 import { BUNDLE_PRODUCT } from "@/utils/constants";
-import CartModal from "@/components/CartModal";
-import ConfirmationModal from "@/components/ConfirmationModal";
 const wildImg = "/assets/wild.jpg";
 const glitchImg = "/assets/glitch.jpg";
 const greenImg = "/assets/green.png";
@@ -55,32 +53,6 @@ export default function Home() {
         <Recipes />
         <Contact />
       </main>
-
-      {/* Cart Modal */}
-      <CartModal
-        isOpen={isCartOpen}
-        cart={cart}
-        onClose={() => setIsCartOpen(false)}
-        onUpdateQty={updateQty}
-        onRemove={removeFromCart}
-        onClearCart={clearCart}
-        onCheckout={() => setIsCartOpen(false)}
-      />
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={confirmationModal.isOpen}
-        product={confirmationModal.product}
-        quantity={confirmationModal.quantity}
-        onClose={() =>
-          setConfirmationModal({ isOpen: false, product: null, quantity: 1 })
-        }
-        onConfirm={confirmAddToCart}
-        onQuantityChange={updateConfirmationQuantity}
-        wildImg={wildImg}
-        glitchImg={glitchImg}
-        greenImg={greenImg}
-      />
     </>
   );
 }

@@ -86,7 +86,7 @@ export async function POST(request) {
       productCount: products.length,
     });
 
-    const merchantOrderId = client.generateOrderId("TEARS");
+    const merchantOrderId = client.generateOrderId("TRS");
     logger.info(requestId, "Order ID generated", { merchantOrderId });
 
     const redirectUrl =

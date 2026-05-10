@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Products required.", requestId }, { status: 400 });
     }
 
-    const merchantOrderId = client.generateOrderId("TEARS");
+    const merchantOrderId = client.generateOrderId("TRS");
 
     const redirectUrl = process.env.PHONEPE_REDIRECT_URL || "https://tears.co.in/api/redirect";
     const webhookUrl = process.env.WEBHOOK_URL || "https://tears.co.in/api/webhook";
