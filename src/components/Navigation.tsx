@@ -51,34 +51,30 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
       return;
     }
 
-    // It's a hash link
-    e.preventDefault();
-    const id = item.href.replace("#", "");
-    
-    const scrollToSection = (sectionId) => {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        const offset = 80; // Navbar height
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = el.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth"
-        });
-      }
-    };
-
     if (pathname !== "/") {
+      e.preventDefault();
       router.push("/");
       setTimeout(() => {
-        scrollToSection(id);
+        const id = item.href.replace("#", "");
+        const el = document.getElementById(id);
+        if (el) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = el.getBoundingClientRect().top;
+          window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+        }
       }, 500);
     } else {
-      scrollToSection(id);
-      window.history.pushState(null, "", "/" + item.href);
+      e.preventDefault();
+      const id = item.href.replace("#", "");
+      const el = document.getElementById(id);
+      if (el) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = el.getBoundingClientRect().top;
+        window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+      }
+      window.history.pushState(null, "", item.href);
     }
   };
 
@@ -102,7 +98,7 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
           {NAV_ITEMS.map((item, index) => (
             <motion.a
               key={item.name}
-              href={"/" + item.href}
+              href={item.href.startsWith("#") ? item.href : "/" + item.href}
               className="nav-link"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -356,7 +352,7 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
             {NAV_ITEMS.map((item, index) => (
               <motion.a
                 key={item.name}
-                href={"/" + item.href}
+                href={item.href.startsWith("#") ? item.href : "/" + item.href}
                 className="mobile-nav-link"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}

@@ -84,36 +84,38 @@ const Testimonials = () => {
         </motion.div>
 
         <motion.div
-          className="testimonials-grid"
+          className="carousel-container"
           ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              className="testimonial-card glass"
-              variants={itemVariants}
-              whileHover={{
-                y: -10,
-                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
-              }}
-            >
-              <div className="testimonial-header">
-                <div className="testimonial-avatar">{testimonial.avatar}</div>
-                <div className="testimonial-info">
-                  <h4 className="testimonial-name">{testimonial.name}</h4>
-                  <p className="testimonial-role">{testimonial.role}</p>
-                  <div className="testimonial-rating">
-                    {renderStars(testimonial.rating)}
+          <div className="carousel-track">
+            {[...testimonials, ...testimonials].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className="testimonial-card glass"
+                style={{ width: "350px", flexShrink: 0 }}
+                whileHover={{
+                  y: -10,
+                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+                }}
+              >
+                <div className="testimonial-header">
+                  <div className="testimonial-avatar">{testimonial.avatar}</div>
+                  <div className="testimonial-info">
+                    <h4 className="testimonial-name">{testimonial.name}</h4>
+                    <p className="testimonial-role">{testimonial.role}</p>
+                    <div className="testimonial-rating">
+                      {renderStars(testimonial.rating)}
+                    </div>
                   </div>
+                  <Quote className="quote-icon" />
                 </div>
-                <Quote className="quote-icon" />
-              </div>
-              <p className="testimonial-text">{testimonial.text}</p>
-            </motion.div>
-          ))}
+                <p className="testimonial-text">{testimonial.text}</p>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         <motion.div

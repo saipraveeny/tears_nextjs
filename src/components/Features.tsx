@@ -80,35 +80,31 @@ const Features = () => {
           </p>
         </motion.div>
 
-        <motion.div
-          className="features-grid"
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              className="feature-card glass"
-              variants={itemVariants}
-              whileHover={{
-                y: -10,
-                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
-              }}
-            >
+        <div className="carousel-container" ref={ref}>
+          <div className="carousel-track">
+            {[...features, ...features].map((feature, index) => (
               <motion.div
-                className="feature-icon-wrapper"
-                style={{ "--icon-color": feature.color }}
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                key={index}
+                className="feature-card glass"
+                style={{ width: "300px", flexShrink: 0 }}
+                whileHover={{
+                  y: -10,
+                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+                }}
               >
-                {feature.icon}
+                <motion.div
+                  className="feature-icon-wrapper"
+                  style={{ "--icon-color": feature.color } as any}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  {feature.icon}
+                </motion.div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
               </motion.div>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-description">{feature.description}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </div>
+        </div>
 
         <motion.div
           className="features-cta"

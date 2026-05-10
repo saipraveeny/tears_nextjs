@@ -2289,3 +2289,49 @@
     font-size: 0.8rem !important;
   }
 }
+
+/* Premium Auto-Scroll Carousels */
+.carousel-container {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  padding: 1rem 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.carousel-track {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  animation: scroll-marquee 40s linear infinite;
+}
+
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 1rem));
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-track {
+    gap: 1rem;
+    animation: scroll-marquee-mobile 30s linear infinite;
+  }
+  
+  @keyframes scroll-marquee-mobile {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-50% - 0.5rem));
+    }
+  }
+}

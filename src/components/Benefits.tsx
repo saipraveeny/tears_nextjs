@@ -81,33 +81,35 @@ const Benefits = () => {
         </motion.div>
 
         <motion.div
-          className="benefits-grid"
+          className="carousel-container"
           ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {benefits.map((benefit, index) => (
-            <motion.div
-              key={index}
-              className="benefit-card glass"
-              variants={itemVariants}
-              whileHover={{
-                y: -10,
-                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
-              }}
-            >
+          <div className="carousel-track">
+            {[...benefits, ...benefits].map((benefit, index) => (
               <motion.div
-                className="benefit-icon-wrapper"
-                style={{ "--icon-color": benefit.color } as React.CSSProperties}
-                whileHover={{ scale: 1.1, rotate: 5 }}
+                key={index}
+                className="benefit-card glass"
+                style={{ width: "300px", flexShrink: 0 }}
+                whileHover={{
+                  y: -10,
+                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)",
+                }}
               >
-                {benefit.icon}
+                <motion.div
+                  className="benefit-icon-wrapper"
+                  style={{ "--icon-color": benefit.color } as React.CSSProperties}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  {benefit.icon}
+                </motion.div>
+                <h3 className="benefit-title">{benefit.title}</h3>
+                <p className="benefit-description">{benefit.description}</p>
               </motion.div>
-              <h3 className="benefit-title">{benefit.title}</h3>
-              <p className="benefit-description">{benefit.description}</p>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </motion.div>
 
         <motion.div
