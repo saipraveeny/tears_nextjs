@@ -531,53 +531,45 @@
   }
 
   .merchandise-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
   }
 
   .merchandise-image-container {
-    height: 140px !important;
+    height: 250px !important;
   }
 
   .merchandise-content {
-    padding: 12px 8px !important;
-    min-height: auto !important;
+    padding: 20px !important;
   }
 
   .merchandise-name {
-    font-size: 1rem !important;
-    margin-bottom: 4px;
+    font-size: 1.2rem !important;
   }
 
   .merchandise-price {
-    font-size: 1.1rem !important;
+    font-size: 1.4rem !important;
   }
 
-  .merchandise-description,
-  .merchandise-category,
-  .material-tag,
+  .merchandise-description {
+    display: block !important;
+    font-size: 0.85rem !important;
+    margin-bottom: 10px;
+  }
+  
   .variant-label {
-    display: none !important;
-  }
-
-  .merchandise-variants {
-    margin-bottom: 10px !important;
-    margin-top: 5px;
+    display: block !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 5px;
   }
 
   .size-btn {
-    padding: 6px 0 !important;
-    font-size: 0.8rem !important;
+    padding: 8px 0 !important;
+    font-size: 0.85rem !important;
   }
 
   .add-to-cart-full {
-    padding: 10px !important;
-    font-size: 0.85rem !important;
-    border-radius: 8px !important;
-  }
-
-  .merchandise-info-banner {
-    padding: 20px !important;
-    margin-top: 20px;
+    padding: 12px !important;
+    font-size: 0.9rem !important;
   }
 }

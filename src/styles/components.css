@@ -321,9 +321,17 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2.5rem;
   margin-bottom: 4rem;
+}
+
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 15px;
+  }
 }
 
 .product-card {
@@ -1387,36 +1395,63 @@
 }
 
 @media (max-width: 900px) {
+  .hero-title {
+    font-size: 2.2rem !important;
+    text-align: center;
+  }
+  .hero-subtitle {
+    font-size: 1rem !important;
+    text-align: center;
+  }
+  .hero-description {
+    font-size: 0.9rem !important;
+    text-align: center;
+    margin: 0 auto 1.5rem;
+  }
+  .hero-badge {
+    margin-bottom: 1rem;
+    align-self: center;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .hero-stats {
+    justify-content: center;
+    gap: 1rem;
+  }
   .hero-visual-side {
-    display: none;
+    display: none !important;
   }
   .hero-mobile-visual {
     display: block;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     text-align: center;
     position: relative;
-    height: 300px; /* Space for absolute product image */
+    height: 220px;
+    overflow: hidden;
   }
   .mobile-product-img {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    max-width: 280px;
+    max-width: 180px;
     height: auto;
     object-fit: contain;
   }
   .product-image {
-    height: 140px;
+    height: 120px;
   }
 }
 
 @media (max-width: 600px) {
   .hero-visual-side {
-    height: 200px;
-    margin-top: 1.5rem;
+    display: none !important;
   }
-  .hero-variant-slider {
-    height: 100%;
+  .hero-mobile-visual {
+    height: 200px;
+  }
+  .mobile-product-img {
+    max-width: 180px;
   }
 }
 
@@ -2010,5 +2045,44 @@
   
   .confirmation-actions {
     flex-direction: column;
+  }
+
+  .merchandise {
+    padding: 60px 4% 40px;
+  }
+
+  .merchandise-header {
+    margin-bottom: 30px;
+  }
+
+  .merchandise-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .merchandise-image-container {
+    height: 250px !important;
+  }
+
+  .merchandise-content {
+    padding: 20px !important;
+  }
+
+  .merchandise-name {
+    font-size: 1.2rem !important;
+  }
+
+  .merchandise-price {
+    font-size: 1.4rem !important;
+  }
+
+  .merchandise-description {
+    display: block !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .variant-label {
+    display: block !important;
+    font-size: 0.8rem !important;
   }
 }

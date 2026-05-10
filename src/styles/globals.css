@@ -220,16 +220,50 @@ html {
   text-shadow: 0 0 20px rgba(255, 59, 48, 0.5);
 }
 
-/* Responsive design */
+/* Global mobile stability */
+body, main, #__next {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Responsive design for products */
 @media (max-width: 768px) {
   :root {
     --border-radius: 12px;
     --border-radius-large: 18px;
   }
 
-  .btn {
-    padding: 10px 20px;
-    font-size: 14px;
+  .products {
+    padding: 2rem 0;
+  }
+
+  .product-card {
+    padding: 1rem !important;
+    margin: 0 10px;
+  }
+
+  .product-name {
+    font-size: 1.25rem !important;
+  }
+
+  .product-price {
+    font-size: 1.1rem !important;
+  }
+
+  .product-description {
+    font-size: 0.9rem !important;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .add-to-cart-full {
+    padding: 10px 15px !important;
+    font-size: 14px !important;
+  }
+  
+  .premium-badge {
+    display: none !important;
   }
 }
 
