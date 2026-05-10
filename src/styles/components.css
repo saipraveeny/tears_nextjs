@@ -2368,6 +2368,11 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
+/* Tighten Layout Spacing */
+.features, .benefits, .testimonials {
+  padding: 3.5rem 0 !important;
+}
+
 @media (max-width: 768px) {
   .carousel-nav-btn {
     display: none; /* Hide arrows on mobile, swipe is better */
@@ -2377,5 +2382,9 @@
     --item-width: 280px;
     gap: 12px;
     padding: 1rem calc(50% - (var(--item-width) / 2)); /* Reduce free space */
+  }
+
+  .features, .benefits, .testimonials {
+    padding: 2rem 0 !important;
   }
 }

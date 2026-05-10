@@ -48,19 +48,15 @@ const Features = () => {
 
   const scrollPrev = () => {
     if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
-      let nextIndex = activeIndex - 1;
-      if (nextIndex < 0) nextIndex = features.length - 1;
-      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+      const itemWidth = window.innerWidth > 768 ? 332 : 292;
+      carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
     }
   };
 
   const scrollNext = () => {
     if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
-      let nextIndex = activeIndex + 1;
-      if (nextIndex >= features.length) nextIndex = 0;
-      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+      const itemWidth = window.innerWidth > 768 ? 332 : 292;
+      carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
     }
   };
 
