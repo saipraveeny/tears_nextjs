@@ -78,7 +78,7 @@ const BottleSequence: React.FC = () => {
       {/* Wild Bottle (0 to 0.33) */}
       <div style={getPhaseStyles(0, 0.33)}>
         <Img 
-          src={wildImg} 
+          src={wildImg.src} 
           style={{ 
             height: '80%', 
             objectFit: 'contain',
@@ -90,7 +90,7 @@ const BottleSequence: React.FC = () => {
       {/* Glitch Bottle (0.33 to 0.66) */}
       <div style={getPhaseStyles(0.33, 0.66)}>
         <Img 
-          src={glitchImg} 
+          src={glitchImg.src} 
           style={{ 
             height: '80%', 
             objectFit: 'contain',
@@ -102,7 +102,7 @@ const BottleSequence: React.FC = () => {
       {/* Green Bottle (0.66 to 1.0) */}
       <div style={getPhaseStyles(0.66, 1.0)}>
         <Img 
-          src={greenImg} 
+          src={greenImg.src} 
           style={{ 
             height: '80%', 
             objectFit: 'contain',

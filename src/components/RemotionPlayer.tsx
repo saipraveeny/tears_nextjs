@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Player } from '@remotion/player';
 import { useLenis } from 'lenis/react';
-import BottleSequence from '../remotion/BottleSequence';
+import BottleSequence from '@/remotion/BottleSequence';
 
 const DURATION_IN_FRAMES = 900; // 30fps * 30s = smooth 900 frames interpolation over full scroll length
 const FPS = 30;
