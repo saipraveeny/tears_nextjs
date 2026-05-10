@@ -266,6 +266,32 @@
   margin-bottom: 4rem;
 }
 
+@media (max-width: 768px) {
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .feature-card {
+    padding: 1.5rem 1rem !important;
+  }
+  
+  .feature-icon-wrapper {
+    width: 50px !important;
+    height: 50px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .feature-title {
+    font-size: 1rem !important;
+  }
+  
+  .feature-description {
+    font-size: 0.8rem !important;
+    line-height: 1.3 !important;
+  }
+}
+
 .feature-card {
   padding: 2rem;
   text-align: center;
@@ -328,9 +354,40 @@
 
 @media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 0 15px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 0 10px;
+  }
+  
+  .product-card {
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .product-name {
+    font-size: 0.95rem !important;
+    margin-bottom: 4px;
+  }
+
+  .product-price {
+    font-size: 1rem !important;
+  }
+  
+  .product-description, 
+  .product-rating, 
+  .product-heat, 
+  .product-features {
+    display: none !important;
+  }
+
+  .product-image {
+    height: 140px !important;
+    border-radius: 12px !important;
+  }
+
+  .product-bottle {
+    width: 80px !important;
+    height: 120px !important;
   }
 }
 
@@ -605,6 +662,32 @@
   margin-bottom: 4rem;
 }
 
+@media (max-width: 768px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .benefit-card {
+    padding: 1.5rem 1rem !important;
+  }
+  
+  .benefit-icon-wrapper {
+    width: 50px !important;
+    height: 50px !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .benefit-title {
+    font-size: 1rem !important;
+  }
+  
+  .benefit-description {
+    font-size: 0.8rem !important;
+    line-height: 1.3 !important;
+  }
+}
+
 .benefit-card {
   padding: 2rem;
   text-align: center;
@@ -650,6 +733,25 @@
   text-align: center;
 }
 
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  .stat-item {
+    padding: 1rem !important;
+  }
+  
+  .stat-number {
+    font-size: 2rem !important;
+  }
+  
+  .stat-label {
+    font-size: 0.85rem !important;
+  }
+}
+
 .stat-item {
   padding: 2rem;
 }
@@ -677,6 +779,43 @@
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
   margin-bottom: 4rem;
+}
+
+@media (max-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  .testimonial-card {
+    padding: 1rem !important;
+  }
+  
+  .testimonial-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem !important;
+  }
+  
+  .testimonial-avatar {
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .testimonial-name {
+    font-size: 0.85rem !important;
+  }
+  
+  .testimonial-role {
+    font-size: 0.7rem !important;
+  }
+  
+  .testimonial-text {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+  }
 }
 
 .testimonial-card {
@@ -756,6 +895,18 @@
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 1.2rem;
   margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .recipes-gallery {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 2rem;
+  }
+  
+  .recipe-image-wrapper {
+    height: 150px !important;
+  }
 }
 
 .recipe-image-wrapper {
@@ -1395,51 +1546,67 @@
 }
 
 @media (max-width: 900px) {
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .hero-text {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .hero-title {
     font-size: 2.2rem !important;
     text-align: center;
+    width: 100%;
   }
   .hero-subtitle {
     font-size: 1rem !important;
     text-align: center;
+    width: 100%;
   }
   .hero-description {
     font-size: 0.9rem !important;
     text-align: center;
     margin: 0 auto 1.5rem;
+    max-width: 90%;
   }
   .hero-badge {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     align-self: center;
   }
   .hero-actions {
     justify-content: center;
+    width: 100%;
   }
   .hero-stats {
     justify-content: center;
-    gap: 1rem;
+    gap: 1.5rem;
+    width: 100%;
   }
   .hero-visual-side {
     display: none !important;
   }
   .hero-mobile-visual {
-    display: block;
-    margin: 1rem 0;
-    text-align: center;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+    width: 100%;
+    height: 240px;
     position: relative;
-    height: 220px;
-    overflow: hidden;
+    overflow: visible;
   }
   .mobile-product-img {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 180px;
-    height: auto;
+    position: relative;
+    left: auto;
+    transform: none !important;
+    max-width: 200px;
+    height: 100%;
     object-fit: contain;
-  }
-  .product-image {
-    height: 120px;
   }
 }
 

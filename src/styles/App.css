@@ -329,6 +329,18 @@ section {
   color: var(--accent-red);
   margin-bottom: 1rem;
 }
+@media (max-width: 768px) {
+  .navbar {
+    background: rgba(5, 5, 5, 0.98) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    padding: 0.75rem 0 !important;
+  }
+  
+  .nav-container {
+    padding: 0 1rem !important;
+  }
+}
 @media (max-width: 600px) {
   .cart-content {
     max-width: 95vw;

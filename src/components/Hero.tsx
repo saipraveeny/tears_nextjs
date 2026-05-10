@@ -114,7 +114,13 @@ const Hero: React.FC<HeroProps> = ({ logo }) => {
             {/* Mobile Visual - placed between text and buttons */}
             <motion.div 
               className="hero-mobile-visual"
-              style={{ opacity }}
+              style={{ 
+                opacity,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%'
+              }}
             >
               <AnimatePresence mode="wait">
                 <motion.img
