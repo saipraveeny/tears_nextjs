@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Zap, Leaf, Droplets, Shield } from "lucide-react";
+import { Zap, Leaf, Droplets, Shield, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Features = () => {
   const [ref, inView] = useInView({
@@ -45,6 +45,24 @@ const Features = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const scrollPrev = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex - 1;
+      if (nextIndex < 0) nextIndex = features.length - 1;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
+
+  const scrollNext = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex + 1;
+      if (nextIndex >= features.length) nextIndex = 0;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,29 +116,45 @@ const Features = () => {
           </p>
         </motion.div>
 
-        <div 
-          className="snap-carousel" 
-          ref={carouselRef}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => setIsHovered(false)}
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
-            >
+        <div className="carousel-wrapper">
+          <button className="carousel-nav-btn prev" onClick={scrollPrev}>
+            <ChevronLeft size={24} />
+          </button>
+          
+          <div 
+            className="snap-carousel" 
+            ref={carouselRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+          >
+            {features.map((feature, index) => (
               <motion.div
-                className="feature-icon-wrapper"
-                style={{ "--icon-color": feature.color } as any}
+                key={index}
+                className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => {
+                  if (index !== activeIndex && carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
+                  }
+                }}
               >
-                {feature.icon}
+                <motion.div
+                  className="feature-icon-wrapper"
+                  style={{ "--icon-color": feature.color } as any}
+                >
+                  {feature.icon}
+                </motion.div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
               </motion.div>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-description">{feature.description}</p>
-            </motion.div>
-          ))}
+            ))}
+          </div>
+
+          <button className="carousel-nav-btn next" onClick={scrollNext}>
+            <ChevronRight size={24} />
+          </button>
         </div>
 
         <motion.div

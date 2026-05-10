@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Heart, Shield, Zap, Leaf } from "lucide-react";
+import { Heart, Shield, Zap, Leaf, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Benefits = () => {
   const [ref, inView] = useInView({
@@ -45,6 +45,24 @@ const Benefits = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const scrollPrev = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex - 1;
+      if (nextIndex < 0) nextIndex = benefits.length - 1;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
+
+  const scrollNext = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex + 1;
+      if (nextIndex >= benefits.length) nextIndex = 0;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,29 +116,45 @@ const Benefits = () => {
           </p>
         </motion.div>
 
-        <div 
-          className="snap-carousel" 
-          ref={carouselRef}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => setIsHovered(false)}
-        >
-          {benefits.map((benefit, index) => (
-            <motion.div
-              key={index}
-              className={`snap-item benefit-card glass ${index === activeIndex ? 'active' : ''}`}
-            >
+        <div className="carousel-wrapper">
+          <button className="carousel-nav-btn prev" onClick={scrollPrev}>
+            <ChevronLeft size={24} />
+          </button>
+          
+          <div 
+            className="snap-carousel" 
+            ref={carouselRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+          >
+            {benefits.map((benefit, index) => (
               <motion.div
-                className="benefit-icon-wrapper"
-                style={{ "--icon-color": benefit.color } as React.CSSProperties}
+                key={index}
+                className={`snap-item benefit-card glass ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => {
+                  if (index !== activeIndex && carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
+                  }
+                }}
               >
-                {benefit.icon}
+                <motion.div
+                  className="benefit-icon-wrapper"
+                  style={{ "--icon-color": benefit.color } as React.CSSProperties}
+                >
+                  {benefit.icon}
+                </motion.div>
+                <h3 className="benefit-title">{benefit.title}</h3>
+                <p className="benefit-description">{benefit.description}</p>
               </motion.div>
-              <h3 className="benefit-title">{benefit.title}</h3>
-              <p className="benefit-description">{benefit.description}</p>
-            </motion.div>
-          ))}
+            ))}
+          </div>
+
+          <button className="carousel-nav-btn next" onClick={scrollNext}>
+            <ChevronRight size={24} />
+          </button>
         </div>
 
         <motion.div

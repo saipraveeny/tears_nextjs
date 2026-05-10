@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Star, Quote } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Testimonials = () => {
   const [ref, inView] = useInView({
@@ -38,6 +38,24 @@ const Testimonials = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const scrollPrev = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex - 1;
+      if (nextIndex < 0) nextIndex = testimonials.length - 1;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
+
+  const scrollNext = () => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+      let nextIndex = activeIndex + 1;
+      if (nextIndex >= testimonials.length) nextIndex = 0;
+      carouselRef.current.scrollTo({ left: nextIndex * itemWidth, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,33 +119,49 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div 
-          className="snap-carousel" 
-          ref={carouselRef}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onTouchStart={() => setIsHovered(true)}
-          onTouchEnd={() => setIsHovered(false)}
-        >
-          {testimonials.map((testimonial, index) => (
-            <motion.div
-              key={index}
-              className={`snap-item testimonial-card glass ${index === activeIndex ? 'active' : ''}`}
-            >
-              <div className="testimonial-header">
-                <div className="testimonial-avatar">{testimonial.avatar}</div>
-                <div className="testimonial-info">
-                  <h4 className="testimonial-name">{testimonial.name}</h4>
-                  <p className="testimonial-role">{testimonial.role}</p>
-                  <div className="testimonial-rating">
-                    {renderStars(testimonial.rating)}
+        <div className="carousel-wrapper">
+          <button className="carousel-nav-btn prev" onClick={scrollPrev}>
+            <ChevronLeft size={24} />
+          </button>
+          
+          <div 
+            className="snap-carousel" 
+            ref={carouselRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
+          >
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                className={`snap-item testimonial-card glass ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => {
+                  if (index !== activeIndex && carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
+                  }
+                }}
+              >
+                <div className="testimonial-header">
+                  <div className="testimonial-avatar">{testimonial.avatar}</div>
+                  <div className="testimonial-info">
+                    <h4 className="testimonial-name">{testimonial.name}</h4>
+                    <p className="testimonial-role">{testimonial.role}</p>
+                    <div className="testimonial-rating">
+                      {renderStars(testimonial.rating)}
+                    </div>
                   </div>
+                  <Quote className="quote-icon" />
                 </div>
-                <Quote className="quote-icon" />
-              </div>
-              <p className="testimonial-text">{testimonial.text}</p>
-            </motion.div>
-          ))}
+                <p className="testimonial-text">{testimonial.text}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <button className="carousel-nav-btn next" onClick={scrollNext}>
+            <ChevronRight size={24} />
+          </button>
         </div>
 
         <motion.div
