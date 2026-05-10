@@ -11,13 +11,13 @@ interface NavigationProps {
   logo?: string;
   cartCount?: number;
   onCartClick?: () => void;
-  scrollY?: number;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ logo, cartCount = 0, onCartClick, scrollY = 0 }) => {
+const Navigation: React.FC<NavigationProps> = ({ logo, cartCount = 0, onCartClick }) => {
   const { currentUser, openAuthModal, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   
   useEffect(() => {
