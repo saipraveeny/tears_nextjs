@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { computeCartTotals, formatCurrency } from "../utils/cartUtils";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 const CartModal = ({
   isOpen,
@@ -45,28 +46,30 @@ const CartModal = ({
             ) : (
               <div className="cart-items">
                 {cart.map((item) => (
-                  <div className="cart-item" key={item.id}>
+                  <div className="cart-item" key={item.cartItemId || item.id}>
                     <div className="cart-item-info">
                       <span className="cart-item-name">{item.name}{item.size && ` (${item.size})`}</span>
                       <span className="cart-item-price">{item.price}</span>
                     </div>
                     <div className="cart-item-controls">
                       <button
-                        onClick={() => onUpdateQty(item.id, item.qty - 1)}
+                        onClick={() => onUpdateQty(item.cartItemId || item.id, item.qty - 1)}
                       >
                         -
                       </button>
                       <span>{item.qty}</span>
                       <button
-                        onClick={() => onUpdateQty(item.id, item.qty + 1)}
+                        onClick={() => onUpdateQty(item.cartItemId || item.id, item.qty + 1)}
                       >
                         +
                       </button>
                       <button
                         className="cart-remove"
-                        onClick={() => onRemove(item.id)}
+                        onClick={() => onRemove(item.cartItemId || item.id)}
+                        title="Remove Item"
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "6px" }}
                       >
-                        Remove
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>

@@ -116,7 +116,7 @@ const useCartInternal = () => {
   };
 
   const removeFromCart = (cartItemId) => {
-    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId || item.id === cartItemId /* fallback */));
+    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId && item.id !== cartItemId));
   };
 
   const updateQty = (cartItemId, qty) => {
