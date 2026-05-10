@@ -2332,18 +2332,19 @@
 
 @media (max-width: 768px) {
   .premium-carousel-container {
-    height: 440px;
+    height: 500px; /* Increased height for more prominence */
   }
   .premium-carousel-track {
-    gap: 1rem; /* Tighter gap for better peeking on mobile */
+    gap: 0.75rem; /* Slightly tighter gap to pull side cards in more */
   }
   .premium-card-wrapper {
-    flex: 0 0 280px;
+    flex: 0 0 260px; /* Slightly narrower to show more of side cards */
   }
+
   .premium-card-wrapper.inactive {
-    opacity: 0.15;
-    transform: scale(0.8);
-    filter: blur(10px);
+    opacity: 0.2;
+    transform: scale(0.85);
+    filter: blur(6px); /* Softer blur for better visibility */
   }
 }
 
