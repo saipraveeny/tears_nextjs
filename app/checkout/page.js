@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CheckoutPageComponent from "@/components/CheckoutPage";
+import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
 import { useCheckoutForm } from "@/hooks/useCheckoutForm";
 import { API_BASE } from "@/utils/constants";
@@ -14,15 +15,29 @@ export default function CheckoutPage() {
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   const { cart, clearCart } = useCart();
+  const { currentUser } = useAuth();
 
   const {
     checkoutForm,
     formErrors,
+    setCheckoutForm,
     setFormErrors,
     handleCheckoutChange,
     handleInputKeyDown,
     validateCheckoutForm,
   } = useCheckoutForm();
+
+  // Auto-fill form when user logs in
+  useEffect(() => {
+    if (currentUser) {
+      setCheckoutForm(prev => ({
+        ...prev,
+        name: prev.name || currentUser.name || "",
+        email: prev.email || currentUser.email || "",
+        phone: prev.phone || currentUser.phone || ""
+      }));
+    }
+  }, [currentUser, setCheckoutForm]);
 
   const submitCheckout = async (e) => {
     e?.preventDefault();
@@ -81,6 +96,7 @@ export default function CheckoutPage() {
   return (
     <div style={{ minHeight: "100vh", padding: "20px", marginTop: "80px" }}>
       <CheckoutPageComponent
+        currentUser={currentUser}
         cart={cart}
         checkoutForm={checkoutForm}
         formErrors={formErrors}

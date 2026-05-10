@@ -156,11 +156,12 @@ const CheckoutPage = ({
                     <label style={{ display: "block", color: "#888", fontSize: "13px", marginBottom: "8px" }}>Email</label>
                     <input 
                       value={checkoutForm.email}
-                      readOnly={!!currentUser}
+                      onChange={(e) => onFormChange("email", e.target.value)}
+                      readOnly={!!(currentUser && currentUser.email)}
                       required
                       placeholder="john@example.com"
                       className="form-input"
-                      style={{ width: "100%", padding: "14px", borderRadius: "12px", background: currentUser ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: currentUser ? "#666" : "#fff", boxSizing: "border-box", fontSize: "15px" }}
+                      style={{ width: "100%", padding: "14px", borderRadius: "12px", background: (currentUser && currentUser.email) ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: (currentUser && currentUser.email) ? "#666" : "#fff", boxSizing: "border-box", fontSize: "15px" }}
                     />
                   </div>
 

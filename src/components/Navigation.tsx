@@ -18,10 +18,13 @@ const Navigation: React.FC<NavigationProps> = ({ logo, cartCount = 0, onCartClic
   const { currentUser, openAuthModal, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   
   useEffect(() => {
     setIsMobile(window.innerWidth <= 768);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
