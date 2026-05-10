@@ -38,25 +38,13 @@ const Testimonials = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const extendedTestimonials = [...testimonials, ...testimonials, ...testimonials, ...testimonials];
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      carouselRef.current.scrollTo({ left: testimonials.length * itemWidth, behavior: "auto" });
-    }
-  }, [testimonials.length]);
 
   const scrollPrev = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index <= testimonials.length) {
-          const middleIndex = testimonials.length * 2 + (index % testimonials.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: -itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index === 0) {
+        carouselRef.current.scrollTo({ left: (testimonials.length - 1) * itemWidth, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
       }
@@ -67,12 +55,8 @@ const Testimonials = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index >= testimonials.length * 3 - 1) {
-          const middleIndex = testimonials.length + (index % testimonials.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index >= testimonials.length - 1) {
+        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
       }
@@ -85,9 +69,8 @@ const Testimonials = () => {
       const { scrollLeft } = carouselRef.current;
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const newIndex = Math.round(scrollLeft / itemWidth);
-      const realIndex = newIndex % testimonials.length;
-      if (realIndex !== activeIndex) {
-        setActiveIndex(realIndex);
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < testimonials.length) {
+        setActiveIndex(newIndex);
       }
     };
     
@@ -146,12 +129,12 @@ const Testimonials = () => {
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
           >
-            {extendedTestimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
-                className={`snap-item testimonial-card glass ${index % testimonials.length === activeIndex ? 'active' : ''}`}
+                className={`snap-item testimonial-card glass ${index === activeIndex ? 'active' : ''}`}
                 onClick={() => {
-                  if (index % testimonials.length !== activeIndex && carouselRef.current) {
+                  if (index !== activeIndex && carouselRef.current) {
                     const itemWidth = window.innerWidth > 768 ? 332 : 292;
                     carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
                   }

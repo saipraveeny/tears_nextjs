@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         {/* Highcharts scripts for Admin Dashboard */}
         <Script src="https://code.highcharts.com/highcharts.js" />
         <Script src="https://code.highcharts.com/highcharts-more.js" />

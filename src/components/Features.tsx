@@ -45,25 +45,13 @@ const Features = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const extendedFeatures = [...features, ...features, ...features, ...features];
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      carouselRef.current.scrollTo({ left: features.length * itemWidth, behavior: "auto" });
-    }
-  }, [features.length]);
 
   const scrollPrev = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index <= features.length) {
-          const middleIndex = features.length * 2 + (index % features.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: -itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index === 0) {
+        carouselRef.current.scrollTo({ left: (features.length - 1) * itemWidth, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
       }
@@ -74,12 +62,8 @@ const Features = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index >= features.length * 3 - 1) {
-          const middleIndex = features.length + (index % features.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index >= features.length - 1) {
+        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
       }
@@ -92,9 +76,8 @@ const Features = () => {
       const { scrollLeft } = carouselRef.current;
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const newIndex = Math.round(scrollLeft / itemWidth);
-      const realIndex = newIndex % features.length;
-      if (realIndex !== activeIndex) {
-        setActiveIndex(realIndex);
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < features.length) {
+        setActiveIndex(newIndex);
       }
     };
     
@@ -143,12 +126,12 @@ const Features = () => {
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
           >
-            {extendedFeatures.map((feature, index) => (
+            {features.map((feature, index) => (
               <motion.div
                 key={index}
-                className={`snap-item feature-card glass ${index % features.length === activeIndex ? 'active' : ''}`}
+                className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
                 onClick={() => {
-                  if (index % features.length !== activeIndex && carouselRef.current) {
+                  if (index !== activeIndex && carouselRef.current) {
                     const itemWidth = window.innerWidth > 768 ? 332 : 292;
                     carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
                   }

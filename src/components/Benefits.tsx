@@ -45,25 +45,13 @@ const Benefits = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const extendedBenefits = [...benefits, ...benefits, ...benefits, ...benefits];
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      carouselRef.current.scrollTo({ left: benefits.length * itemWidth, behavior: "auto" });
-    }
-  }, [benefits.length]);
 
   const scrollPrev = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index <= benefits.length) {
-          const middleIndex = benefits.length * 2 + (index % benefits.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: -itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index === 0) {
+        carouselRef.current.scrollTo({ left: (benefits.length - 1) * itemWidth, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
       }
@@ -74,12 +62,8 @@ const Benefits = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index >= benefits.length * 3 - 1) {
-          const middleIndex = benefits.length + (index % benefits.length);
-          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
-          setTimeout(() => {
-            carouselRef.current?.scrollBy({ left: itemWidth, behavior: "smooth" });
-          }, 50);
+      if (index >= benefits.length - 1) {
+        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
       } else {
         carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
       }
@@ -92,9 +76,8 @@ const Benefits = () => {
       const { scrollLeft } = carouselRef.current;
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const newIndex = Math.round(scrollLeft / itemWidth);
-      const realIndex = newIndex % benefits.length;
-      if (realIndex !== activeIndex) {
-        setActiveIndex(realIndex);
+      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < benefits.length) {
+        setActiveIndex(newIndex);
       }
     };
     
@@ -143,12 +126,12 @@ const Benefits = () => {
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
           >
-            {extendedBenefits.map((benefit, index) => (
+            {benefits.map((benefit, index) => (
               <motion.div
                 key={index}
-                className={`snap-item benefit-card glass ${index % benefits.length === activeIndex ? 'active' : ''}`}
+                className={`snap-item benefit-card glass ${index === activeIndex ? 'active' : ''}`}
                 onClick={() => {
-                  if (index % benefits.length !== activeIndex && carouselRef.current) {
+                  if (index !== activeIndex && carouselRef.current) {
                     const itemWidth = window.innerWidth > 768 ? 332 : 292;
                     carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
                   }
