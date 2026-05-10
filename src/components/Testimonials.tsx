@@ -35,43 +35,22 @@ const Testimonials = () => {
     },
   ];
 
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [items, setItems] = useState(testimonials);
   const [isHovered, setIsHovered] = useState(false);
-  
-  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 336 : 296;
 
-  const handleScroll = () => {
-    if (!carouselRef.current) return;
-    const { scrollLeft } = carouselRef.current;
-    const newIndex = Math.round(scrollLeft / itemWidth);
-    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < testimonials.length) {
-      setActiveIndex(newIndex);
-    }
+  const scrollNext = () => {
+    setItems((prev) => [...prev.slice(1), prev[0]]);
   };
 
   const scrollPrev = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
-    }
-  };
-
-  const scrollNext = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      if (scrollLeft + clientWidth >= scrollWidth - 10) {
-        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
-      }
-    }
+    setItems((prev) => [prev[prev.length - 1], ...prev.slice(0, -1)]);
   };
 
   useEffect(() => {
     if (isHovered) return;
     const interval = setInterval(scrollNext, 4000);
     return () => clearInterval(interval);
-  }, [isHovered, activeIndex]);
+  }, [isHovered, items]);
 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
@@ -100,44 +79,65 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div className="carousel-wrapper">
+        <div 
+          className="premium-carousel-container"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <button className="carousel-nav-btn prev" onClick={scrollPrev}>
             <ChevronLeft size={24} />
           </button>
-          
-          <div 
-            className="snap-carousel" 
-            ref={carouselRef}
-            onScroll={handleScroll}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+
+          <motion.div 
+            className="premium-carousel-track"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            onDragEnd={(e, { offset, velocity }) => {
+              if (offset.x < -50) scrollNext();
+              else if (offset.x > 50) scrollPrev();
+            }}
           >
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className={`snap-item testimonial-card glass ${index === activeIndex ? 'active' : ''}`}
-                onClick={() => {
-                  if (carouselRef.current) {
-                    const itemWidth = window.innerWidth > 768 ? 336 : 296;
-                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
-                  }
-                }}
-              >
-                <div className="testimonial-header">
-                  <div className="testimonial-avatar">{testimonial.avatar}</div>
-                  <div className="testimonial-info">
-                    <h4 className="testimonial-name">{testimonial.name}</h4>
-                    <p className="testimonial-role">{testimonial.role}</p>
-                    <div className="testimonial-rating">
-                      {renderStars(testimonial.rating)}
+            <AnimatePresence mode="popLayout">
+              {items.map((testimonial, index) => {
+                const isActive = index === 1; 
+                
+                return (
+                  <motion.div
+                    layout
+                    key={testimonial.name}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ 
+                      opacity: isActive ? 1 : 0.4,
+                      scale: isActive ? 1.15 : 0.85,
+                      filter: isActive ? 'blur(0px)' : 'blur(8px)',
+                    }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className={`premium-card-wrapper ${isActive ? 'active' : 'inactive'}`}
+                    onClick={() => {
+                      if (index === 0) scrollPrev();
+                      if (index === 2) scrollNext();
+                    }}
+                  >
+                    <div className="testimonial-card glass">
+                      <div className="testimonial-header">
+                        <div className="testimonial-avatar">{testimonial.avatar}</div>
+                        <div className="testimonial-info">
+                          <h4 className="testimonial-name">{testimonial.name}</h4>
+                          <p className="testimonial-role">{testimonial.role}</p>
+                          <div className="testimonial-rating">
+                            {renderStars(testimonial.rating)}
+                          </div>
+                        </div>
+                        <Quote className="quote-icon" />
+                      </div>
+                      <p className="testimonial-text">{testimonial.text}</p>
                     </div>
-                  </div>
-                  <Quote className="quote-icon" />
-                </div>
-                <p className="testimonial-text">{testimonial.text}</p>
-              </motion.div>
-            ))}
-          </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </motion.div>
 
           <button className="carousel-nav-btn next" onClick={scrollNext}>
             <ChevronRight size={24} />
