@@ -2332,19 +2332,23 @@
 
 @media (max-width: 768px) {
   .premium-carousel-container {
-    height: 500px; /* Increased height for more prominence */
+    height: 520px;
   }
   .premium-carousel-track {
-    gap: 0.75rem; /* Slightly tighter gap to pull side cards in more */
+    gap: 0.5rem; /* Tightest gap to maximize side card visibility */
   }
   .premium-card-wrapper {
-    flex: 0 0 260px; /* Slightly narrower to show more of side cards */
+    flex: 0 0 220px; /* Narrower width to show more of sides */
+    height: 400px; /* Taller card height */
+  }
+  .premium-card-wrapper > div {
+    height: 100%; /* Ensure card content fills the taller wrapper */
   }
 
   .premium-card-wrapper.inactive {
-    opacity: 0.2;
-    transform: scale(0.85);
-    filter: blur(6px); /* Softer blur for better visibility */
+    opacity: 0.25;
+    transform: scale(0.8);
+    filter: blur(4px); /* Even softer blur to make them clearly visible as 'next' items */
   }
 }
 
