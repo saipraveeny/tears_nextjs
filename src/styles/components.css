@@ -2388,14 +2388,8 @@
 .features, .benefits, .testimonials {
   padding: 2.5rem 0 !important;
 }
-  }
 
-  .snap-carousel {
-    --item-width: 280px;
-    gap: 12px;
-    padding: 1rem calc(50% - (var(--item-width) / 2)); /* Reduce free space */
-  }
-
+@media (max-width: 768px) {
   .features, .benefits, .testimonials {
     padding: 2rem 0 !important;
   }
