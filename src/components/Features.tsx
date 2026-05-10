@@ -45,18 +45,44 @@ const Features = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const extendedFeatures = [...features, ...features, ...features, ...features];
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const itemWidth = window.innerWidth > 768 ? 332 : 292;
+      carouselRef.current.scrollTo({ left: features.length * itemWidth, behavior: "auto" });
+    }
+  }, [features.length]);
 
   const scrollPrev = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
+      const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
+      if (index <= features.length) {
+          const middleIndex = features.length * 2 + (index % features.length);
+          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
+          setTimeout(() => {
+            carouselRef.current?.scrollBy({ left: -itemWidth, behavior: "smooth" });
+          }, 50);
+      } else {
+        carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
+      }
     }
   };
 
   const scrollNext = () => {
     if (carouselRef.current) {
       const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
+      if (index >= features.length * 3 - 1) {
+          const middleIndex = features.length + (index % features.length);
+          carouselRef.current.scrollTo({ left: middleIndex * itemWidth, behavior: "auto" });
+          setTimeout(() => {
+            carouselRef.current?.scrollBy({ left: itemWidth, behavior: "smooth" });
+          }, 50);
+      } else {
+        carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
+      }
     }
   };
 
@@ -64,10 +90,11 @@ const Features = () => {
     const handleScroll = () => {
       if (!carouselRef.current) return;
       const { scrollLeft } = carouselRef.current;
-      const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
+      const itemWidth = window.innerWidth > 768 ? 332 : 292;
       const newIndex = Math.round(scrollLeft / itemWidth);
-      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < features.length) {
-        setActiveIndex(newIndex);
+      const realIndex = newIndex % features.length;
+      if (realIndex !== activeIndex) {
+        setActiveIndex(realIndex);
       }
     };
     
@@ -81,22 +108,13 @@ const Features = () => {
   useEffect(() => {
     if (isHovered) return;
     const interval = setInterval(() => {
-      if (carouselRef.current) {
-        let nextIndex = activeIndex + 1;
-        if (nextIndex >= features.length) nextIndex = 0;
-        
-        const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 16;
-        carouselRef.current.scrollTo({
-          left: nextIndex * itemWidth,
-          behavior: "smooth"
-        });
-      }
+      scrollNext();
     }, 4000);
     return () => clearInterval(interval);
-  }, [activeIndex, isHovered, features.length]);
+  }, [isHovered]);
 
   return (
-    <section id="features" className="features">
+    <section id="features" className="features" ref={ref}>
       <div className="container">
         <motion.div
           className="section-header"
@@ -125,13 +143,13 @@ const Features = () => {
             onTouchStart={() => setIsHovered(true)}
             onTouchEnd={() => setIsHovered(false)}
           >
-            {features.map((feature, index) => (
+            {extendedFeatures.map((feature, index) => (
               <motion.div
                 key={index}
-                className={`snap-item feature-card glass ${index === activeIndex ? 'active' : ''}`}
+                className={`snap-item feature-card glass ${index % features.length === activeIndex ? 'active' : ''}`}
                 onClick={() => {
-                  if (index !== activeIndex && carouselRef.current) {
-                    const itemWidth = window.innerWidth > 768 ? 300 + 32 : 280 + 12;
+                  if (index % features.length !== activeIndex && carouselRef.current) {
+                    const itemWidth = window.innerWidth > 768 ? 332 : 292;
                     carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
                   }
                 }}
