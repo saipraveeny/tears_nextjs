@@ -104,7 +104,7 @@ const PartnerWithUs = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            style={{ fontSize: "clamp(40px, 8vw, 72px)", fontWeight: "900", letterSpacing: "-3px", marginBottom: "20px", lineHeight: "0.9", fontFamily: 'Outfit' }}
+            style={{ fontSize: "clamp(40px, 8vw, 72px)", fontWeight: "900", letterSpacing: "-3px", marginBottom: "20px", lineHeight: "0.9", fontFamily: 'Inter' }}
           >
             SCALE THE <span style={{ color: "#ff3b30" }}>HEAT</span> <br/>WITH TEARS.
           </motion.h1>

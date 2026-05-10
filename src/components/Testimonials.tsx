@@ -38,54 +38,49 @@ const Testimonials = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  
+  // 3 sets for infinite loop
+  const displayTestimonials = [...testimonials, ...testimonials, ...testimonials];
+  const itemWidth = typeof window !== 'undefined' && window.innerWidth > 768 ? 332 : 292;
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({ left: testimonials.length * itemWidth, behavior: "auto" });
+    }
+  }, []);
+
+  const handleScroll = () => {
+    if (!carouselRef.current) return;
+    const { scrollLeft } = carouselRef.current;
+    
+    // Teleport logic
+    if (scrollLeft <= 50) {
+      carouselRef.current.scrollTo({ left: testimonials.length * itemWidth + scrollLeft, behavior: "auto" });
+    } else if (scrollLeft >= (testimonials.length * 2) * itemWidth) {
+      carouselRef.current.scrollTo({ left: testimonials.length * itemWidth + (scrollLeft % itemWidth), behavior: "auto" });
+    }
+
+    const newIndex = Math.round(scrollLeft / itemWidth) % testimonials.length;
+    if (newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
+  };
 
   const scrollPrev = () => {
     if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index === 0) {
-        carouselRef.current.scrollTo({ left: (testimonials.length - 1) * itemWidth, behavior: "smooth" });
-      } else {
-        carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
-      }
+      carouselRef.current.scrollBy({ left: -itemWidth, behavior: "smooth" });
     }
   };
 
   const scrollNext = () => {
     if (carouselRef.current) {
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      const index = Math.round(carouselRef.current.scrollLeft / itemWidth);
-      if (index >= testimonials.length - 1) {
-        carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
-      }
+      carouselRef.current.scrollBy({ left: itemWidth, behavior: "smooth" });
     }
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!carouselRef.current) return;
-      const { scrollLeft } = carouselRef.current;
-      const itemWidth = window.innerWidth > 768 ? 332 : 292;
-      const newIndex = Math.round(scrollLeft / itemWidth);
-      if (newIndex !== activeIndex && newIndex >= 0 && newIndex < testimonials.length) {
-        setActiveIndex(newIndex);
-      }
-    };
-    
-    const el = carouselRef.current;
-    if (el) el.addEventListener("scroll", handleScroll);
-    return () => {
-      if (el) el.removeEventListener("scroll", handleScroll);
-    };
-  }, [activeIndex, testimonials.length]);
-
-  useEffect(() => {
     if (isHovered) return;
-    const interval = setInterval(() => {
-      scrollNext();
-    }, 4000);
+    const interval = setInterval(scrollNext, 4000);
     return () => clearInterval(interval);
   }, [isHovered]);
 
@@ -124,36 +119,45 @@ const Testimonials = () => {
           <div 
             className="snap-carousel" 
             ref={carouselRef}
+            onScroll={handleScroll}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            onTouchStart={() => setIsHovered(true)}
-            onTouchEnd={() => setIsHovered(false)}
           >
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className={`snap-item testimonial-card glass ${index === activeIndex ? 'active' : ''}`}
-                onClick={() => {
-                  if (index !== activeIndex && carouselRef.current) {
-                    const itemWidth = window.innerWidth > 768 ? 332 : 292;
-                    carouselRef.current.scrollTo({ left: index * itemWidth, behavior: "smooth" });
-                  }
-                }}
-              >
-                <div className="testimonial-header">
-                  <div className="testimonial-avatar">{testimonial.avatar}</div>
-                  <div className="testimonial-info">
-                    <h4 className="testimonial-name">{testimonial.name}</h4>
-                    <p className="testimonial-role">{testimonial.role}</p>
-                    <div className="testimonial-rating">
-                      {renderStars(testimonial.rating)}
+            {displayTestimonials.map((testimonial, index) => {
+              const isActive = index % testimonials.length === activeIndex;
+              const isNext = (index % testimonials.length) === (activeIndex + 1) % testimonials.length;
+
+              return (
+                <motion.div
+                  key={index}
+                  className="snap-item"
+                  initial={false}
+                >
+                  <div className={`testimonial-card glass ${isActive ? 'active' : ''}`}
+                       style={{
+                         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                         transform: `scale(${isActive ? 1 : 0.85}) rotateY(${isActive ? 0 : (isNext ? -15 : 15)}deg)`,
+                         opacity: isActive ? 1 : 0.5,
+                         filter: `blur(${isActive ? 0 : 2}px)`,
+                         zIndex: isActive ? 10 : 1
+                       }}
+                  >
+                    <div className="testimonial-header">
+                      <div className="testimonial-avatar">{testimonial.avatar}</div>
+                      <div className="testimonial-info">
+                        <h4 className="testimonial-name">{testimonial.name}</h4>
+                        <p className="testimonial-role">{testimonial.role}</p>
+                        <div className="testimonial-rating">
+                          {renderStars(testimonial.rating)}
+                        </div>
+                      </div>
+                      <Quote className="quote-icon" />
                     </div>
+                    <p className="testimonial-text">{testimonial.text}</p>
                   </div>
-                  <Quote className="quote-icon" />
-                </div>
-                <p className="testimonial-text">{testimonial.text}</p>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
 
           <button className="carousel-nav-btn next" onClick={scrollNext}>

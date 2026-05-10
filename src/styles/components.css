@@ -242,7 +242,7 @@
 
 .section-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1rem !important; /* Extremely tight margin */
 }
 
 .section-title {
@@ -2294,6 +2294,7 @@
 .carousel-wrapper {
   position: relative;
   width: 100%;
+  perspective: 1200px; /* Essential for 3D card effects */
 }
 
 .carousel-nav-btn {
