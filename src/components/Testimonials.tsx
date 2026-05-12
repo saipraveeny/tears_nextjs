@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -35,34 +35,49 @@ const Testimonials = () => {
     },
   ];
 
-  const [items, setItems] = useState(testimonials);
-  const [isHovered, setIsHovered] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  const scrollNext = () => {
-    setItems((prev) => [...prev.slice(1), prev[0]]);
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+    setScrollProgress(progress);
+
+    // Calculate active index
+    const cardWidth = scrollRef.current.querySelector(".modern-card-wrapper")?.clientWidth || 0;
+    const gap = 40;
+    const index = Math.round(scrollLeft / (cardWidth + gap));
+    if (index !== activeIndex && index >= 0 && index < testimonials.length) {
+      setActiveIndex(index);
+    }
   };
 
-  const scrollPrev = () => {
-    setItems((prev) => [prev[prev.length - 1], ...prev.slice(0, -1)]);
+  const scrollTo = (index: number) => {
+    if (!scrollRef.current) return;
+    const cardWidth = scrollRef.current.querySelector(".modern-card-wrapper")?.clientWidth || 0;
+    const gap = 40;
+    scrollRef.current.scrollTo({
+      left: index * (cardWidth + gap),
+      behavior: "smooth"
+    });
   };
 
-  useEffect(() => {
-    if (isHovered) return;
-    const interval = setInterval(scrollNext, 4000);
-    return () => clearInterval(interval);
-  }, [isHovered, items]);
-
-  const visibleItems = [items[items.length - 1], items[0], items[1]];
-
-  const renderStars = (rating) => {
+  const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (
       <Star
         key={i}
-        size={16}
-        className={`star ${i < rating ? "filled" : ""}`}
+        size={18}
+        className={`star-modern ${i < rating ? "filled" : ""}`}
       />
     ));
   };
+
+  useEffect(() => {
+    handleScroll();
+  }, []);
 
   return (
     <section className="testimonials" ref={ref}>
@@ -71,7 +86,7 @@ const Testimonials = () => {
           className="section-header"
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <h2 className="section-title">
             What <span className="text-gradient">Chefs Say</span>
@@ -81,76 +96,77 @@ const Testimonials = () => {
           </p>
         </motion.div>
 
-        <div 
-          className="premium-carousel-container"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <button className="carousel-nav-btn prev" onClick={scrollPrev}>
-            <ChevronLeft size={24} />
-          </button>
-
-          <motion.div 
-            className="premium-carousel-track"
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            onDragEnd={(e, { offset }) => {
-              if (offset.x < -50) scrollNext();
-              else if (offset.x > 50) scrollPrev();
-            }}
+        <div className="modern-carousel-section">
+          <div 
+            className="modern-carousel-track" 
+            ref={scrollRef}
+            onScroll={handleScroll}
           >
-            <AnimatePresence mode="popLayout" initial={false}>
-              {visibleItems.map((testimonial, index) => {
-                const isActive = index === 1; 
-                
-                return (
-                  <motion.div
-                    layout
-                    key={testimonial.name}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ 
-                      opacity: isActive ? 1 : 0.3,
-                      scale: isActive ? 1.1 : 0.85,
-                      filter: isActive ? 'blur(0px)' : 'blur(8px)',
-                    }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className={`premium-card-wrapper ${isActive ? 'active' : 'inactive'}`}
-                    onClick={() => {
-                      if (index === 0) scrollPrev();
-                      if (index === 2) scrollNext();
-                    }}
-                  >
-                    <div className="testimonial-card glass">
-                      <div className="testimonial-header">
-                        <div className="testimonial-avatar">{testimonial.avatar}</div>
-                        <div className="testimonial-info">
-                          <h4 className="testimonial-name">{testimonial.name}</h4>
-                          <p className="testimonial-role">{testimonial.role}</p>
-                          <div className="testimonial-rating">
-                            {renderStars(testimonial.rating)}
-                          </div>
-                        </div>
-                        <Quote className="quote-icon" />
+            {testimonials.map((testimonial, index) => (
+              <div 
+                key={testimonial.name}
+                className={`modern-card-wrapper ${index === activeIndex ? 'active' : ''}`}
+                onClick={() => scrollTo(index)}
+              >
+                <div className="modern-glass-card">
+                  <Quote className="quote-icon-modern" />
+                  
+                  <div className="testimonial-header-modern">
+                    <div className="avatar-ring">
+                      <div className="avatar-inner">
+                        {testimonial.avatar}
                       </div>
-                      <p className="testimonial-text">{testimonial.text}</p>
                     </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                    <h4 className="testimonial-name-modern">{testimonial.name}</h4>
+                    <p className="testimonial-role-modern">{testimonial.role}</p>
+                  </div>
 
-          <button className="carousel-nav-btn next" onClick={scrollNext}>
-            <ChevronRight size={24} />
-          </button>
+                  <div className="testimonial-rating-modern">
+                    {renderStars(testimonial.rating)}
+                  </div>
+
+                  <p className="modern-card-description" style={{ fontStyle: 'italic' }}>
+                    "{testimonial.text}"
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="carousel-controls">
+            <div className="modern-progress-bar">
+              <div 
+                className="modern-progress-fill" 
+                style={{ width: `${Math.max(5, scrollProgress)}%` }}
+              />
+            </div>
+
+            <div className="modern-nav-buttons">
+              <button 
+                className="modern-nav-btn" 
+                onClick={() => scrollTo(activeIndex - 1)}
+                disabled={activeIndex === 0}
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button 
+                className="modern-nav-btn" 
+                onClick={() => scrollTo(activeIndex + 1)}
+                disabled={activeIndex === testimonials.length - 1}
+                aria-label="Next testimonial"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </div>
         </div>
 
         <motion.div
           className="testimonials-cta"
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
         >
           <p className="cta-text">
             Join thousands of satisfied customers and culinary professionals
