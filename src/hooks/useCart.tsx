@@ -120,9 +120,13 @@ const useCartInternal = () => {
   };
 
   const updateQty = (cartItemId, qty) => {
+    if (qty < 1) {
+      removeFromCart(cartItemId);
+      return;
+    }
     setCart((prev) =>
       prev.map((item) =>
-        (item.cartItemId === cartItemId || item.id === cartItemId) ? { ...item, qty: Math.max(1, qty) } : item,
+        (item.cartItemId === cartItemId || item.id === cartItemId) ? { ...item, qty } : item,
       ),
     );
   };
@@ -141,6 +145,7 @@ const useCartInternal = () => {
     updateConfirmationQuantity,
     removeFromCart,
     updateQty,
+    clearCart,
   };
 };
 

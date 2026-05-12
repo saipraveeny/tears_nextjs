@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Flame, Star, ShoppingCart, Eye } from "lucide-react";
+import { Flame, Star, ShoppingCart, Eye, X } from "lucide-react";
 
 // Import variant images
-// Variant images (using string paths from public/assets)
 const wildImage = "/assets/wild.png";
 const glitchImage = "/assets/glitch.png";
 const greenImage = "/assets/green.png";
@@ -104,127 +103,142 @@ const Products: React.FC<ProductsProps> = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.7,
+        ease: [0.2, 0.8, 0.2, 1],
       },
     },
   };
 
-  const renderHeatLevel = (level) => {
+  const renderHeatLevel = (level: number, color: string) => {
     return [...Array(5)].map((_, i) => (
       <Flame
         key={i}
-        size={16}
-        className={`heat-flame ${i < level ? "active" : ""}`}
+        size={18}
+        className="heat-flame-premium"
+        style={{ color: i < level ? color : "rgba(255, 255, 255, 0.2)" }}
       />
     ));
   };
 
+  const formatProductName = (name: string) => {
+    if (name.includes("(100ml)")) {
+      return (
+        <>
+          {name.replace("(100ml)", "").trim()}
+          <span className="premium-product-size"> (100ml)</span>
+        </>
+      );
+    }
+    return name;
+  };
+
   return (
-    <section id="products" className="products">
+    <section id="products" className="products premium-products-section" ref={ref}>
       <div className="container">
         <motion.div
-          className="products-grid"
-          ref={ref}
+          className="section-header"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ marginBottom: "4rem" }}
+        >
+          <h2 className="section-title">
+            Our <span className="text-gradient">Collection</span>
+          </h2>
+          <p className="section-subtitle">
+            Discover the perfect balance of heat and flavor for your palate
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="premium-products-track"
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
         >
-          {products.map((product, index) => (
+          {products.map((product) => (
             <motion.div
               key={product.id}
-              className="product-card neumorphic"
+              className="premium-product-card"
               variants={itemVariants}
-              whileHover={{
-                y: -10,
-                scale: 1.02,
-              }}
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => setSelectedProduct(product as any)}
             >
-              <div
-                className="product-image"
-                style={{ background: product.color, borderRadius: "2rem" }}
+              <div 
+                className="premium-product-glass"
+                style={{ "--product-color": product.color } as any}
               >
-                <img
-                  src={product.image}
-                  alt={`${product.name} Hot Sauce`}
-                  className="product-variant-image"
-                />
-                <motion.div
-                  className="product-overlay"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                >
-                  <motion.button
-                    className="overlay-btn"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
+                <div className="premium-product-image-container">
+                  <div className="premium-product-glow" style={{ background: product.color }} />
+                  <img
+                    src={product.image}
+                    alt={`${product.name} Hot Sauce`}
+                    className="premium-product-image"
+                  />
+                  <div 
+                    className="premium-product-view-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedProduct(product as any);
+                    }}
                   >
-                    <Eye size={20} />
-                  </motion.button>
-                </motion.div>
-              </div>
-
-              <div className="product-content">
-                <div className="product-header">
-                  <h3 className="product-name">{product.name}</h3>
-                  {product.available && (
-                    <div className="product-rating">
-                      <Star size={16} className="star-icon" />
-                      <span>4.9</span>
-                    </div>
-                  )}
-                </div>
-
-                <p className="product-description">{product.description}</p>
-
-                <div className="product-heat">
-                  <span className="heat-label">Heat Level:</span>
-                  <div className="heat-level">
-                    {renderHeatLevel(product.heatLevel)}
+                    <Eye size={24} />
                   </div>
                 </div>
 
-                <div className="product-features">
-                  {product.features.map((feature, i) => (
-                    <span key={i} className="feature-tag">
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="product-footer-main">
-                  <div className="product-price-row">
-                    <span className="product-price">{product.price}</span>
+                <div className="premium-product-content">
+                  <div className="premium-product-header">
+                    <h3 className="premium-product-name">{formatProductName(product.name)}</h3>
+                    {product.available && (
+                      <div className="premium-product-rating">
+                        <Star size={16} fill="currentColor" />
+                        <span>4.9</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="product-actions">
+
+                  <p className="premium-product-description">{product.description}</p>
+
+                  <div className="premium-product-heat">
+                    {renderHeatLevel(product.heatLevel, product.color)}
+                  </div>
+
+                  <div className="premium-product-features">
+                    {product.features.slice(0, 3).map((feature, i) => (
+                      <span key={i} className="premium-feature-tag">
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="premium-product-footer">
+                    <span className="premium-product-price">{product.price}</span>
+                    
                     {product.available ? (
-                      <motion.button
-                        className="add-to-cart-full"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.95 }}
+                      <button
+                        className="premium-add-to-cart-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart(product, 1);
                           openCart();
                         }}
                       >
-                        <ShoppingCart size={18} />
-                        <span className="cart-btn-text">Add to Cart</span>
-                      </motion.button>
+                        <ShoppingCart size={20} />
+                        <span>Add to Cart</span>
+                      </button>
                     ) : (
-                      <div className="coming-soon-badge-full">
-                        <span>Launching soon</span>
+                      <div className="premium-coming-soon">
+                        Launching soon
                       </div>
                     )}
                   </div>
@@ -234,45 +248,42 @@ const Products: React.FC<ProductsProps> = ({
           ))}
         </motion.div>
 
-        {/* Great Deal Panel (moved below products) */}
-        <motion.div
-          className="great-deal-panel"
+        {/* Great Deal Panel */}
+        {/* <motion.div
+          className="premium-deal-panel"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
         >
-          <div className="great-deal-content">
-            <div className="great-deal-title">Launching Offer</div>
-            <div className="great-deal-desc">
-              <b>3 bottles pack(green, wild, glitch)</b> for just{" "}
-              <span className="great-deal-price">₹816.00</span>
-              <span className="discount-badge">Save ₹100</span>
+          <div className="premium-deal-glass">
+            <div className="premium-deal-glow"></div>
+            <div className="premium-deal-content">
+              <div className="premium-deal-badge">Special Offer</div>
+              <h3 className="premium-deal-title">The Ultimate Trio</h3>
+              <p className="premium-deal-desc">
+                Experience our core lineup with the 3-bottle pack (Green, Wild, Glitch).
+              </p>
+              <div className="premium-deal-pricing">
+                <span className="premium-deal-current">₹816.00</span>
+                <span className="premium-deal-original">₹916.00</span>
+                <span className="premium-deal-savings">Save ₹100</span>
+              </div>
             </div>
-            <div className="original-price">
-              <span className="strikethrough">₹916.00</span>
-            </div>
+            <button 
+              className="premium-deal-btn"
+              onClick={() => {
+                if(addBundleToCart) {
+                  addToCart(addBundleToCart, 1);
+                  openCart();
+                }
+              }}
+            >
+              <ShoppingCart size={20} />
+              Grab The Bundle
+            </button>
           </div>
-        </motion.div>
-
-        <motion.div
-          className="products-cta"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <p className="cta-text">
-            Perfect for cafés, fine-dining restaurants, and barbecue joints
-          </p>
-          <motion.button
-            className="btn btn-secondary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={openCart}
-          >
-            View Cart
-          </motion.button>
-        </motion.div>
+        </motion.div> */}
       </div>
 
       {/* Product Modal */}
@@ -290,16 +301,24 @@ const Products: React.FC<ProductsProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
+            style={{ 
+              background: 'rgba(18, 18, 18, 0.95)',
+              border: `1px solid ${(selectedProduct as any).color}40`,
+              boxShadow: `0 30px 60px rgba(0,0,0,0.6), 0 0 40px ${(selectedProduct as any).color}20`
+            }}
           >
             <button
-              className="modal-close"
-              onClick={() => setSelectedProduct(null)}
+              className="premium-modal-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedProduct(null);
+              }}
             >
-              ×
+              <X size={24} />
             </button>
             <div className="modal-product modal-product-grid">
               <div className="modal-image modal-image-fill">
-                {selectedProduct.name === "Wild (100ml)" && (
+                {(selectedProduct as any).name === "Wild (100ml)" && (
                   <video
                     className="modal-variant-image modal-variant-image-fill"
                     src={wildJpg}
@@ -308,10 +327,9 @@ const Products: React.FC<ProductsProps> = ({
                     loop
                     playsInline
                     preload="auto"
-                    aria-label="Wild Hot Sauce video"
                   />
                 )}
-                {selectedProduct.name === "Glitch (100ml)" && (
+                {(selectedProduct as any).name === "Glitch (100ml)" && (
                   <video
                     className="modal-variant-image modal-variant-image-fill"
                     src={glitchJpg}
@@ -320,10 +338,9 @@ const Products: React.FC<ProductsProps> = ({
                     loop
                     playsInline
                     preload="auto"
-                    aria-label="Wild Hot Sauce video"
                   />
                 )}
-                {selectedProduct.name === "Green (100ml)" && (
+                {(selectedProduct as any).name === "Green (100ml)" && (
                   <video
                     className="modal-variant-image modal-variant-image-fill"
                     src={bgVideo}
@@ -332,31 +349,42 @@ const Products: React.FC<ProductsProps> = ({
                     loop
                     playsInline
                     preload="auto"
-                    aria-label="Green Hot Sauce video"
+                  />
+                )}
+                {/* Fallback for others */}
+                {!["Wild (100ml)", "Glitch (100ml)", "Green (100ml)"].includes((selectedProduct as any).name) && (
+                  <img
+                    src={(selectedProduct as any).image}
+                    alt={(selectedProduct as any).name}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2rem' }}
                   />
                 )}
               </div>
               <div className="modal-details">
-                <h2>{selectedProduct.name}</h2>
-                <p>{selectedProduct.description}</p>
-                <div className="modal-heat">
-                  <span>Heat Level:</span>
+                <h2 style={{ color: (selectedProduct as any).color }}>{formatProductName((selectedProduct as any).name)}</h2>
+                <p style={{ fontSize: '1.1rem', lineHeight: 1.6 }}>{(selectedProduct as any).description}</p>
+                <div className="modal-heat" style={{ marginTop: '2rem' }}>
                   <div className="heat-level">
-                    {renderHeatLevel(selectedProduct.heatLevel)}
+                    {renderHeatLevel((selectedProduct as any).heatLevel, (selectedProduct as any).color)}
                   </div>
                 </div>
-                <div className="modal-features">
-                  {selectedProduct.features.map((feature, i) => (
-                    <span key={i} className="feature-tag">
+                <div className="modal-features" style={{ gap: '0.75rem', marginTop: '1.5rem' }}>
+                  {(selectedProduct as any).features.map((feature: string, i: number) => (
+                    <span 
+                      key={i} 
+                      className="premium-feature-tag"
+                      style={{ padding: '8px 16px', fontSize: '0.9rem' }}
+                    >
                       {feature}
                     </span>
                   ))}
                 </div>
-                <div className="modal-price">{selectedProduct.price}</div>
-                {selectedProduct.available ? (
+                <div className="modal-price" style={{ marginTop: '2rem', fontSize: '2.5rem' }}>{(selectedProduct as any).price}</div>
+                {(selectedProduct as any).available ? (
                   <motion.button
-                    className="btn btn-primary"
-                    whileHover={{ scale: 1.05 }}
+                    className="premium-add-to-cart-btn"
+                    style={{ width: '100%', marginTop: '1rem', padding: '1rem' }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       addToCart(selectedProduct, 1);
@@ -364,11 +392,11 @@ const Products: React.FC<ProductsProps> = ({
                       openCart();
                     }}
                   >
-                    <ShoppingCart size={16} />
-                    Add to Cart
+                    <ShoppingCart size={20} />
+                    <span>Add to Cart</span>
                   </motion.button>
                 ) : (
-                  <div className="modal-coming-soon">
+                  <div className="modal-coming-soon" style={{ padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem' }}>
                     <span>Launching soon - Stay Tuned!</span>
                   </div>
                 )}

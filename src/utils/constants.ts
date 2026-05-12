@@ -18,7 +18,7 @@ export const NAV_ITEMS = [
 export const BUNDLE_PRODUCT = {
   id: "bundle-160",
   name: "Special Bundle: All 3 Variants + Tube",
-  price: "₹160.00",
+  price: "₹816.00",
   description: "Get all 3 hot sauce variants and a tube for just ₹160!",
   qty: 1,
   isBundle: true,

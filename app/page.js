@@ -79,7 +79,7 @@ export default function HomePage() {
         greenImg={greenImg}
       />
 
-      <main>
+      {/* <main>
         <Hero logo={logo} />
         <Features />
         <Products
@@ -92,7 +92,7 @@ export default function HomePage() {
         <Testimonials />
         <Recipes />
         <Contact />
-      </main>
+      </main> */}
 
       <AnimatePresence>
         {scrollY > 500 && (

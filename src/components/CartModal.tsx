@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { computeCartTotals, formatCurrency } from "../utils/cartUtils";
 import { useAuth } from "../contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 
 const CartModal = ({
   isOpen,
@@ -37,8 +37,8 @@ const CartModal = ({
             exit={{ scale: 0.95, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <button className="modal-close" onClick={onClose}>
-              ×
+            <button className="premium-modal-close" onClick={onClose}>
+              <X size={24} />
             </button>
             <h2 className="cart-title">Your Cart</h2>
             {cart.length === 0 ? (

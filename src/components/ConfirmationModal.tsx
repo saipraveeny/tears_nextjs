@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ShoppingCart, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Plus, Minus, X } from "lucide-react";
 import { formatCurrency, getProductImage } from "../utils/cartUtils";
 const wildVideo = "/assets/wild.mp4";
 const glitchVideo = "/assets/glitch.mp4";
@@ -49,8 +49,8 @@ const ConfirmationModal = ({
         transition={{ duration: 0.2 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose}>
-          ×
+        <button className="premium-modal-close" onClick={onClose}>
+          <X size={24} />
         </button>
         <h2 className="confirmation-title">Add to Cart</h2>
 
