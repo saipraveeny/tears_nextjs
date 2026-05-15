@@ -68,7 +68,6 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
           <div className="footer-column brand-column">
             <div className="footer-logo-container">
               {logo && <img src={logo} alt="Tears" className="footer-logo-img" />}
-              <span className="brand-name">TEARS</span>
             </div>
             <p className="brand-description">
               Crafting premium, health-conscious hot sauces that redefine the culinary landscape. 
@@ -127,14 +126,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
 
         {/* Newsletter & Socials */}
         <div className="footer-middle">
-          <div className="newsletter-box">
-            <h3>Enter the Heat</h3>
-            <p>Subscribe for exclusive drops and cinematic releases.</p>
-            <div className="newsletter-input-group">
-              <input type="email" placeholder="your@email.com" />
-              <button>Subscribe</button>
-            </div>
-          </div>
+         
           
           <div className="footer-social-box">
             <a href="https://www.instagram.com/tearshxd/" target="_blank" rel="noreferrer" className="social-pill">
