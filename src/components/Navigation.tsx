@@ -92,224 +92,96 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
           <img src={logo} alt="Tears Logo" className="logo-img" />
         </motion.div>
 
-        <div className="nav-menu">
-          {NAV_ITEMS.map((item, index) => (
-            <motion.a
-              key={item.name}
-              href={item.href.startsWith("#") ? item.href : "/" + item.href}
-              className="nav-link"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -2 }}
-              onClick={(e) => handleNavClick(e, item)}
-            >
-              {item.name}
-            </motion.a>
-          ))}
-
-          {!isMobile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px' }}>
-              <motion.button
-                className="cart-btn"
-                onClick={onCartClick}
-                whileTap={{ scale: 0.95 }}
+        <div className="nav-actions">
+          {/* Desktop Links (Hidden on Mobile) */}
+          <div className="desktop-nav-links">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.name}
+                href={item.href.startsWith("#") ? item.href : "/" + item.href}
+                className="nav-link"
+                onClick={(e) => handleNavClick(e, item)}
               >
-                <ShoppingCart size={24} />
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
-              </motion.button>
-              
-              {currentUser ? (
-               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}
-                    onMouseEnter={() => setIsDropdownOpen(true)}
-                    onMouseLeave={() => setIsDropdownOpen(false)}
-               >
-                   <motion.div
-                     whileHover={{ scale: 1.05 }}
-                     style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'linear-gradient(45deg, #ff3b30, #ff8a80)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', cursor: 'pointer' }}
-                   >
-                     {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={18} />}
-                   </motion.div>
-                   
-                   <AnimatePresence>
-                     {isDropdownOpen && (
-                       <motion.div
-                         initial={{ opacity: 0, y: 10 }}
-                         animate={{ opacity: 1, y: 0 }}
-                         exit={{ opacity: 0, y: 10 }}
-                         style={{
-                           position: 'absolute',
-                           top: '100%',
-                           right: 0,
-                           background: 'rgba(20, 20, 20, 0.95)',
-                           backdropFilter: 'blur(10px)',
-                           border: '1px solid rgba(255,255,255,0.1)',
-                           borderRadius: '12px',
-                           padding: '10px 0',
-                           minWidth: '150px',
-                           marginTop: '10px',
-                           zIndex: 100
-                         }}
-                       >
-                         <div style={{ padding: '8px 20px', color: '#888', fontSize: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '5px' }}>
-                           Hi, {currentUser.name?.split(' ')[0] || 'User'}
-                         </div>
-                          <button
-                            onClick={() => { router.push('/profile'); setIsDropdownOpen(false); }}
-                            style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                          >
-                            <User size={16} /> Profile
-                          </button>
-                          <button
-                            onClick={() => { router.push('/orders'); setIsDropdownOpen(false); }}
-                            style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                          >
-                            <Package size={16} /> My Orders
-                          </button>
-                          {currentUser.role === 'admin' && (
-                            <button
-                              onClick={() => { router.push('/admin-panel'); setIsDropdownOpen(false); }}
-                              style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff9500', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                            >
-                              <Shield size={16} /> Admin Panel
-                            </button>
-                          )}
-                          <button
-                            onClick={() => { logout(); setIsDropdownOpen(false); }}
-                            style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '5px' }}
-                          >
-                            <LogOut size={16} /> Sign Out
-                          </button>
-                       </motion.div>
-                     )}
-                   </AnimatePresence>
-               </div>
-              ) : (
-                <motion.button
-                  className="btn btn-primary"
-                  onClick={openAuthModal}
+                {item.name}
+              </a>
+            ))}
+          </div>
+
+          <div className="action-buttons-group">
+            {/* Cart Button (Always Visible) */}
+            <motion.button
+              className="cart-btn"
+              onClick={onCartClick}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingCart size={22} />
+              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+            </motion.button>
+
+            {/* User Profile / Auth (Always Visible) */}
+            {currentUser ? (
+              <div className="user-profile-dropdown-wrapper"
+                   onMouseEnter={() => !isMobile && setIsDropdownOpen(true)}
+                   onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
+              >
+                <motion.div
+                  className="user-avatar"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  style={{ padding: '8px 20px', fontSize: '14px' }}
                 >
-                  Sign In
-                </motion.button>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="mobile-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {currentUser ? (
-            <div style={{ position: 'relative' }}>
-              <motion.div
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                whileTap={{ scale: 0.9 }}
-                style={{ 
-                  width: '32px', 
-                  height: '32px', 
-                  borderRadius: '50%', 
-                  background: 'linear-gradient(45deg, #ff3b30, #ff8a80)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  color: '#fff', 
-                  fontWeight: 'bold', 
-                  cursor: 'pointer',
-                  fontSize: '14px'
-                }}
-              >
-                {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={16} />}
-              </motion.div>
-              
-              <AnimatePresence>
-                {isDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      right: 0,
-                      background: 'rgba(20, 20, 20, 0.98)',
-                      backdropFilter: 'blur(15px)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: '12px',
-                      padding: '8px 0',
-                      minWidth: '160px',
-                      marginTop: '12px',
-                      zIndex: 1000,
-                      boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-                    }}
-                  >
-                    <div style={{ padding: '8px 16px', color: '#888', fontSize: '11px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '4px' }}>
-                      {currentUser.email || currentUser.phone || 'Account'}
-                    </div>
-                    <button
-                      onClick={() => { router.push('/profile'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}
+                  {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={18} />}
+                </motion.div>
+                
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      className="dropdown-menu"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
                     >
-                      <User size={14} /> Profile
-                    </button>
-                    <button
-                      onClick={() => { router.push('/orders'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}
-                    >
-                      <Package size={14} /> Orders
-                    </button>
-                    <button
-                      onClick={() => { logout(); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: '4px' }}
-                    >
-                      <LogOut size={14} /> Sign Out
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <motion.button
-              onClick={openAuthModal}
-              whileTap={{ scale: 0.9 }}
-              style={{ background: 'transparent', border: 'none', color: '#fff' }}
-            >
-              <User size={22} />
-            </motion.button>
-          )}
-
-          <motion.button
-            className="cart-btn"
-            onClick={onCartClick}
-            whileTap={{ scale: 0.95 }}
-            style={{ 
-              margin: 0, 
-              padding: 0,
-              position: "relative"
-            }}
-          >
-            <ShoppingCart size={22} />
-            {cartCount > 0 && (
-              <span className="cart-count" style={{ fontSize: 10, position: 'absolute', top: -6, right: -8 }}>
-                {cartCount}
-              </span>
-            )}
-          </motion.button>
-
-          <motion.button
-            className="mobile-menu-btn"
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-              setIsDropdownOpen(false);
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isMenuOpen ? (
-              <span style={{ fontSize: 24 }}>&#10005;</span>
+                      <div className="dropdown-header">
+                        Hi, {currentUser.name?.split(' ')[0] || 'User'}
+                      </div>
+                      <button onClick={() => { router.push('/profile'); setIsDropdownOpen(false); }}>
+                        <User size={16} /> Profile
+                      </button>
+                      <button onClick={() => { router.push('/orders'); setIsDropdownOpen(false); }}>
+                        <Package size={16} /> My Orders
+                      </button>
+                      {currentUser.role === 'admin' && (
+                        <button className="admin-link" onClick={() => { router.push('/admin-panel'); setIsDropdownOpen(false); }}>
+                          <Shield size={16} /> Admin Panel
+                        </button>
+                      )}
+                      <button className="logout-link" onClick={() => { logout(); setIsDropdownOpen(false); }}>
+                        <LogOut size={16} /> Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
-              <span style={{ fontSize: 24 }}>&#9776;</span>
+              <motion.button
+                className="login-btn-header"
+                onClick={openAuthModal}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <User size={22} className="mobile-only-icon" />
+                <span className="desktop-only-text">Sign In</span>
+              </motion.button>
             )}
-          </motion.button>
+
+            {/* Mobile Menu Toggle */}
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <span>&#10005;</span> : <span>&#9776;</span>}
+            </button>
+          </div>
         </div>
       </div>
 

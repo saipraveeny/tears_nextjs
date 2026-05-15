@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Instagram } from "lucide-react";
+import { Instagram, ArrowUpRight, Mail, MapPin, Globe } from "lucide-react";
 import LegalModals from "./LegalModals";
 import FAQ from "./FAQ";
 
@@ -14,31 +14,32 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
   const currentYear = new Date().getFullYear();
   const [isFAQOpen, setIsFAQOpen] = useState(false);
 
-  const footerLinks = {
-    products: [
-      { name: "Wild (100ml)", href: "#products" },
-      { name: "Glitch (100ml)", href: "#products" },
-      { name: "Green", href: "#products" },
+  const footerData = {
+    collections: [
+      { name: "The Wild Edition", href: "#products" },
+      { name: "The Glitch Edition", href: "#products" },
+      { name: "The Green Edition", href: "#products" },
+      { name: "Trio Pack", href: "#products" },
     ],
-    company: [
-      { name: "About Us", href: "/about-us" },
-      { name: "Our Story", href: "/our-story" },
+    merchandise: [
+      { name: "Oversized Tees", href: "#merchandise" },
+      { name: "Cinematic Hoodies", href: "#merchandise" },
+      { name: "Limited Edition Caps", href: "#merchandise" },
+    ],
+    experience: [
+      { name: "Pure Fermentation", href: "#features" },
+      { name: "Gut Health Focus", href: "#benefits" },
+      { name: "No Preservatives", href: "#features" },
+      { name: "Cinematic Stories", href: "/our-story" },
     ],
     support: [
-      { name: "Contact", href: "#contact" },
-      { name: "FAQ", href: "#", onClick: () => setIsFAQOpen(true) },
+      { name: "Order Tracking", href: "/orders" },
+      { name: "Bulk Orders", href: "#contact" },
+      { name: "FAQs", href: "#", onClick: () => setIsFAQOpen(true) },
+      { name: "Contact Us", href: "#contact" },
     ],
   };
 
-  const socialLinks = [
-    {
-      icon: <Instagram size={20} />,
-      href: "https://www.instagram.com/tearshxd/",
-      label: "Instagram",
-    },
-  ];
-
-  // Handle link click with onClick if available
   const handleLinkClick = (link: any, event: React.MouseEvent) => {
     if (link.onClick) {
       event.preventDefault();
@@ -47,111 +48,120 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
   };
 
   return (
-    <footer className="footer">
+    <footer className="cinematic-footer">
+      <div className="footer-top-accent" />
+      
       <div className="container">
-        <div className="footer-content">
-          <motion.div
-            className="footer-brand"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
+        {/* Giant Brand Mark */}
+        <div className="footer-hero-text">
+          <motion.h2
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 0.1, y: 0 }}
+            transition={{ duration: 1 }}
           >
-            <div className="footer-logo">
-              {logo ? (
-                <img
-                  src={logo}
-                  alt="Tears Logo"
-                  className="logo-img"
-                  style={{ height: "2rem", marginRight: "0.5rem" }}
-                />
-              ) : null}
-            </div>
-            <p className="footer-tagline">
-              Hot Sauce that Heals. Elevate your culinary experience with
-              premium, health-conscious sauces.
-            </p>
-            <div className="social-links">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={index}
-                  href={social.href}
-                  className="social-link"
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.9 }}
-                  aria-label={social.label}
-                >
-                  {social.icon}
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="footer-links"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
-          >
-            <div className="footer-section">
-              <h4>Products</h4>
-              <ul>
-                {footerLinks.products.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.href}>{link.name}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h4>Company</h4>
-              <ul>
-                {footerLinks.company.map((link, index) => (
-                  <li key={index}>
-                    <a href={link.href}>{link.name}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="footer-section">
-              <h4>Support</h4>
-              <ul>
-                {footerLinks.support.map((link, index) => (
-                  <li key={index}>
-                    <a
-                      href={link.href}
-                      onClick={(e) => handleLinkClick(link, e)}
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+            TEARS
+          </motion.h2>
         </div>
 
-        <motion.div
-          className="footer-bottom"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          <div className="footer-bottom-content">
-            <p>
-              &copy; {currentYear} TEARS SAUCES PVT LTD. All rights reserved.
+        <div className="footer-grid">
+          {/* Brand Info */}
+          <div className="footer-column brand-column">
+            <div className="footer-logo-container">
+              {logo && <img src={logo} alt="Tears" className="footer-logo-img" />}
+              <span className="brand-name">TEARS</span>
+            </div>
+            <p className="brand-description">
+              Crafting premium, health-conscious hot sauces that redefine the culinary landscape. 
+              Pure concentration. Zero fat. Infinite flavor.
             </p>
-            <p>GST : 36AAMCT1318F1ZF</p>
-            <div className="footer-legal">
-              <LegalModals />
+            <div className="footer-contact-info">
+              <div className="info-item">
+                <Mail size={16} /> <span>hello@tears.in</span>
+              </div>
+              <div className="info-item">
+                <MapPin size={16} /> <span>Hyderabad, India</span>
+              </div>
             </div>
           </div>
-        </motion.div>
+
+          {/* Links Columns */}
+          <div className="footer-column">
+            <h4>Collections</h4>
+            <ul className="footer-link-list">
+              {footerData.collections.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="footer-column">
+            <h4>Merchandise</h4>
+            <ul className="footer-link-list">
+              {footerData.merchandise.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="footer-column">
+            <h4>Support</h4>
+            <ul className="footer-link-list">
+              {footerData.support.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Newsletter & Socials */}
+        <div className="footer-middle">
+          <div className="newsletter-box">
+            <h3>Enter the Heat</h3>
+            <p>Subscribe for exclusive drops and cinematic releases.</p>
+            <div className="newsletter-input-group">
+              <input type="email" placeholder="your@email.com" />
+              <button>Subscribe</button>
+            </div>
+          </div>
+          
+          <div className="footer-social-box">
+            <a href="https://www.instagram.com/tearshxd/" target="_blank" rel="noreferrer" className="social-pill">
+              <Instagram size={24} />
+              <span>@tearshxd</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="footer-bottom-cinematic">
+          <div className="bottom-left">
+            <p>&copy; {currentYear} TEARS SAUCES PVT LTD.</p>
+            <span className="gst-tag">GST: 36AAMCT1318F1ZF</span>
+          </div>
+          
+          <div className="bottom-right">
+            <div className="footer-legal-links">
+              <LegalModals />
+            </div>
+            <div className="global-tag">
+              <Globe size={14} /> <span>IND / GLOBAL</span>
+            </div>
+          </div>
+        </div>
       </div>
+
       <FAQ isOpen={isFAQOpen} onClose={() => setIsFAQOpen(false)} />
     </footer>
   );
