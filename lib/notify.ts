@@ -27,16 +27,16 @@ const transporter = nodemailer.createTransport({
 
 export async function sendAllNotifications(orderId: string, status: string, user: any, payload: any, products: any[]) {
   const messageMap: Record<string, string> = {
-    [PAYMENT_STATUS.COMPLETED]: "Your payment was successful. We will notify you when your order ships.",
-    [PAYMENT_STATUS.FAILED]: "Your payment failed. Please retry or contact support.",
-    [PAYMENT_STATUS.PENDING]: "Your order is pending confirmation.",
-    [PAYMENT_STATUS.UNKNOWN]: "Your payment status has been updated.",
+    [PAYMENT_STATUS.COMPLETED]: "🔥 Order Confirmed! Your payment was successful. We'll notify you when your TEARS order ships.",
+    [PAYMENT_STATUS.FAILED]: "⚠️ Payment Failed. Your transaction for order was unsuccessful. Please retry or contact support.",
+    [PAYMENT_STATUS.PENDING]: "⏳ Order Pending. We're waiting for payment confirmation for your TEARS order.",
+    [PAYMENT_STATUS.UNKNOWN]: "ℹ️ Order Update. Your payment status has been updated.",
   };
 
   const whatsappMessage = (messageMap[status] || "Your order status has been updated.") + " Order ID: " + orderId;
 
   await Promise.allSettled([
-    sendWhatsAppMessage(orderId, whatsappMessage),
+    user?.phone ? sendWhatsAppMessage(user.phone, whatsappMessage) : Promise.resolve(null),
     sendEmail(orderId, status, user, products),
   ]);
 }
@@ -134,19 +134,22 @@ function calculateTotal(products: any[]) {
   return products.reduce((sum, p) => sum + (p.price || 0) * (p.quantity || 1), 0);
 }
 
-export async function sendWhatsAppMessage(orderId: string, message: string) {
+export async function sendWhatsAppMessage(phone: string, message: string) {
   try {
     if (!ENABLE_WHATSAPP) return null;
     const token = process.env.WHATSAPP_TOKEN;
     const phoneId = process.env.WHATSAPP_PHONE_ID;
-    const receiver = process.env.WHATSAPP_RECEIVER_NUMBER;
 
-    if (!token || !phoneId || !receiver) return null;
+    if (!token || !phoneId || !phone) return null;
+
+    // Format phone number: remove any non-digit characters and ensure it has country code
+    let formattedPhone = phone.replace(/\D/g, "");
+    if (formattedPhone.length === 10) formattedPhone = "91" + formattedPhone; // Default to India if 10 digits
 
     const url = `https://graph.facebook.com/v16.0/${phoneId}/messages`;
     const body = {
       messaging_product: "whatsapp",
-      to: receiver,
+      to: formattedPhone,
       type: "text",
       text: { body: message },
     };
@@ -160,7 +163,11 @@ export async function sendWhatsAppMessage(orderId: string, message: string) {
       body: JSON.stringify(body),
     });
 
-    if (!resp.ok) throw new Error(`WhatsApp API returned ${resp.status}`);
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      console.error("[Notify] WhatsApp API error:", errorData);
+      throw new Error(`WhatsApp API returned ${resp.status}`);
+    }
     return await resp.json();
   } catch (err) {
     console.error("[Notify] WhatsApp failed:", err);

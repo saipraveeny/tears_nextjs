@@ -40,54 +40,52 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
   const pathname = usePathname();
 
   const handleNavClick = (e: React.MouseEvent, item: any) => {
+    e.stopPropagation();
     setIsMenuOpen(false);
     setIsDropdownOpen(false);
 
     const isHashLink = item.href.startsWith("#");
     
-    if (!isHashLink) {
-      // It's a route, not a hash link
-      router.push("/" + item.href);
-      return;
-    }
-
-    if (pathname !== "/") {
-      e.preventDefault();
-      router.push("/");
-      setTimeout(() => {
+    if (isHashLink) {
+      if (pathname === "/") {
+        e.preventDefault();
         const id = item.href.replace("#", "");
         const el = document.getElementById(id);
         if (el) {
-          const offset = 80;
-          const bodyRect = document.body.getBoundingClientRect().top;
-          const elementRect = el.getBoundingClientRect().top;
-          window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+          setTimeout(() => {
+            const offset = 80;
+            const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({
+              top: elementPosition - offset,
+              behavior: "smooth"
+            });
+            window.history.pushState(null, "", item.href);
+          }, 50);
         }
-      }, 500);
-    } else {
-      e.preventDefault();
-      const id = item.href.replace("#", "");
-      const el = document.getElementById(id);
-      if (el) {
-        const offset = 80;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = el.getBoundingClientRect().top;
-        window.scrollTo({ top: elementRect - bodyRect - offset, behavior: "smooth" });
+      } else {
+        router.push("/" + item.href);
       }
-      window.history.pushState(null, "", item.href);
+    } else {
+      router.push("/" + item.href);
     }
   };
 
   return (
     <motion.nav
-      className={`navbar ${scrollY > 100 ? "navbar-scrolled" : ""}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
+      className={`navbar ${scrollY > 50 ? "navbar-scrolled" : ""}`}
     >
       <div className="nav-container">
         <motion.div
           className="nav-logo"
+          onClick={() => {
+            if (pathname === "/") {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              router.push("/");
+            }
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -110,7 +108,6 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
             </motion.a>
           ))}
 
-          {/* Desktop cart button: render only when not mobile */}
           {!isMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px' }}>
               <motion.button
@@ -158,50 +155,42 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                            Hi, {currentUser.name?.split(' ')[0] || 'User'}
                          </div>
                           <button
-                            onClick={() => router.push('/profile')}
+                            onClick={() => { router.push('/profile'); setIsDropdownOpen(false); }}
                             style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                            onMouseEnter={(e) => (e.currentTarget as any).style.background = 'rgba(255,255,255,0.05)'}
-                            onMouseLeave={(e) => (e.currentTarget as any).style.background = 'transparent'}
                           >
-                            <User size={16} /> My Profile
+                            <User size={16} /> Profile
                           </button>
                           <button
-                            onClick={() => router.push('/orders')}
+                            onClick={() => { router.push('/orders'); setIsDropdownOpen(false); }}
                             style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                            onMouseEnter={(e) => (e.currentTarget as any).style.background = 'rgba(255,255,255,0.05)'}
-                            onMouseLeave={(e) => (e.currentTarget as any).style.background = 'transparent'}
                           >
                             <Package size={16} /> My Orders
                           </button>
-                         {currentUser.role === 'admin' && (
-                           <button
-                             onClick={() => router.push('/admin-panel')}
-                             style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff9500', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                             onMouseEnter={(e: any) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                             onMouseLeave={(e: any) => e.currentTarget.style.background = 'transparent'}
-                           >
-                             <Shield size={16} /> Admin Panel
-                           </button>
-                         )}
-                         <button
-                           onClick={logout}
-                           style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                           onMouseEnter={(e) => (e.currentTarget as any).style.background = 'rgba(255,255,255,0.05)'}
-                           onMouseLeave={(e) => (e.currentTarget as any).style.background = 'transparent'}
-                         >
-                           <LogOut size={16} /> Sign Out
-                         </button>
+                          {currentUser.role === 'admin' && (
+                            <button
+                              onClick={() => { router.push('/admin-panel'); setIsDropdownOpen(false); }}
+                              style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff9500', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
+                            >
+                              <Shield size={16} /> Admin Panel
+                            </button>
+                          )}
+                          <button
+                            onClick={() => { logout(); setIsDropdownOpen(false); }}
+                            style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '5px' }}
+                          >
+                            <LogOut size={16} /> Sign Out
+                          </button>
                        </motion.div>
                      )}
                    </AnimatePresence>
-                </div>
+               </div>
               ) : (
                 <motion.button
-                  className="btn btn-secondary"
-                  style={{ padding: '8px 16px', fontSize: '14px' }}
+                  className="btn btn-primary"
                   onClick={openAuthModal}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  style={{ padding: '8px 20px', fontSize: '14px' }}
                 >
                   Sign In
                 </motion.button>
@@ -210,105 +199,15 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
           )}
         </div>
 
-        {/* Mobile menu */}
-        <div
-          style={{
-            display: isMobile ? "flex" : "none",
-            alignItems: "center",
-            gap: "12px"
-          }}
-        >
+        <div className="mobile-actions" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           {isMobile && (
             <>
-              {currentUser ? (
-                <div style={{ position: 'relative' }}>
-                  <motion.button
-                    onClick={() => {
-                      setIsDropdownOpen(!isDropdownOpen);
-                      setIsMenuOpen(false);
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(45deg, #ff3b30, #ff8a80)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', cursor: 'pointer', zIndex: 1200, border: 'none', padding: 0 }}
-                  >
-                    {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={16} />}
-                  </motion.button>
-                  <AnimatePresence>
-                    {isDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          right: -10,
-                          background: 'rgba(20, 20, 20, 0.95)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '12px',
-                          padding: '10px 0',
-                          minWidth: '150px',
-                          marginTop: '10px',
-                          zIndex: 1500
-                        }}
-                      >
-                        <div style={{ padding: '8px 20px', color: '#888', fontSize: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '5px' }}>
-                          Hi, {currentUser.name?.split(' ')[0] || 'User'}
-                        </div>
-                        <button
-                          onClick={() => { router.push('/profile'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                        >
-                          <User size={16} /> My Profile
-                        </button>
-                        <button
-                          onClick={() => { router.push('/orders'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                        >
-                          <Package size={16} /> My Orders
-                        </button>
-                        {currentUser.role === 'admin' && (
-                          <button
-                            onClick={() => { router.push('/admin-panel'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                            style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff9500', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                          >
-                            <Shield size={16} /> Admin Panel
-                          </button>
-                        )}
-                        <button
-                          onClick={() => { logout(); setIsDropdownOpen(false); setIsMenuOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px' }}
-                        >
-                          <LogOut size={16} /> Sign Out
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <motion.button
-                  onClick={() => {
-                    openAuthModal();
-                    setIsMenuOpen(false);
-                  }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 1200, padding: 0 }}
-                >
-                  <User size={22} />
-                </motion.button>
-              )}
-
               <motion.button
+                className="cart-btn"
                 onClick={onCartClick}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                  zIndex: 1200,
-                  display: "flex",
-                  alignItems: "center",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  cursor: "pointer",
+                style={{ 
+                  margin: 0, 
                   padding: 0,
                   position: "relative"
                 }}
@@ -359,7 +258,6 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                 transition={{ delay: index * 0.1 }}
                 onClick={(e) => {
                   handleNavClick(e, item);
-                  setIsMenuOpen(false);
                 }}
               >
                 {item.name}

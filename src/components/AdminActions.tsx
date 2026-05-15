@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCw, Bell, Mail, CheckCircle, AlertTriangle,
-  Send, X, UserCheck, Clock
+  Send, X, UserCheck, Clock, MessageSquare
 } from 'lucide-react';
 import { API_BASE } from '../utils/constants';
 
@@ -199,6 +199,7 @@ export const UsersTab = () => {
   const [emailMessage, setEmailMessage] = useState('');
   const [promoImageUrl, setPromoImageUrl] = useState('');
   const [sending, setSending] = useState(false);
+  const [channel, setChannel] = useState('EMAIL'); // 'EMAIL' or 'WHATSAPP'
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -239,16 +240,17 @@ export const UsersTab = () => {
       const payload = { 
         message: emailMessage, 
         subject: emailSubject || undefined,
-        imageUrl: promoImageUrl || undefined
+        imageUrl: promoImageUrl || undefined,
+        channel: channel
       };
       if (selected.size > 0) payload.userIds = [...selected];
       const data = await adminAction('bulkNotify', payload);
-      showToast(data.message || 'Emails sent');
+      showToast(data.message || 'Notifications sent');
       setShowEmailModal(false);
       setEmailMessage('');
       setEmailSubject('');
       setPromoImageUrl('');
-    } catch { showToast('Email send failed', 'error'); }
+    } catch { showToast('Notification failed', 'error'); }
     finally { setSending(false); }
   };
 
@@ -264,12 +266,12 @@ export const UsersTab = () => {
         <div className="header-actions">
           <input
             className="admin-search"
-            placeholder="Search by name, email, phone..."
+            placeholder="Search users..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
           <button className="admin-action-btn primary" onClick={() => setShowEmailModal(true)}>
-            <Mail size={13} /> {selected.size > 0 ? `Email ${selected.size} Selected` : 'Email All Users'}
+            <Bell size={13} /> {selected.size > 0 ? `Notify ${selected.size} Selected` : 'Broadcast to All'}
           </button>
         </div>
       </div>
@@ -278,7 +280,7 @@ export const UsersTab = () => {
         <div className="admin-bulk-bar">
           <span>{selected.size} users selected</span>
           <button className="admin-action-btn primary" onClick={() => setShowEmailModal(true)}>
-            <Mail size={12} /> Send Email to Selected
+            <Send size={12} /> Send Message to Selected
           </button>
           <button className="admin-action-btn" onClick={() => setSelected(new Set())}>
             <X size={12} /> Clear
@@ -353,51 +355,74 @@ export const UsersTab = () => {
             >
               <h3>
                 <Send size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} />
-                {selected.size > 0 ? `Send Email to ${selected.size} Users` : 'Send Email to All Users'}
+                Broadcast Message
               </h3>
 
-              <div style={{ marginBottom: 16 }}>
-                <label>Subject / Title</label>
-                <input type="text" value={emailSubject} onChange={e => setEmailSubject(e.target.value)} placeholder="e.g. New Collection Launch!" />
+              <div className="channel-toggle" style={{ display: 'flex', gap: 10, margin: '20px 0' }}>
+                <button 
+                  className={`admin-action-btn ${channel === 'EMAIL' ? 'primary' : ''}`}
+                  onClick={() => setChannel('EMAIL')}
+                  style={{ flex: 1 }}
+                >
+                  <Mail size={14} /> Email
+                </button>
+                <button 
+                  className={`admin-action-btn ${channel === 'WHATSAPP' ? 'success' : ''}`}
+                  onClick={() => setChannel('WHATSAPP')}
+                  style={{ flex: 1 }}
+                >
+                  <MessageSquare size={14} /> WhatsApp
+                </button>
               </div>
 
+              {channel === 'EMAIL' && (
+                <div style={{ marginBottom: 16 }}>
+                  <label>Subject / Title</label>
+                  <input type="text" value={emailSubject} onChange={e => setEmailSubject(e.target.value)} placeholder="e.g. New Collection Launch!" />
+                </div>
+              )}
+
               <div style={{ marginBottom: 16 }}>
-                <label>Message</label>
+                <label>Message {channel === 'WHATSAPP' && '(WhatsApp text)'}</label>
                 <textarea
-                  rows={6}
+                  rows={channel === 'WHATSAPP' ? 4 : 6}
                   value={emailMessage}
                   onChange={e => setEmailMessage(e.target.value)}
                   placeholder="Write your message here..."
                 />
-                <p style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
-                  Tip: You can use &lt;b&gt;bold&lt;/b&gt; tags for emphasis.
-                </p>
+                {channel === 'EMAIL' && (
+                  <p style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
+                    Tip: You can use &lt;b&gt;bold&lt;/b&gt; tags for emphasis.
+                  </p>
+                )}
               </div>
 
-              <div style={{ marginBottom: 16 }}>
-                <label>Promo Image URL (Optional)</label>
-                <input 
-                  type="text" 
-                  value={promoImageUrl} 
-                  onChange={e => setPromoImageUrl(e.target.value)} 
-                  placeholder="https://example.com/image.jpg" 
-                />
-              </div>
+              {channel === 'EMAIL' && (
+                <div style={{ marginBottom: 16 }}>
+                  <label>Promo Image URL (Optional)</label>
+                  <input 
+                    type="text" 
+                    value={promoImageUrl} 
+                    onChange={e => setPromoImageUrl(e.target.value)} 
+                    placeholder="https://example.com/image.jpg" 
+                  />
+                </div>
+              )}
 
               <p style={{ fontSize: 12, color: '#666', margin: '0 0 16px' }}>
                 {selected.size > 0
-                  ? `This will send to ${selected.size} selected user(s).`
-                  : `This will send to ALL registered users with valid emails.`}
+                  ? `Sending ${channel} to ${selected.size} selected user(s).`
+                  : `Sending ${channel} to ALL registered users.`}
               </p>
 
               <div className="admin-modal-actions">
                 <button className="admin-action-btn" onClick={() => setShowEmailModal(false)}>Cancel</button>
                 <button
-                  className="admin-action-btn primary"
+                  className={`admin-action-btn ${channel === 'WHATSAPP' ? 'success' : 'primary'}`}
                   disabled={!emailMessage.trim() || sending}
                   onClick={handleBulkEmail}
                 >
-                  {sending ? 'Sending...' : 'Send Email'}
+                  {sending ? 'Sending...' : `Send ${channel === 'EMAIL' ? 'Email' : 'WhatsApp'}`}
                 </button>
               </div>
             </motion.div>

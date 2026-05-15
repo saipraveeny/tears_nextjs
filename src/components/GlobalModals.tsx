@@ -4,6 +4,7 @@ import React from "react";
 import { useCart } from "@/hooks/useCart";
 import CartModal from "./CartModal";
 import ConfirmationModal from "./ConfirmationModal";
+import ProfileCompletionModal from "./ProfileCompletionModal";
 
 const wildImg = "/assets/wild.jpg";
 const glitchImg = "/assets/glitch.jpg";
@@ -48,6 +49,8 @@ export default function GlobalModals() {
         glitchImg={glitchImg}
         greenImg={greenImg}
       />
+
+      <ProfileCompletionModal />
     </>
   );
 }

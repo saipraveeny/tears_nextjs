@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import { getAuthenticatedUser } from "@/lib/auth";
 import Payment from "@/lib/models/Payment";
 import User from "@/lib/models/User";
-import { sendAllNotifications, sendEmail } from "@/lib/notify";
+import { sendAllNotifications, sendEmail, sendWhatsAppMessage } from "@/lib/notify";
 import { PAYMENT_STATUS } from "@/lib/constants";
 import phonepeClient from "@/lib/phonepeClient";
 
@@ -82,16 +82,16 @@ export async function POST(req: Request) {
       }
 
       case "bulkNotify": {
-        const { userIds, subject, message, imageUrl } = payload || {};
+        const { userIds, subject, message, imageUrl, channel = "EMAIL" } = payload || {};
         if (!message) return NextResponse.json({ error: "message required" }, { status: 400 });
 
         let targetUsers;
         if (userIds && Array.isArray(userIds) && userIds.length > 0) {
-          targetUsers = await User.find({ _id: { $in: userIds } }).select("name email").lean();
+          targetUsers = await User.find({ _id: { $in: userIds } }).select("name email phone").lean();
         } else {
           targetUsers = await User.find({
-            email: { $exists: true, $ne: null, $not: /@tears\.local$/ }
-          }).select("name email").lean();
+            role: { $ne: "admin" }
+          }).select("name email phone").lean();
         }
 
         if (targetUsers.length === 0) {
@@ -100,10 +100,24 @@ export async function POST(req: Request) {
 
         let sentCount = 0;
         let failCount = 0;
+
         for (const u of targetUsers) {
           try {
-            await sendEmail(`BULK-${Date.now()}`, "PROMOTIONAL", u, [], subject, message, imageUrl);
-            sentCount++;
+            if (channel === "WHATSAPP") {
+              if (u.phone) {
+                await sendWhatsAppMessage(u.phone, message);
+                sentCount++;
+              } else {
+                failCount++;
+              }
+            } else {
+              if (u.email && !u.email.endsWith("@tears.local")) {
+                await sendEmail(`BULK-${Date.now()}`, "PROMOTIONAL", u, [], subject, message, imageUrl);
+                sentCount++;
+              } else {
+                failCount++;
+              }
+            }
           } catch (err) {
             failCount++;
           }
@@ -111,7 +125,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
           success: true,
-          message: `Emails sent: ${sentCount}, Failed: ${failCount}`,
+          message: `${channel} sent: ${sentCount}, Failed: ${failCount}`,
           totalTargeted: targetUsers.length,
           sentCount,
           failCount,

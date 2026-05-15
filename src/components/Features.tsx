@@ -1,9 +1,31 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Zap, Leaf, Droplets, Shield, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sparkles, ShieldCheck, Heart, Wind, ChevronLeft, ChevronRight } from "lucide-react";
+
+const FeatureCard = ({ feature, index }: { feature: any; index: number }) => {
+  return (
+    <motion.div
+      className="premium-feature-card"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
+    >
+      <div className="premium-card-blur" />
+      <div className="premium-card-content">
+        <div className="premium-icon-box">
+          <img src={feature.image} alt={feature.title} className="premium-feature-img" />
+        </div>
+        <h3 className="premium-card-title">{feature.title}</h3>
+        <p className="premium-card-desc">{feature.description}</p>
+      </div>
+      <div className="premium-card-shimmer" />
+    </motion.div>
+  );
+};
 
 const Features = () => {
   const [ref, inView] = useInView({
@@ -11,167 +33,119 @@ const Features = () => {
     threshold: 0.1,
   });
 
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = React.useState(0);
+  const [isPaused, setIsPaused] = React.useState(false);
+
   const features = [
     {
-      icon: <Zap />,
-      title: "Zero Fat",
-      description:
-        "Enjoy guilt-free indulgence with no oils or unhealthy additives, perfect for modern dietary trends like keto and paleo.",
-      color: "#ff3b30",
+      image: "/assets/premium/essence.png",
+      title: "Pure Essence",
+      description: "Zero water dilution. We deliver the absolute concentration of our hand-picked chilies and botanical herbs.",
     },
     {
-      icon: <Shield />,
-      title: "Zero Preservatives",
-      description:
-        "Our expert formulation ensures clean-label appeal with naturally preserved ingredients.",
-      color: "#ff6b61",
+      image: "/assets/premium/integrity.png",
+      title: "Natural Integrity",
+      description: "Lacto-fermented for months to achieve natural stability without a single drop of artificial preservatives.",
     },
     {
-      icon: <Droplets />,
-      title: "Zero Water",
-      description:
-        "Experience intense flavor and longer shelf life with pure ingredient concentration.",
-      color: "#ff8a80",
+      image: "/assets/premium/health.png",
+      title: "Health First",
+      description: "A functional gourmet experience. Zero fat, keto-friendly, and packed with bio-available antioxidants.",
     },
     {
-      icon: <Leaf />,
-      title: "All-Natural Spice Blends",
-      description:
-        "Crafted from real chillies, herbs, and spices, our sauces deliver heat and depth without sacrificing quality.",
-      color: "#ffab91",
+      image: "/assets/premium/dilution.png",
+      title: "Zero Dilution",
+      description: "No emulsifiers or thickening agents. Just the clean, crisp texture of nature's finest ingredients.",
     },
   ];
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  // Auto-scroll logic
+  React.useEffect(() => {
+    if (!inView || isPaused) return;
 
-  const handleScroll = () => {
-    if (!scrollRef.current) return;
-    
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        const maxScroll = scrollWidth - clientWidth;
+        const nextScroll = scrollLeft >= maxScroll ? 0 : scrollLeft + (scrollWidth / features.length);
+        
+        scrollRef.current.scrollTo({
+          left: nextScroll,
+          behavior: "smooth"
+        });
+      }
+    }, 4000); // 4 seconds reading time
+
+    return () => clearInterval(interval);
+  }, [inView, isPaused, features.length]);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const element = e.currentTarget;
+    const progress = (element.scrollLeft / (element.scrollWidth - element.clientWidth)) * 100;
     setScrollProgress(progress);
+  };
 
-    // Calculate active index
-    const cardWidth = scrollRef.current.querySelector(".modern-card-wrapper")?.clientWidth || 0;
-    const gap = 40; // 2.5rem gap
-    const index = Math.round(scrollLeft / (cardWidth + gap));
-    if (index !== activeIndex && index >= 0 && index < features.length) {
-      setActiveIndex(index);
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollAmount = clientWidth * 0.8;
+      scrollRef.current.scrollTo({
+        left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
+        behavior: "smooth"
+      });
     }
   };
 
-  const scrollTo = (index: number) => {
-    if (!scrollRef.current) return;
-    const cardWidth = scrollRef.current.querySelector(".modern-card-wrapper")?.clientWidth || 0;
-    const gap = 40;
-    scrollRef.current.scrollTo({
-      left: index * (cardWidth + gap),
-      behavior: "smooth"
-    });
-  };
-
-  // Sync scroll on mount
-  useEffect(() => {
-    handleScroll();
-  }, []);
-
   return (
-    <section id="features" className="features" ref={ref}>
+    <section id="features" className="premium-features-section" ref={ref}>
       <div className="container">
         <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 30 }}
+          className="premium-header"
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 1 }}
         >
-          <h2 className="section-title">
-            Why Choose <span className="text-gradient">Tears.</span>
-          </h2>
-          <p className="section-subtitle">
-            Revolutionary hot sauce that prioritizes both taste and health
-          </p>
+          <span className="premium-tagline">Crafted for the Connoisseur</span>
+          <h2 className="premium-title">The <span className="text-highlight">Tears</span> Standard</h2>
         </motion.div>
 
-        <div className="modern-carousel-section">
-          <div 
-            className="modern-carousel-track" 
-            ref={scrollRef}
-            onScroll={handleScroll}
-          >
+        <div 
+          className="timeline-carousel-container"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <button className="carousel-nav-btn prev" onClick={() => scroll('left')}>
+            <ChevronLeft size={24} />
+          </button>
+          <button className="carousel-nav-btn next" onClick={() => scroll('right')}>
+            <ChevronRight size={24} />
+          </button>
+
+          <div className="timeline-track" onScroll={handleScroll} ref={scrollRef}>
             {features.map((feature, index) => (
-              <div 
-                key={feature.title}
-                className={`modern-card-wrapper ${index === activeIndex ? 'active' : ''}`}
-                onClick={() => scrollTo(index)}
-              >
-                <div className="modern-glass-card">
-                  <div 
-                    className="modern-icon-container"
-                    style={{ "--icon-color": feature.color } as any}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="modern-card-title">{feature.title}</h3>
-                  <p className="modern-card-description">{feature.description}</p>
-                </div>
+              <div key={feature.title} className="timeline-card-wrapper">
+                <FeatureCard feature={feature} index={index} />
               </div>
             ))}
           </div>
-
-          <div className="carousel-controls">
-            <div className="modern-progress-bar">
-              <div 
-                className="modern-progress-fill" 
-                style={{ width: `${Math.max(5, scrollProgress)}%` }}
-              />
-            </div>
-
-            <div className="modern-nav-buttons">
-              <button 
-                className="modern-nav-btn" 
-                onClick={() => scrollTo(activeIndex - 1)}
-                disabled={activeIndex === 0}
-                aria-label="Previous feature"
-              >
-                <ChevronLeft size={24} />
-              </button>
-              <button 
-                className="modern-nav-btn" 
-                onClick={() => scrollTo(activeIndex + 1)}
-                disabled={activeIndex === features.length - 1}
-                aria-label="Next feature"
-              >
-                <ChevronRight size={24} />
-              </button>
-            </div>
+          
+          <div className="timeline-progress-bar">
+            <div 
+              className="timeline-progress-fill" 
+              style={{ width: `${scrollProgress}%` }} 
+            />
+            <div 
+              className="timeline-dot" 
+              style={{ left: `${scrollProgress}%` }} 
+            />
           </div>
         </div>
+      </div>
 
-        <motion.div
-          className="features-cta"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <p className="cta-text">
-            Experience the perfect blend of culinary depth and wellness benefits
-          </p>
-          <motion.button
-            className="btn btn-primary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              const productsSection = document.getElementById("products");
-              if (productsSection) {
-                productsSection.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
-          >
-            Discover Our Variants
-          </motion.button>
-        </motion.div>
+      <div className="premium-bg-accents">
+        <div className="accent-circle c1" />
+        <div className="accent-circle c2" />
       </div>
     </section>
   );

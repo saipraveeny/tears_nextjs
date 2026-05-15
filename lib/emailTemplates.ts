@@ -161,7 +161,7 @@ export const getPromotionalTemplate = (name: string, subject: string, message: s
             ${formattedMessage}
           </div>
 
-          <a href="https://tears.co.in/shop" class="button">Explore the Collection</a>
+          <a href="https://tears.co.in/#products" class="button">Explore the Collection</a>
         </div>
         <div class="footer">
           <p>You received this because you're a registered user of Tears Hot Sauce.</p>
