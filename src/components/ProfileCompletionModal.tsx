@@ -20,13 +20,20 @@ const ProfileCompletionModal = () => {
       return;
     }
 
-    // Determine missing field
-    const hasEmail = !!currentUser.email;
-    const hasPhone = !!currentUser.phone;
+    // Determine missing field with robust checks
+    const hasEmail = currentUser.email && !currentUser.email.includes('temp_') && currentUser.email.length > 5;
+    const hasPhone = currentUser.phone && currentUser.phone.trim().length >= 10;
 
     let missing: 'phone' | 'email' | null = null;
-    if (hasEmail && !hasPhone) missing = 'phone';
-    else if (hasPhone && !hasEmail) missing = 'email';
+    
+    // Only ask for phone if they have email but no valid phone
+    if (hasEmail && !hasPhone) {
+      missing = 'phone';
+    } 
+    // Only ask for email if they have phone but no valid email
+    else if (hasPhone && !hasEmail) {
+      missing = 'email';
+    }
 
     if (!missing) {
       setIsOpen(false);

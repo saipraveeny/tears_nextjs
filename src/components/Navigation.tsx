@@ -199,28 +199,102 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
           )}
         </div>
 
-        <div className="mobile-actions" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          {isMobile && (
-            <>
-              <motion.button
-                className="cart-btn"
-                onClick={onCartClick}
-                whileTap={{ scale: 0.95 }}
+        <div className="mobile-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {currentUser ? (
+            <div style={{ position: 'relative' }}>
+              <motion.div
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                whileTap={{ scale: 0.9 }}
                 style={{ 
-                  margin: 0, 
-                  padding: 0,
-                  position: "relative"
+                  width: '32px', 
+                  height: '32px', 
+                  borderRadius: '50%', 
+                  background: 'linear-gradient(45deg, #ff3b30, #ff8a80)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: '#fff', 
+                  fontWeight: 'bold', 
+                  cursor: 'pointer',
+                  fontSize: '14px'
                 }}
               >
-                <ShoppingCart size={22} />
-                {cartCount > 0 && (
-                  <span className="cart-count" style={{ fontSize: 12, position: 'absolute', top: -8, right: -10 }}>
-                    {cartCount}
-                  </span>
+                {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={16} />}
+              </motion.div>
+              
+              <AnimatePresence>
+                {isDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      background: 'rgba(20, 20, 20, 0.98)',
+                      backdropFilter: 'blur(15px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '12px',
+                      padding: '8px 0',
+                      minWidth: '160px',
+                      marginTop: '12px',
+                      zIndex: 1000,
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    <div style={{ padding: '8px 16px', color: '#888', fontSize: '11px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '4px' }}>
+                      {currentUser.email || currentUser.phone || 'Account'}
+                    </div>
+                    <button
+                      onClick={() => { router.push('/profile'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
+                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}
+                    >
+                      <User size={14} /> Profile
+                    </button>
+                    <button
+                      onClick={() => { router.push('/orders'); setIsDropdownOpen(false); setIsMenuOpen(false); }}
+                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}
+                    >
+                      <Package size={14} /> Orders
+                    </button>
+                    <button
+                      onClick={() => { logout(); setIsDropdownOpen(false); setIsMenuOpen(false); }}
+                      style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', padding: '10px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: '4px' }}
+                    >
+                      <LogOut size={14} /> Sign Out
+                    </button>
+                  </motion.div>
                 )}
-              </motion.button>
-            </>
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.button
+              onClick={openAuthModal}
+              whileTap={{ scale: 0.9 }}
+              style={{ background: 'transparent', border: 'none', color: '#fff' }}
+            >
+              <User size={22} />
+            </motion.button>
           )}
+
+          <motion.button
+            className="cart-btn"
+            onClick={onCartClick}
+            whileTap={{ scale: 0.95 }}
+            style={{ 
+              margin: 0, 
+              padding: 0,
+              position: "relative"
+            }}
+          >
+            <ShoppingCart size={22} />
+            {cartCount > 0 && (
+              <span className="cart-count" style={{ fontSize: 10, position: 'absolute', top: -6, right: -8 }}>
+                {cartCount}
+              </span>
+            )}
+          </motion.button>
 
           <motion.button
             className="mobile-menu-btn"
