@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/contexts/AuthContext";
 import CartModal from "./CartModal";
 import ConfirmationModal from "./ConfirmationModal";
 import ProfileCompletionModal from "./ProfileCompletionModal";
@@ -11,6 +12,7 @@ const glitchImg = "/assets/glitch.jpg";
 const greenImg = "/assets/green.png";
 
 export default function GlobalModals() {
+  const { currentUser, openAuthModal, authModalOpen } = useAuth();
   const {
     cart,
     isCartOpen,
@@ -23,6 +25,20 @@ export default function GlobalModals() {
     updateQty,
     clearCart,
   } = useCart();
+
+  // Forced Login Prompt Logic
+  useEffect(() => {
+    if (currentUser) return;
+
+    const timer = setInterval(() => {
+      // Only open if not already open and user is still guest
+      if (!currentUser && !authModalOpen) {
+        openAuthModal();
+      }
+    }, 10000); // 10 seconds interval
+
+    return () => clearInterval(timer);
+  }, [currentUser, authModalOpen, openAuthModal]);
 
   return (
     <>
