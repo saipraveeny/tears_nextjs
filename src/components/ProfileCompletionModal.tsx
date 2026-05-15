@@ -26,12 +26,10 @@ const ProfileCompletionModal = () => {
 
     let missing: 'phone' | 'email' | null = null;
     
-    // Only ask for phone if they have email but no valid phone
-    if (hasEmail && !hasPhone) {
+    // Prioritize phone if missing, otherwise check for email
+    if (!hasPhone) {
       missing = 'phone';
-    } 
-    // Only ask for email if they have phone but no valid email
-    else if (hasPhone && !hasEmail) {
+    } else if (!hasEmail) {
       missing = 'email';
     }
 

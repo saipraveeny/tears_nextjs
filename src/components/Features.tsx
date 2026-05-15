@@ -98,7 +98,7 @@ const Features = () => {
   };
 
   return (
-    <section id="features" className="premium-features-section" ref={ref}>
+    <section id="features" className="premium-features-section section-light-accent" ref={ref}>
       <div className="container">
         <motion.div
           className="premium-header"

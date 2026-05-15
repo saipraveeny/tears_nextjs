@@ -119,7 +119,7 @@ const Benefits = () => {
   };
 
   return (
-    <section id="benefits" className="wellness-journey-modern" ref={containerRef}>
+    <section id="benefits" className="wellness-journey-modern section-light-accent" ref={containerRef}>
       <div className="container">
         <div className="wellness-header-modern">
           <motion.div

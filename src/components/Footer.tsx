@@ -38,6 +38,12 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
       { name: "FAQs", href: "#", onClick: () => setIsFAQOpen(true) },
       { name: "Contact Us", href: "#contact" },
     ],
+    company: [
+      { name: "About Us", href: "#features" },
+      { name: "Our Story", href: "/our-story" },
+      { name: "The Process", href: "#features" },
+      { name: "Our Benefits", href: "#benefits" },
+    ],
   };
 
   const handleLinkClick = (link: any, event: React.MouseEvent) => {
@@ -101,6 +107,19 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
             <h4>Merchandise</h4>
             <ul className="footer-link-list">
               {footerData.merchandise.map((link, i) => (
+                <li key={i}>
+                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="footer-column">
+            <h4>Company</h4>
+            <ul className="footer-link-list">
+              {footerData.company.map((link, i) => (
                 <li key={i}>
                   <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
                     {link.name} <ArrowUpRight size={12} className="hover-arrow" />

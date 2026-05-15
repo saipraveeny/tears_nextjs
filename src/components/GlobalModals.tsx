@@ -35,7 +35,7 @@ export default function GlobalModals() {
       if (!currentUser && !authModalOpen) {
         openAuthModal();
       }
-    }, 10000); // 10 seconds interval
+    }, 45000); // Increased to 45 seconds interval for better UX
 
     return () => clearInterval(timer);
   }, [currentUser, authModalOpen, openAuthModal]);

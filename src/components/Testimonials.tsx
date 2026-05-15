@@ -108,7 +108,7 @@ const Testimonials = () => {
                 className={`modern-card-wrapper ${index === activeIndex ? 'active' : ''}`}
                 onClick={() => scrollTo(index)}
               >
-                <div className="modern-glass-card">
+                <div className={`modern-glass-card ${index === activeIndex ? 'red-accent-card' : ''}`}>
                   <Quote className="quote-icon-modern" />
                   
                   <div className="testimonial-header-modern">

@@ -188,22 +188,26 @@ html {
 .btn-primary {
   background: var(--gradient-primary);
   color: var(--text-white);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 10px 30px rgba(255, 59, 48, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(255, 59, 48, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(255, 59, 48, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-white);
-  border: 2px solid var(--accent-red);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .btn-secondary:hover {
-  background: var(--accent-red);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--text-white);
   transform: translateY(-2px);
 }
 

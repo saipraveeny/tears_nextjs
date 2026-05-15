@@ -125,12 +125,33 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                    onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
               >
                 <motion.div
-                  className="user-avatar"
+                  className="user-avatar-wrapper"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={18} />}
+                  <svg className="profile-progress-svg" viewBox="0 0 36 36">
+                    <path
+                      className="profile-progress-bg"
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      className="profile-progress-bar"
+                      strokeDasharray={`${
+                        (!currentUser.email || currentUser.email.includes('temp_') || !currentUser.phone) 
+                        ? '75, 100' 
+                        : '100, 100'
+                      }`}
+                      d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className="user-avatar">
+                    {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={18} />}
+                  </div>
                 </motion.div>
                 
                 <AnimatePresence>

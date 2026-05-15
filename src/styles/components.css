@@ -19,18 +19,20 @@
 
 .hero-glow {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 59, 48, 0.1) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  animation: pulse 4s ease-in-out infinite;
+  top: 10%;
+  left: 5%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle at center, rgba(255, 59, 48, 0.25), transparent 70%);
+  filter: blur(100px);
+  z-index: 1;
+  pointer-events: none;
+  animation: glowPulse 8s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 0.8; }
 }
 
 .hero-particles {
@@ -67,13 +69,16 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--border-radius);
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 2rem;
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 59, 48, 0.4);
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2.5rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(255, 59, 48, 0.15);
 }
 
 .badge-icon {
@@ -3284,7 +3289,7 @@
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 60px;
   position: relative;
   z-index: 1;
@@ -3575,4 +3580,302 @@
     flex-direction: column;
     gap: 20px;
   }
+}
+
+/* Profile Progress Ring */
+.user-avatar-wrapper {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile-progress-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.profile-progress-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 2;
+}
+
+.profile-progress-bar {
+  fill: none;
+  stroke: #ff3b30;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 2;
+  box-shadow: 0 0 15px rgba(255, 59, 48, 0.3);
+}
+
+/* Premium Accent Sections (Addressing 'Too Black' Feedback with Red Heat) */
+.section-light-accent {
+  background: linear-gradient(180deg, #0a0a0a 0%, #450a0a 40%, #450a0a 60%, #0a0a0a 100%) !important;
+  color: #ffffff !important;
+  padding: 10rem 0;
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255, 59, 48, 0.1);
+  border-bottom: 1px solid rgba(255, 59, 48, 0.1);
+}
+
+.section-light-accent .premium-title,
+.section-light-accent .section-title,
+.section-light-accent .wellness-title-modern {
+  color: #ffffff !important;
+}
+
+.section-light-accent .premium-card-title,
+.section-light-accent .wellness-heading {
+  color: #ffffff !important;
+}
+
+.section-light-accent .premium-card-desc,
+.section-light-accent .wellness-description-text,
+.section-light-accent .text-gray {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.section-light-accent .premium-feature-card,
+.section-light-accent .timeline-card-wrapper {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(25px);
+  border-radius: 40px !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.section-light-accent .premium-card-blur,
+.section-light-accent .premium-icon-box,
+.section-light-accent .wellness-number-overlay {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.section-light-accent .wellness-product-img {
+  border: none !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4) !important;
+}
+
+.section-light-accent .premium-card-content {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.section-light-accent .premium-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 59, 48, 0.1), transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.section-light-accent .timeline-progress-bar {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.section-light-accent .carousel-nav-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.red-accent-card {
+  background: #ff3b30 !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 30px 60px rgba(255, 59, 48, 0.3) !important;
+}
+
+.red-accent-card * {
+  color: white !important;
+}
+
+.white-accent-btn {
+  background: white !important;
+  color: #ff3b30 !important;
+  border: 1px solid #ff3b30 !important;
+}
+
+.white-accent-btn:hover {
+  background: #ff3b30 !important;
+  color: white !important;
+}
+
+/* Profile Completion Modal */
+.profile-completion-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(15px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.profile-completion-modal {
+  background: #111;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 32px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 59, 48, 0.1);
+}
+
+.modal-content-inner {
+  padding: 40px;
+  text-align: center;
+}
+
+.icon-badge {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 59, 48, 0.1);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: #ff3b30;
+  box-shadow: 0 10px 20px rgba(255, 59, 48, 0.15);
+}
+
+.profile-completion-modal h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.profile-completion-modal p {
+  color: #888;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.input-group input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 20px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #ff3b30;
+  background: rgba(255, 59, 48, 0.05);
+  outline: none;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #ff3b30;
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #ff453a;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(255, 59, 48, 0.3);
+}
+
+.skip-btn {
+  background: transparent;
+  border: none;
+  color: #555;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.skip-btn:hover {
+  color: #888;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #888;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
