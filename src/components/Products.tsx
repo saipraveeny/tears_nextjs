@@ -55,11 +55,13 @@ const Products: React.FC<ProductsProps> = ({
       <Flame
         key={i}
         size={18}
-        className="heat-flame-premium"
-        style={{ color: i < level ? color : "rgba(255, 255, 255, 0.2)" }}
+        className={`heat-flame-premium ${i < level ? "heat-flame-active" : ""}`}
+        style={{ color: i < level ? "#ff3b30" : "rgba(255, 255, 255, 0.2)" }}
       />
     ));
   };
+
+
 
   const formatProductName = (name: string) => {
     if (name.includes("(100ml)")) {

@@ -79,10 +79,12 @@ export default function ProductDetailPage() {
       <Flame
         key={i}
         size={isMobile ? 20 : 24}
-        style={{ color: i < level ? color : "rgba(255, 255, 255, 0.2)", filter: i < level ? `drop-shadow(0 0 8px ${color})` : "none" }}
+        className={`heat-flame-premium ${i < level ? "heat-flame-active" : ""}`}
+        style={{ color: i < level ? "#ff3b30" : "rgba(255, 255, 255, 0.2)" }}
       />
     ));
   };
+
 
   const averageRating = (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1);
 
@@ -226,26 +228,32 @@ export default function ProductDetailPage() {
               {product.name}
             </h1>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "3px", color: "#fbbf24" }}>
-                  <Star size={isMobile ? 16 : 18} fill="currentColor" />
-                  <span style={{ fontWeight: "700", color: "#fff", fontSize: isMobile ? "1rem" : "1.2rem" }}>{averageRating}</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "2rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontWeight: "700", color: "#888", fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "1px" }}>Heat Level:</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  {renderHeatLevel(product.heatLevel, "#ff3b30")}
                 </div>
-                <span style={{ color: "#555", fontSize: "0.8rem" }}>({reviews.length})</span>
               </div>
-              <div style={{ width: "1px", height: "15px", background: "rgba(255,255,255,0.1)" }} />
-              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                {renderHeatLevel(product.heatLevel, product.color)}
+
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "3px", color: "#fbbf24" }}>
+                    <Star size={isMobile ? 16 : 18} fill="currentColor" />
+                    <span style={{ fontWeight: "700", color: "#fff", fontSize: isMobile ? "1rem" : "1.2rem" }}>{averageRating}</span>
+                  </div>
+                  <span style={{ color: "#555", fontSize: "0.8rem" }}>({reviews.length})</span>
+                </div>
+                <div style={{ width: "1px", height: "15px", background: "rgba(255,255,255,0.1)" }} />
+                <button 
+                  onClick={() => setIsReviewModalOpen(true)}
+                  style={{ background: "transparent", border: "none", color: "#ff3b30", fontWeight: "700", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline", display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  <MessageSquarePlus size={14} /> Write a Review
+                </button>
               </div>
-              <div style={{ width: "1px", height: "15px", background: "rgba(255,255,255,0.1)" }} />
-              <button 
-                onClick={() => setIsReviewModalOpen(true)}
-                style={{ background: "transparent", border: "none", color: product.color, fontWeight: "700", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline", display: "flex", alignItems: "center", gap: "4px" }}
-              >
-                <MessageSquarePlus size={14} /> Write a Review
-              </button>
             </div>
+
 
             <p style={{ fontSize: isMobile ? "1rem" : "1.2rem", color: "#ccc", lineHeight: 1.6, marginBottom: "2rem" }}>
               {product.description}

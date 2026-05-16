@@ -71,9 +71,11 @@ const Testimonials = () => {
         key={i}
         size={18}
         className={`star-modern ${i < rating ? "filled" : ""}`}
+        fill={i < rating ? "currentColor" : "none"}
       />
     ));
   };
+
 
   useEffect(() => {
     handleScroll();
