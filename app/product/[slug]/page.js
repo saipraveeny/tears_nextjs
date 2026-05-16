@@ -5,7 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ALL_PRODUCTS } from "@/utils/productData";
 import { useCart } from "@/hooks/useCart";
-import { Flame, Star, ShoppingCart, ChevronLeft, ShieldCheck, Truck, RotateCcw, X, MessageSquarePlus } from "lucide-react";
+import { Flame, Star, ShoppingCart, ChevronLeft, ShieldCheck, Truck, Sparkles, X, MessageSquarePlus } from "lucide-react";
+
 import Reviews from "@/components/Reviews";
 import CartModal from "@/components/CartModal";
 
@@ -313,9 +314,10 @@ export default function ProductDetailPage() {
                 <span style={{ fontSize: "0.7rem", color: "#666" }}>Fast Delivery</span>
               </div>
               <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-                <RotateCcw size={20} color={product.color} />
-                <span style={{ fontSize: "0.7rem", color: "#666" }}>Easy Return</span>
+                <Sparkles size={20} color={product.color} />
+                <span style={{ fontSize: "0.7rem", color: "#666" }}>Small Batch</span>
               </div>
+
             </div>
           </motion.div>
         </div>
