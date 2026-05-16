@@ -221,12 +221,12 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                       </div>
                     </div>
 
-                    <div className="merchandise-footer-bottom">
+                    <div className="merchandise-footer-row">
                       <span className="merchandise-price">{product.price}</span>
                       
                       {product.available ? (
                         <button
-                          className="premium-add-to-cart-btn"
+                          className="premium-icon-cart-btn"
                           onClick={(e) => {
                             e.stopPropagation();
                             const defaultSize = product.sizes.find(s => s.inStock)?.size || product.sizes[0].size;
@@ -234,9 +234,9 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                             addToCart({ ...product, size });
                             if (openCart) openCart();
                           }}
+                          title="Add to Cart"
                         >
-                          <ShoppingCart size={20} />
-                          <span>Add to Cart</span>
+                          <ShoppingCart size={18} />
                         </button>
                       ) : (
                         <div className="premium-coming-soon">
@@ -244,6 +244,7 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                         </div>
                       )}
                     </div>
+
                   </div>
                 </div>
               </div>

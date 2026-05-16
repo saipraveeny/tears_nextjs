@@ -153,25 +153,24 @@ const Products: React.FC<ProductsProps> = ({
                     ))}
                   </div>
 
-                  <div className="premium-product-footer">
-                    <span className="premium-product-price">{product.price}</span>
-                    
+                  <div className="premium-product-footer-row">
+                    <div className="premium-product-price">
+                      ₹{product.price}
+                    </div>
                     {product.available ? (
                       <button
-                        className="premium-add-to-cart-btn"
+                        className="premium-icon-cart-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart(product, 1);
-                          openCart();
+                          if (openCart) openCart();
                         }}
+                        title="Add to Cart"
                       >
-                        <ShoppingCart size={20} />
-                        <span>Add to Cart</span>
+                        <ShoppingCart size={18} />
                       </button>
                     ) : (
-                      <div className="premium-coming-soon">
-                        Launching soon
-                      </div>
+                      <div className="premium-coming-soon">Coming Soon</div>
                     )}
                   </div>
                 </div>
