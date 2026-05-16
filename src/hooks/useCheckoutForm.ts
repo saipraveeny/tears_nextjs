@@ -45,20 +45,25 @@ export const useCheckoutForm = () => {
 
   const validateCheckoutForm = () => {
     const errs = {};
-    if (!checkoutForm.name.trim()) errs.name = "Name is required";
-    if (!/^\d{10}$/.test(checkoutForm.phone.replace(/\s+/g, "")))
+    const form = checkoutForm || {};
+    
+    if (!(form.name || "").trim()) errs.name = "Name is required";
+    if (!/^\d{10}$/.test((form.phone || "").replace(/\s+/g, "")))
       errs.phone = "Enter a valid 10-digit mobile number";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(checkoutForm.email))
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email || ""))
       errs.email = "Enter valid email";
-    if (!checkoutForm.address.trim()) errs.address = "Address is required";
-    if (!checkoutForm.city.trim()) errs.city = "City is required";
-    if (!checkoutForm.state.trim()) errs.state = "State is required";
-    if (!checkoutForm.pincode.trim()) errs.pincode = "Pincode is required";
-    else if (!/^\d{5,6}$/.test(checkoutForm.pincode.trim())) errs.pincode = "Enter valid pincode";
-    if (checkoutForm.paymentMethod === "card") {
-      if (!/^\d{12,19}$/.test(checkoutForm.cardNumber.replace(/\s+/g, "")))
+    if (!(form.address || "").trim()) errs.address = "Address is required";
+    if (!(form.city || "").trim()) errs.city = "City is required";
+    if (!(form.state || "").trim()) errs.state = "State is required";
+    if (!(form.pincode || "").trim()) errs.pincode = "Pincode is required";
+    else if (!/^\d{5,6}$/.test((form.pincode || "").trim())) errs.pincode = "Enter valid pincode";
+    
+    if (form.paymentMethod === "card") {
+      if (!/^\d{12,19}$/.test((form.cardNumber || "").replace(/\s+/g, "")))
         errs.cardNumber = "Enter valid card number";
     }
+    
+    console.log("Validation Result:", errs);
     return errs;
   };
 

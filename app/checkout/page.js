@@ -40,14 +40,26 @@ export default function CheckoutPage() {
   }, [currentUser, setCheckoutForm]);
 
   const submitCheckout = async (e) => {
-    e?.preventDefault();
-    const errs = validateCheckoutForm();
-    setFormErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-
-    setSubmitting(true);
-
     try {
+      console.log("Submit triggered", !!e);
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      
+      const errs = validateCheckoutForm();
+      setFormErrors(errs);
+      
+      const errorCount = Object.keys(errs).length;
+      if (errorCount > 0) {
+        const firstError = Object.keys(errs)[0];
+        const element = document.querySelector(`[name="${firstError}"]`) || document.querySelector(`input[placeholder*="${firstError}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+        return;
+      }
+
+      setSubmitting(true);
+      
       const { total } = computeCartTotals(cart);
 
       const productsPayload = cart.map((it) => ({
@@ -86,8 +98,8 @@ export default function CheckoutPage() {
         throw new Error("Invalid response from payment gateway");
       }
     } catch (err) {
-      console.error("Checkout error:", err);
-      alert("Payment initiation failed: " + err.message);
+      console.error("Critical Submit Error:", err);
+      alert("An unexpected error occurred during submission: " + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -96,6 +108,7 @@ export default function CheckoutPage() {
   return (
     <div style={{ minHeight: "100vh", padding: "20px", marginTop: "80px" }}>
       <CheckoutPageComponent
+        key={JSON.stringify(formErrors)}
         currentUser={currentUser}
         cart={cart}
         checkoutForm={checkoutForm}

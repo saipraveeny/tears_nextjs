@@ -188,10 +188,6 @@
   }
 }
 
-/* Section spacing */
-section {
-  padding: 3rem 0;
-}
 
 /* Container */
 .container {
@@ -203,10 +199,6 @@ section {
 @media (max-width: 768px) {
   .container {
     padding: 0 1rem;
-  }
-
-  section {
-    padding: 3rem 0;
   }
 }
 
@@ -267,7 +259,6 @@ section {
 .cart-empty {
   color: var(--text-gray);
   text-align: center;
-  margin: 2rem 0;
 }
 .cart-items {
   margin-bottom: 1.5rem;

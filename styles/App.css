@@ -269,7 +269,6 @@ section {
 .cart-empty {
   color: var(--text-gray);
   text-align: center;
-  margin: 2rem 0;
 }
 .cart-items {
   margin-bottom: 1.5rem;

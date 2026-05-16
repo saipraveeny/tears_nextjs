@@ -242,7 +242,7 @@
 
 .section-header {
   text-align: center;
-  margin-bottom: 4rem;
+  
 }
 
 .section-title {
@@ -263,7 +263,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  margin-bottom: 4rem;
+  
 }
 
 .feature-card {
@@ -323,7 +323,7 @@
   display: grid;
   /* grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); */
   gap: 2rem;
-  margin-bottom: 4rem;
+  
 }
 
 .product-card {
@@ -594,7 +594,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  margin-bottom: 4rem;
+  
 }
 
 .benefit-card {
@@ -632,7 +632,7 @@
 }
 
 .benefits-stats {
-  margin-bottom: 4rem;
+  
 }
 
 .stats-grid {
@@ -668,7 +668,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
-  margin-bottom: 4rem;
+  
 }
 
 .testimonial-card {

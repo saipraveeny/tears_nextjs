@@ -4,18 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Flame, Star, ShoppingCart, Eye, X } from "lucide-react";
-
-// Import variant images
-const wildImage = "/assets/wild.png";
-const glitchImage = "/assets/glitch.png";
-const greenImage = "/assets/green.png";
-const spikeImage = "/assets/spike.PNG";
-const altImage = "/assets/alt.PNG";
-
-// Video paths
-const wildJpg = "/assets/wild.mp4";
-const glitchJpg = "/assets/glitch.mp4";
-const bgVideo = "/assets/Background.mp4";
+import { ALL_PRODUCTS } from "@/utils/productData";
 
 interface ProductsProps {
   addToCart: (product: any, qty: number) => void;
@@ -37,66 +26,7 @@ const Products: React.FC<ProductsProps> = ({
 
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const products = [
-    {
-      id: 1,
-      name: "Green (100ml)",
-      description:
-        "Classic green chilli with citrus undertones, with coriander seeds, black pepper, capsicum and kaffir lime",
-      heatLevel: 2,
-      price: "₹250.00",
-      color: "#548c50",
-      features: ["Green chilli", "Lemon", "Balanced Heat", "Versatile"],
-      image: greenImage,
-      available: true,
-    },
-    {
-      id: 2,
-      name: "Wild (100ml)",
-      description:
-        "This is the peak of the Tears spectrum, our spiciest variant yet. Crafted with a heavy-hitting chili base",
-      heatLevel: 4,
-      price: "₹333.00",
-      color: "#ff3b30",
-      features: ["Extra Hot", "Herb Infused", "Smoky Finish"],
-      image: wildImage,
-      available: true,
-    },
-    {
-      id: 3,
-      name: "Glitch (100ml)",
-      description: "Innovative fusion of red chilli and grape fruit",
-      heatLevel: 3,
-      price: "₹333.00",
-      color: "#0f222b",
-      features: ["Exotic Spices", "Complex Heat"],
-      image: glitchImage,
-      available: true,
-    },
-    {
-      id: 4,
-      name: "Spike (100ml)",
-      description:
-        "Sharp, piercing heat with a bold chilli profile. Perfect for heat enthusiasts seeking an intense kick",
-      heatLevel: 2,
-      price: "₹301.00",
-      color: "#cc4400",
-      features: ["Intense Heat", "Bold Flavor", "Spicy Kick"],
-      image: spikeImage,
-      available: true,
-    },
-    {
-      id: 5,
-      name: "ALT (100ml)",
-      description: "Amla chilli",
-      heatLevel: 3,
-      price: "₹326.00",
-      color: "#8B9B17",
-      features: ["Amla", "Chilli"],
-      image: altImage,
-      available: true,
-    },
-  ];
+  const products = ALL_PRODUCTS.filter(p => p.category === "sauce");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -151,7 +81,7 @@ const Products: React.FC<ProductsProps> = ({
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ marginBottom: "4rem" }}
+          style={{ marginBottom: "2rem" }}
         >
           <h2 className="section-title">
             Our <span className="text-gradient">Collection</span>
@@ -172,7 +102,7 @@ const Products: React.FC<ProductsProps> = ({
               key={product.id}
               className="premium-product-card"
               variants={itemVariants}
-              onClick={() => setSelectedProduct(product as any)}
+              onClick={() => window.location.href = `/product/${product.slug}`}
             >
               <div 
                 className="premium-product-glass"
@@ -189,7 +119,7 @@ const Products: React.FC<ProductsProps> = ({
                     className="premium-product-view-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedProduct(product as any);
+                      window.location.href = `/product/${product.slug}`;
                     }}
                   >
                     <Eye size={24} />
@@ -318,44 +248,20 @@ const Products: React.FC<ProductsProps> = ({
             </button>
             <div className="modal-product modal-product-grid">
               <div className="modal-image modal-image-fill">
-                {(selectedProduct as any).name === "Wild (100ml)" && (
+                {selectedProduct.video ? (
                   <video
                     className="modal-variant-image modal-variant-image-fill"
-                    src={wildJpg}
+                    src={selectedProduct.video}
                     autoPlay
                     muted
                     loop
                     playsInline
                     preload="auto"
                   />
-                )}
-                {(selectedProduct as any).name === "Glitch (100ml)" && (
-                  <video
-                    className="modal-variant-image modal-variant-image-fill"
-                    src={glitchJpg}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  />
-                )}
-                {(selectedProduct as any).name === "Green (100ml)" && (
-                  <video
-                    className="modal-variant-image modal-variant-image-fill"
-                    src={bgVideo}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  />
-                )}
-                {/* Fallback for others */}
-                {!["Wild (100ml)", "Glitch (100ml)", "Green (100ml)"].includes((selectedProduct as any).name) && (
+                ) : (
                   <img
-                    src={(selectedProduct as any).image}
-                    alt={(selectedProduct as any).name}
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
                     style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2rem' }}
                   />
                 )}

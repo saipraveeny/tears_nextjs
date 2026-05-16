@@ -1,0 +1,146 @@
+// Product images
+const wildImage = "/assets/wild.png";
+const glitchImage = "/assets/glitch.png";
+const greenImage = "/assets/green.png";
+const spikeImage = "/assets/spike.PNG";
+const altImage = "/assets/alt.PNG";
+
+// Video paths
+const wildVid = "/assets/wild.mp4";
+const glitchVid = "/assets/glitch.mp4";
+const bgVideo = "/assets/Background.mp4";
+
+// Merchandise images
+const whiteBackImage = "/assets/merchandise/white back.png";
+const whiteFrontImage = "/assets/merchandise/white front.png";
+const blackBackImage = "/assets/merchandise/black back.png";
+const blackFrontImage = "/assets/merchandise/black front.png";
+const blackCapImage = "/assets/merchandise/black cap.png";
+
+export const ALL_PRODUCTS = [
+  {
+    id: 1,
+    name: "Green (100ml)",
+    description: "Classic green chilli with citrus undertones, with coriander seeds, black pepper, capsicum and kaffir lime",
+    heatLevel: 2,
+    price: "₹250.00",
+    color: "#548c50",
+    features: ["Green chilli", "Lemon", "Balanced Heat", "Versatile"],
+    image: greenImage,
+    video: bgVideo,
+    available: true,
+    premium: false,
+    slug: "green-sauce",
+    category: "sauce"
+  },
+  {
+    id: 2,
+    name: "Wild (100ml)",
+    description: "This is the peak of the Tears spectrum, our spiciest variant yet. Crafted with a heavy-hitting chili base",
+    heatLevel: 4,
+    price: "₹333.00",
+    color: "#ff3b30",
+    features: ["Extra Hot", "Herb Infused", "Smoky Finish"],
+    image: wildImage,
+    video: wildVid,
+    available: true,
+    premium: true,
+    slug: "wild-sauce",
+    category: "sauce"
+  },
+  {
+    id: 3,
+    name: "Glitch (100ml)",
+    description: "Innovative fusion of red chilli and grape fruit",
+    heatLevel: 3,
+    price: "₹333.00",
+    color: "#ff00ff",
+    features: ["Exotic Spices", "Complex Heat"],
+    image: glitchImage,
+    video: glitchVid,
+    available: true,
+    premium: true,
+    slug: "glitch-sauce",
+    category: "sauce"
+  },
+  {
+    id: 4,
+    name: "Spike (100ml)",
+    description: "Sharp, piercing heat with a bold chilli profile. Perfect for heat enthusiasts seeking an intense kick",
+    heatLevel: 2,
+    price: "₹301.00",
+    color: "#cc4400",
+    features: ["Intense Heat", "Bold Flavor", "Spicy Kick"],
+    image: spikeImage,
+    available: true,
+    premium: false,
+    slug: "spike-sauce",
+    category: "sauce"
+  },
+  {
+    id: 5,
+    name: "ALT (100ml)",
+    description: "Amla chilli",
+    heatLevel: 3,
+    price: "₹326.00",
+    color: "#8B9B17",
+    features: ["Amla", "Chilli"],
+    image: altImage,
+    available: true,
+    premium: false,
+    slug: "alt-sauce",
+    category: "sauce"
+  },
+  {
+    id: 101,
+    name: "White T-Shirt",
+    description: "Premium quality Tears branded t-shirt in classic white",
+    price: "₹999.00",
+    color: "#f5f5f5",
+    sizes: [
+      { size: "S", inStock: false },
+      { size: "M", inStock: false },
+      { size: "L", inStock: true },
+      { size: "XL", inStock: true },
+    ],
+    material: "100% Cotton",
+    images: [whiteFrontImage, whiteBackImage],
+    image: whiteFrontImage,
+    available: true,
+    category: "apparel",
+    slug: "white-tshirt"
+  },
+  {
+    id: 102,
+    name: "Black T-Shirt",
+    description: "Bold statement piece with Tears branding in sleek black",
+    price: "₹999.00",
+    color: "#1a1a1a",
+    sizes: [
+      { size: "S", inStock: false },
+      { size: "M", inStock: false },
+      { size: "L", inStock: true },
+      { size: "XL", inStock: true },
+    ],
+    material: "100% Cotton",
+    images: [blackFrontImage, blackBackImage],
+    image: blackFrontImage,
+    available: true,
+    category: "apparel",
+    slug: "black-tshirt"
+  },
+  {
+    id: 103,
+    name: "Black Cap",
+    description: "Stylish black cap to showcase your Tears passion anywhere",
+    price: "₹300.00",
+    color: "#1a1a1a",
+    sizes: [{ size: "One Size", inStock: true }],
+    material: "Cotton Twill",
+    images: [blackCapImage],
+    image: blackCapImage,
+    available: true,
+    category: "accessories",
+    slug: "black-cap"
+  },
+];

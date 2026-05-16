@@ -8,11 +8,7 @@ import "./Merchandise.css";
 
 // Import merchandise images
 // Merchandise asset paths
-const whiteBackImage = "/assets/merchandise/white back.png";
-const whiteFrontImage = "/assets/merchandise/white front.png";
-const blackBackImage = "/assets/merchandise/black back.png";
-const blackFrontImage = "/assets/merchandise/black front.png";
-const blackCapImage = "/assets/merchandise/black cap.png";
+import { ALL_PRODUCTS } from "@/utils/productData";
 
 interface MerchandiseProps {
   addToCart: (product: any) => void;
@@ -29,54 +25,7 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
   const [selectedSizes, setSelectedSizes] = useState({});
   const [zoomedProduct, setZoomedProduct] = useState(null);
 
-  const merchandise = [
-    {
-      id: 101,
-      name: "White T-Shirt",
-      description: "Premium quality Tears branded t-shirt in classic white",
-      price: "₹999.00",
-      color: "#f5f5f5",
-      sizes: [
-        { size: "S", inStock: false },
-        { size: "M", inStock: false },
-        { size: "L", inStock: true },
-        { size: "XL", inStock: true },
-      ],
-      material: "100% Cotton",
-      images: [whiteFrontImage, whiteBackImage],
-      available: true,
-      category: "apparel",
-    },
-    {
-      id: 102,
-      name: "Black T-Shirt",
-      description: "Bold statement piece with Tears branding in sleek black",
-      price: "₹999.00",
-      color: "#1a1a1a",
-      sizes: [
-        { size: "S", inStock: false },
-        { size: "M", inStock: false },
-        { size: "L", inStock: true },
-        { size: "XL", inStock: true },
-      ],
-      material: "100% Cotton",
-      images: [blackFrontImage, blackBackImage],
-      available: true,
-      category: "apparel",
-    },
-    {
-      id: 103,
-      name: "Black Cap",
-      description: "Stylish black cap to showcase your Tears passion anywhere",
-      price: "₹300.00",
-      color: "#1a1a1a",
-      sizes: [{ size: "One Size", inStock: true }],
-      material: "Cotton Twill",
-      images: [blackCapImage],
-      available: true,
-      category: "accessories",
-    },
-  ];
+  const merchandise = ALL_PRODUCTS.filter(p => p.category === "apparel" || p.category === "accessories");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -214,7 +163,7 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                     className="premium-product-view-btn"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setZoomedProduct(product as any);
+                      window.location.href = `/product/${product.slug}`;
                     }}
                   >
                     <Eye size={24} />

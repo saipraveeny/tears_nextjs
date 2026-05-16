@@ -330,7 +330,7 @@
 
 /* Premium Features Section Updated */
 .premium-features-section {
-  padding: 6rem 0; /* Reduced from 10rem */
+  padding: 4rem 0; /* Reduced from 6rem */
   background: #050505;
   position: relative;
   overflow: hidden;
@@ -481,7 +481,7 @@
 @media (max-width: 768px) {
   .premium-features-grid { grid-template-columns: 1fr; }
   .premium-title { font-size: 2.5rem; }
-  .premium-features-section { padding: 6rem 0; }
+  .premium-features-section { padding: 4rem 0; }
 }
 
 /* Premium Products Section */
@@ -533,7 +533,7 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at top, var(--product-color), transparent 70%);
-  opacity: 0.08;
+  opacity: 0.15;
   transition: opacity 0.5s ease;
 }
 
@@ -543,7 +543,7 @@
 }
 
 .premium-product-card:hover .premium-product-glass::before {
-  opacity: 0.15;
+  opacity: 0.25;
 }
 
 .premium-product-image-container {
@@ -562,12 +562,12 @@
   height: 160px;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0.4;
+  opacity: 0.6;
   transition: all 0.5s ease;
 }
 
 .premium-product-card:hover .premium-product-glow {
-  opacity: 0.7;
+  opacity: 0.85;
   transform: scale(1.2);
 }
 
@@ -985,14 +985,14 @@
 
 /* Wellness Journey Modern */
 .wellness-journey-modern {
-  padding: 6rem 0; /* Reduced from 10rem */
+  padding: 1rem 0; /* Reduced from 6rem */
   background: #000;
   overflow: hidden;
 }
 
 .wellness-header-modern {
   text-align: center;
-  margin-bottom: 4rem; /* Reduced from 10rem */
+  margin-bottom: 2rem; /* Reduced from 4rem */
 }
 
 .wellness-title-modern {
@@ -1206,8 +1206,7 @@
 
 @media (max-width: 768px) {
   .wellness-title-modern { font-size: 2.75rem; }
-  .wellness-header-modern { margin-bottom: 6rem; }
-  .wellness-journey-modern { padding: 6rem 0; }
+  .wellness-journey-modern { padding: 4rem 0; }
   .wellness-heading { font-size: 2rem; }
   .wellness-description-text { font-size: 1rem; }
 }
@@ -1218,7 +1217,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -2033,7 +2032,6 @@
     display: flex !important;
     justify-content: center;
     align-items: center;
-    margin: 2rem 0;
     width: 100%;
     height: 240px;
     position: relative;
@@ -2653,9 +2651,6 @@
     flex-direction: column;
   }
 
-  .merchandise {
-    padding: 60px 4% 40px;
-  }
 
   .merchandise-header {
     margin-bottom: 30px;
@@ -2994,12 +2989,6 @@
   padding: 1rem 0 !important;
   background: var(--primary-black);
   overflow: hidden;
-}
-
-@media (max-width: 768px) {
-  .features, .benefits, .testimonials {
-    padding: 5rem 0 !important;
-  }
 }
 
 /* Product Modal (Restored) */
@@ -3635,7 +3624,6 @@
 .section-light-accent {
   background: linear-gradient(180deg, #0a0a0a 0%, #450a0a 40%, #450a0a 60%, #0a0a0a 100%) !important;
   color: #ffffff !important;
-  padding: 10rem 0;
   position: relative;
   z-index: 1;
   border-top: 1px solid rgba(255, 59, 48, 0.1);
