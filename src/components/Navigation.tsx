@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, User, LogOut, Package, Shield } from "lucide-react";
+import { ShoppingCart, User, LogOut, Package, Shield, Menu, X } from "lucide-react";
+
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../hooks/useCart";
@@ -200,7 +201,8 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
               className="mobile-menu-btn"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <span>&#10005;</span> : <span>&#9776;</span>}
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+
             </button>
           </div>
         </div>
