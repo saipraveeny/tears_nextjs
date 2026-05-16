@@ -44,14 +44,15 @@ export default function Home() {
           showConfirmationModal={showConfirmationModal}
           addBundleToCart={BUNDLE_PRODUCT}
         />
+        <Benefits />
         <Merchandise 
           addToCart={addToCart} 
           openCart={() => setIsCartOpen(true)} 
         />
-        <Benefits />
-        <Testimonials />
         <Recipes />
+        <Testimonials />
         <Contact />
+
       </main>
     </>
   );

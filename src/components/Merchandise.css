@@ -464,9 +464,11 @@
   
   .premium-merchandise-card {
     flex: 0 0 260px;
+    height: 380px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
+
 
   
   .premium-merchandise-glass {

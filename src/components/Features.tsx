@@ -68,14 +68,24 @@ const Features = () => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
         const maxScroll = scrollWidth - clientWidth;
-        const nextScroll = scrollLeft >= maxScroll ? 0 : scrollLeft + (scrollWidth / features.length);
         
-        scrollRef.current.scrollTo({
-          left: nextScroll,
-          behavior: "smooth"
-        });
+        // If we are near the end, loop back to start
+        if (scrollLeft >= maxScroll - 5) {
+          scrollRef.current.scrollTo({
+            left: 0,
+            behavior: "smooth"
+          });
+        } else {
+          // Scroll by one card width
+          const cardWidth = scrollWidth / features.length;
+          scrollRef.current.scrollTo({
+            left: scrollLeft + cardWidth,
+            behavior: "smooth"
+          });
+        }
       }
     }, 4000); // 4 seconds reading time
+
 
     return () => clearInterval(interval);
   }, [inView, isPaused, features.length]);

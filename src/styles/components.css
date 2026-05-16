@@ -1065,8 +1065,15 @@
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 30px 60px rgba(255, 59, 48, 0.2));
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
 }
+
+@media (max-width: 768px) {
+  .wellness-product-img {
+    height: 300px;
+  }
+}
+
 
 .wellness-glow-sphere {
   position: absolute;
@@ -1212,20 +1219,38 @@
   .step-num { font-size: 7rem; }
   .wellness-badge-group { justify-content: center; }
   .stats-glass-container {
-    flex-direction: column;
-    gap: 4rem;
-    padding: 3rem;
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+    justify-content: space-between;
+    border-radius: 20px;
   }
-  .divider-line { display: none; }
+  .stat-val {
+    font-size: 1.8rem;
+    margin-bottom: 0.2rem;
+  }
+  .stat-lbl {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+  }
+  .divider-line { 
+    display: block; 
+    height: 40px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   .wellness-flow-modern { gap: 8rem; }
 }
 
 @media (max-width: 768px) {
-  .wellness-title-modern { font-size: 2.75rem; }
-  .wellness-journey-modern { padding: 4rem 0; }
-  .wellness-heading { font-size: 2rem; }
-  .wellness-description-text { font-size: 1rem; }
+  .wellness-title-modern { font-size: 2rem; }
+  .wellness-journey-modern { padding: 3rem 0; }
+  .wellness-heading { font-size: 1.5rem; }
+  .wellness-description-text { font-size: 0.9rem; }
+  .wellness-step-modern { gap: 1.5rem; }
+  .step-num { font-size: 4rem !important; }
 }
+
 
 
 

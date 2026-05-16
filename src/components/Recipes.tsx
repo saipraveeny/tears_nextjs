@@ -51,8 +51,9 @@ const Recipes = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="section-title">
-            Premium <span className="text-gradient">Recipes</span>
+            Premium <span className="text-gradient">How to use it</span>
           </h2>
+
         </motion.div>
 
         <motion.div
