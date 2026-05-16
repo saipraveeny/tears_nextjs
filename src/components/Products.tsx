@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Flame, Star, ShoppingCart, Eye, X } from "lucide-react";
 import { ALL_PRODUCTS } from "@/utils/productData";
+import { useCart } from "@/hooks/useCart";
+
 
 interface ProductsProps {
   addToCart: (product: any, qty: number) => void;
@@ -19,7 +21,9 @@ const Products: React.FC<ProductsProps> = ({
   showConfirmationModal,
   addBundleToCart,
 }) => {
+  const { cart } = useCart();
   const [ref, inView] = useInView({
+
     triggerOnce: true,
     threshold: 0.1,
   });
@@ -166,9 +170,17 @@ const Products: React.FC<ProductsProps> = ({
                           if (openCart) openCart();
                         }}
                         title="Add to Cart"
+                        style={{ position: "relative" }}
                       >
                         <ShoppingCart size={18} />
+                        {(() => {
+                          const inCart = cart.find((item) => item.id === product.id);
+                          return inCart && inCart.qty > 0 ? (
+                            <span className="cart-badge-compact">{inCart.qty}</span>
+                          ) : null;
+                        })()}
                       </button>
+
                     ) : (
                       <div className="premium-coming-soon">Coming Soon</div>
                     )}

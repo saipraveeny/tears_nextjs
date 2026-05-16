@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { ShoppingCart, Eye, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import "./Merchandise.css";
+
 
 // Import merchandise images
 // Merchandise asset paths
@@ -16,7 +18,9 @@ interface MerchandiseProps {
 }
 
 const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
+  const { cart } = useCart();
   const [ref, inView] = useInView({
+
     triggerOnce: true,
     threshold: 0.1,
   });
@@ -235,9 +239,19 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                             if (openCart) openCart();
                           }}
                           title="Add to Cart"
+                          style={{ position: "relative" }}
                         >
                           <ShoppingCart size={18} />
+                          {(() => {
+                            const totalInCart = cart
+                              .filter((item) => item.id === product.id)
+                              .reduce((acc, item) => acc + item.qty, 0);
+                            return totalInCart > 0 ? (
+                              <span className="cart-badge-compact">{totalInCart}</span>
+                            ) : null;
+                          })()}
                         </button>
+
                       ) : (
                         <div className="premium-coming-soon">
                           Coming Soon
