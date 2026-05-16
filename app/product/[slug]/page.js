@@ -18,22 +18,8 @@ export default function ProductDetailPage() {
   const product = ALL_PRODUCTS.find(p => p.slug === slug);
   const [quantity, setQuantity] = useState(1);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      user: "Aditya S.",
-      rating: 5,
-      comment: "Absolutely incredible heat. The Wild sauce is unlike anything I've tried before. The herbal undertones really set it apart.",
-      date: "2024-03-12"
-    },
-    {
-      id: 2,
-      user: "Priya R.",
-      rating: 5,
-      comment: "The Glitch sauce has such a unique flavor profile. The grapefruit adds a refreshing twist to the spicy red chili. 10/10!",
-      date: "2024-03-10"
-    }
-  ]);
+  const [reviews, setReviews] = useState([]);
+
 
   const [newReview, setNewReview] = useState({
     user: "",
@@ -87,7 +73,10 @@ export default function ProductDetailPage() {
   };
 
 
-  const averageRating = (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1);
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+    : "0.0";
+
 
   return (
     <div style={{ background: "#050505", minHeight: "100vh", color: "#fff" }}>

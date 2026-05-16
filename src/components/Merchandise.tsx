@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { ShoppingCart, Eye, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ShoppingCart, Eye, ChevronLeft, ChevronRight, X, Minus, Plus } from "lucide-react";
+
 import { useCart } from "@/hooks/useCart";
 import "./Merchandise.css";
 
@@ -18,8 +19,9 @@ interface MerchandiseProps {
 }
 
 const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
-  const { cart } = useCart();
+  const { cart, updateQty } = useCart();
   const [ref, inView] = useInView({
+
 
     triggerOnce: true,
     threshold: 0.1,
@@ -229,29 +231,53 @@ const Merchandise: React.FC<MerchandiseProps> = ({ addToCart, openCart }) => {
                       <span className="merchandise-price">{product.price}</span>
                       
                       {product.available ? (
-                        <button
-                          className="premium-icon-cart-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const defaultSize = product.sizes.find(s => s.inStock)?.size || product.sizes[0].size;
-                            const size = selectedSizes[product.id as keyof typeof selectedSizes] || defaultSize;
-                            addToCart({ ...product, size });
-                            if (openCart) openCart();
-                          }}
-                          title="Add to Cart"
-                          style={{ position: "relative" }}
-                        >
-                          <ShoppingCart size={18} />
-                          {(() => {
-                            const totalInCart = cart
-                              .filter((item) => item.id === product.id)
-                              .reduce((acc, item) => acc + item.qty, 0);
-                            return totalInCart > 0 ? (
-                              <span className="cart-badge-compact">{totalInCart}</span>
-                            ) : null;
-                          })()}
-                        </button>
+                        (() => {
+                          const defaultSize = product.sizes.find(s => s.inStock)?.size || product.sizes[0].size;
+                          const size = selectedSizes[product.id as keyof typeof selectedSizes] || defaultSize;
+                          const cartItemId = `${product.id}-${size}`;
+                          const inCart = cart.find((item) => item.cartItemId === cartItemId);
 
+                          if (inCart && inCart.qty > 0) {
+                            return (
+                              <div className="quantity-selector">
+                                <button 
+                                  className="qty-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateQty(inCart.cartItemId, inCart.qty - 1);
+                                  }}
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className="qty-count">{inCart.qty}</span>
+                                <button 
+                                  className="qty-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToCart({ ...product, size });
+                                  }}
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <button
+                              className="premium-icon-cart-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart({ ...product, size });
+                                if (openCart) openCart();
+                              }}
+                              title="Add to Cart"
+                              style={{ position: "relative" }}
+                            >
+                              <ShoppingCart size={18} />
+                            </button>
+                          );
+                        })()
                       ) : (
                         <div className="premium-coming-soon">
                           Coming Soon

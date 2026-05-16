@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Flame, Star, ShoppingCart, Eye, X } from "lucide-react";
+import { Flame, Star, ShoppingCart, Eye, X, Minus, Plus } from "lucide-react";
+
 import { ALL_PRODUCTS } from "@/utils/productData";
 import { useCart } from "@/hooks/useCart";
 
@@ -21,8 +22,9 @@ const Products: React.FC<ProductsProps> = ({
   showConfirmationModal,
   addBundleToCart,
 }) => {
-  const { cart } = useCart();
+  const { cart, updateQty } = useCart();
   const [ref, inView] = useInView({
+
 
     triggerOnce: true,
     threshold: 0.1,
@@ -162,28 +164,52 @@ const Products: React.FC<ProductsProps> = ({
                       ₹{product.price}
                     </div>
                     {product.available ? (
-                      <button
-                        className="premium-icon-cart-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(product, 1);
-                          if (openCart) openCart();
-                        }}
-                        title="Add to Cart"
-                        style={{ position: "relative" }}
-                      >
-                        <ShoppingCart size={18} />
-                        {(() => {
-                          const inCart = cart.find((item) => item.id === product.id);
-                          return inCart && inCart.qty > 0 ? (
-                            <span className="cart-badge-compact">{inCart.qty}</span>
-                          ) : null;
-                        })()}
-                      </button>
-
+                      (() => {
+                        const inCart = cart.find((item) => item.id === product.id);
+                        if (inCart && inCart.qty > 0) {
+                          return (
+                            <div className="quantity-selector">
+                              <button 
+                                className="qty-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateQty(inCart.cartItemId, inCart.qty - 1);
+                                }}
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="qty-count">{inCart.qty}</span>
+                              <button 
+                                className="qty-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  addToCart(product, 1);
+                                }}
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                          );
+                        }
+                        return (
+                          <button
+                            className="premium-icon-cart-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(product, 1);
+                              if (openCart) openCart();
+                            }}
+                            title="Add to Cart"
+                            style={{ position: "relative" }}
+                          >
+                            <ShoppingCart size={18} />
+                          </button>
+                        );
+                      })()
                     ) : (
                       <div className="premium-coming-soon">Coming Soon</div>
                     )}
+
                   </div>
                 </div>
               </div>
