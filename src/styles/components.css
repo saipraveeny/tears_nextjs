@@ -1055,7 +1055,10 @@
   position: relative;
   width: 100%;
   max-width: 400px;
+  overflow: hidden;
+  border-radius: 30px;
 }
+
 
 .wellness-product-img {
   width: 100%;
@@ -1065,8 +1068,11 @@
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 30px 60px rgba(255, 59, 48, 0.2));
-  border: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
+
 
 @media (max-width: 768px) {
   .wellness-product-img {

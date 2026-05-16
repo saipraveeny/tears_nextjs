@@ -464,10 +464,19 @@
   
   .premium-merchandise-card {
     flex: 0 0 260px;
-    height: 380px;
+    height: 420px;
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
+  
+  .merchandise-description, .merchandise-variants {
+    display: none !important;
+  }
+
+  .merchandise-content {
+    padding: 1rem !important;
+  }
+
 
 
   
