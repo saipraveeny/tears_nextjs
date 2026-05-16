@@ -239,7 +239,15 @@
   letter-spacing: 1px;
 }
 
+.premium-bg-accents {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Timeline Carousel Styles */
+
 .timeline-carousel-container {
   position: relative;
   width: 100%;
@@ -257,7 +265,11 @@
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
   cursor: grab;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
 }
+
 
 .timeline-track:active {
   cursor: grabbing;
@@ -284,7 +296,10 @@
   height: 2px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
 }
+
 
 .timeline-progress-fill {
   height: 100%;
