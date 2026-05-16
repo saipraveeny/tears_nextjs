@@ -35,8 +35,6 @@ const Features = () => {
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = React.useState(0);
-  const [isPaused, setIsPaused] = React.useState(false);
-
   const features = [
     {
       image: "/assets/premium/essence.png",
@@ -60,41 +58,12 @@ const Features = () => {
     },
   ];
 
-  // Auto-scroll logic
-  React.useEffect(() => {
-    if (!inView || isPaused) return;
-
-    const interval = setInterval(() => {
-      if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const maxScroll = scrollWidth - clientWidth;
-        
-        // If we are near the end, loop back to start
-        if (scrollLeft >= maxScroll - 5) {
-          scrollRef.current.scrollTo({
-            left: 0,
-            behavior: "smooth"
-          });
-        } else {
-          // Scroll by one card width
-          const cardWidth = scrollWidth / features.length;
-          scrollRef.current.scrollTo({
-            left: scrollLeft + cardWidth,
-            behavior: "smooth"
-          });
-        }
-      }
-    }, 4000); // 4 seconds reading time
-
-
-    return () => clearInterval(interval);
-  }, [inView, isPaused, features.length]);
-
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.currentTarget;
     const progress = (element.scrollLeft / (element.scrollWidth - element.clientWidth)) * 100;
     setScrollProgress(progress);
   };
+
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -120,11 +89,8 @@ const Features = () => {
           <h2 className="premium-title">The <span className="text-highlight">Tears</span> Standard</h2>
         </motion.div>
 
-        <div 
-          className="timeline-carousel-container"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="timeline-carousel-container">
+
           <button className="carousel-nav-btn prev" onClick={() => scroll('left')}>
             <ChevronLeft size={24} />
           </button>
