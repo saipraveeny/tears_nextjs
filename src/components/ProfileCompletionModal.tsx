@@ -21,24 +21,14 @@ const ProfileCompletionModal = () => {
     }
 
     // Determine missing field with robust checks
-    const hasEmail = currentUser.email && !currentUser.email.includes('temp_') && currentUser.email.length > 5;
     const hasPhone = currentUser.phone && currentUser.phone.trim().length >= 10;
 
-    let missing: 'phone' | 'email' | null = null;
-    
-    // Prioritize phone if missing, otherwise check for email
-    if (!hasPhone) {
-      missing = 'phone';
-    } else if (!hasEmail) {
-      missing = 'email';
-    }
-
-    if (!missing) {
+    if (hasPhone) {
       setIsOpen(false);
       return;
     }
 
-    setMissingField(missing);
+    setMissingField('phone');
 
     // Regular Intervals logic: Check if shown recently in this session
     const lastShown = sessionStorage.getItem('profile_completion_last_shown');

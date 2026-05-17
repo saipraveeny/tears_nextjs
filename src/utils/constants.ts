@@ -2,7 +2,7 @@
  * Application constants
  */
 
-export const API_BASE = process.env.REACT_APP_API_BASE || "https://tears-api.vercel.app";
+export const API_BASE = "";
 
 export const NAV_ITEMS = [
   { name: "Home", href: "#home" },
