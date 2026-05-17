@@ -9,6 +9,7 @@ const heroGreen = "/assets/green.png";
 const heroSpike = "/assets/spike.PNG";
 const heroAlt = "/assets/alt.PNG";
 import StoryViewer from "./StoryViewer";
+import LandingBgSlideshow from "./LandingBgSlideshow";
 
 const heroImages = [
   { src: heroWild, alt: "Wild Variant" },
@@ -40,6 +41,7 @@ const Hero: React.FC<HeroProps> = ({ logo }) => {
   return (
     <section id="home" className="hero">
       <div className="hero-background">
+        <LandingBgSlideshow />
         <div className="hero-glow"></div>
         <div className="hero-particles">
           {[...Array(20)].map((_, i) => (
