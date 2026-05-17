@@ -269,7 +269,7 @@
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y !important;
+  touch-action: auto !important;
   cursor: grab;
   position: relative;
   z-index: 10;
@@ -277,7 +277,7 @@
 }
 
 .timeline-track * {
-  touch-action: pan-y !important;
+  touch-action: auto !important;
 }
 
 
@@ -360,7 +360,26 @@
 .carousel-nav-btn.next { right: -24px; }
 
 @media (max-width: 1200px) {
-  .carousel-nav-btn { display: none; }
+  .carousel-nav-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(10, 10, 10, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
+    z-index: 30 !important;
+  }
+  .carousel-nav-btn.prev { left: 8px !important; }
+  .carousel-nav-btn.next { right: 8px !important; }
+}
+
+@media (max-width: 480px) {
+  .carousel-nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .carousel-nav-btn.prev { left: 4px !important; }
+  .carousel-nav-btn.next { right: 4px !important; }
 }
 
 @media (max-width: 768px) {
