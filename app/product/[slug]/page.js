@@ -10,6 +10,39 @@ import { Flame, Star, ShoppingCart, ChevronLeft, ChevronRight, ShieldCheck, Truc
 import Reviews from "@/components/Reviews";
 import CartModal from "@/components/CartModal";
 
+function SuggestionCard({ p, isMobile }) {
+  const [imgSrc, setImgSrc] = useState(`/assets/products/${p.imageFolder}/1.jpg`);
+
+  useEffect(() => {
+    if (p.imageFolder) {
+      fetch(`/api/product-images/${p.imageFolder}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.images && data.images.length > 0) {
+            setImgSrc(data.images[0]);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [p.imageFolder]);
+
+  return (
+    <motion.div 
+      whileHover={{ y: -5 }}
+      onClick={() => window.location.href = `/product/${p.slug}`}
+      style={{ flex: isMobile ? "0 0 160px" : "0 0 220px", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer" }}
+    >
+      <div style={{ width: "100%", height: isMobile ? "160px" : "220px", background: "rgba(255,255,255,0.03)", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", width: "80px", height: "80px", background: p.color, filter: "blur(40px)", opacity: 0.15 }} />
+        <img src={imgSrc} alt={p.name} style={{ width: "70%", height: "70%", objectFit: "contain", zIndex: 1 }} />
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontWeight: "700", fontSize: isMobile ? "0.85rem" : "1rem" }}>{p.name}</div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const router = useRouter();
@@ -440,20 +473,7 @@ export default function ProductDetailPage() {
           </h2>
           <div style={{ display: "flex", overflowX: "auto", gap: "15px", padding: "10px 0", scrollbarWidth: "none" }}>
             {ALL_PRODUCTS.filter(p => p.id !== product.id && p.category === "sauce").map((p) => (
-              <motion.div 
-                key={p.id}
-                whileHover={{ y: -5 }}
-                onClick={() => window.location.href = `/product/${p.slug}`}
-                style={{ flex: isMobile ? "0 0 160px" : "0 0 220px", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer" }}
-              >
-                <div style={{ width: "100%", height: isMobile ? "160px" : "220px", background: "rgba(255,255,255,0.03)", borderRadius: "20px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.05)", position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", width: "80px", height: "80px", background: p.color, filter: "blur(40px)", opacity: 0.15 }} />
-                  <img src={p.image} alt={p.name} style={{ width: "70%", height: "70%", objectFit: "contain", zIndex: 1 }} />
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontWeight: "700", fontSize: isMobile ? "0.85rem" : "1rem" }}>{p.name}</div>
-                </div>
-              </motion.div>
+              <SuggestionCard key={p.id} p={p} isMobile={isMobile} />
             ))}
           </div>
         </div>

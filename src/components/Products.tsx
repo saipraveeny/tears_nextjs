@@ -169,8 +169,8 @@ const ProductCard = ({ product, addToCart, cart, updateQty, openCart, itemVarian
             <h3 className="premium-product-name">{formatProductName(product.name)}</h3>
             {product.available && (
               <div className="premium-product-rating">
-                <Star size={16} fill="currentColor" />
-                <span>4.9</span>
+                <Star size={12} fill="currentColor" />
+                <span>{product.rating || "4.9"}</span>
               </div>
             )}
           </div>
