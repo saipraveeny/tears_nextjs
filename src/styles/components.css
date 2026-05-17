@@ -269,11 +269,15 @@
   scrollbar-width: none; /* Hide scrollbar Firefox */
   -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  touch-action: pan-y !important;
   cursor: grab;
   position: relative;
   z-index: 10;
   pointer-events: auto;
+}
+
+.timeline-track * {
+  touch-action: pan-y !important;
 }
 
 
