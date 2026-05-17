@@ -15,6 +15,11 @@ import { Analytics } from "@vercel/analytics/next";
 export const metadata = {
   title: "Tears - Premium Hot Sauce",
   description: "Experience the heat with Tears premium hot sauces.",
+  icons: {
+    icon: "/assets/triangle.png",
+    shortcut: "/assets/triangle.png",
+    apple: "/assets/triangle.png",
+  },
 };
 
 const logo = "/assets/logo.png";

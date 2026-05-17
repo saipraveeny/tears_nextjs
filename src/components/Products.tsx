@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Flame, Star, ShoppingCart, Eye, X, Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Flame, Star, ShoppingCart, Eye, X, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { ALL_PRODUCTS } from "@/utils/productData";
 import { useCart } from "@/hooks/useCart";
-
 
 interface ProductsProps {
   addToCart: (product: any, qty: number) => void;
@@ -16,6 +17,230 @@ interface ProductsProps {
   addBundleToCart?: any;
 }
 
+const ProductCard = ({ product, addToCart, cart, updateQty, openCart, itemVariants, formatProductName, renderHeatLevel }) => {
+  const router = useRouter();
+  const [folderImages, setFolderImages] = useState<string[]>([]);
+  
+  React.useEffect(() => {
+    if (product.imageFolder) {
+      fetch(`/api/product-images/${product.imageFolder}`)
+        .then(res => res.json())
+        .then(data => setFolderImages(data.images || []))
+        .catch(() => setFolderImages([]));
+    }
+  }, [product.imageFolder]);
+
+  const media = [
+    ...(product.videos || []).map(v => ({ type: 'video', url: v })),
+    ...folderImages.map(img => ({ type: 'image', url: img })),
+    { type: 'image', url: product.productLogo, isLogo: true }
+  ].filter(m => m.url);
+  
+  // Fallback: if no folder images loaded yet, show the primary image
+  if (folderImages.length === 0 && product.image) {
+    const hasPrimary = media.some(m => m.url === product.image);
+    if (!hasPrimary) {
+      media.splice(product.videos?.length || 0, 0, { type: 'image', url: product.image });
+    }
+  }
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentMedia = media[currentIndex % media.length];
+
+  const handleNextMedia = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % media.length);
+  };
+
+  const handlePrevMedia = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
+  };
+
+  const inCart = cart.find((item) => item.id === product.id);
+
+  return (
+    <motion.div
+      className="premium-product-card"
+      variants={itemVariants}
+      onClick={() => router.push(`/product/${product.slug}`)}
+    >
+      <div 
+        className="premium-product-glass"
+        style={{ "--product-color": product.color } as any}
+      >
+        <div className="premium-product-image-container">
+          <div className="premium-product-glow" style={{ background: product.color, position: 'absolute', width: '60%', height: '60%', filter: 'blur(60px)', opacity: 0.2, zIndex: 0, pointerEvents: 'none' }} />
+          
+          {currentMedia?.type === 'video' ? (
+            <video
+              src={currentMedia.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="premium-product-image"
+              style={{ 
+                objectFit: 'cover', 
+                width: '100%', 
+                height: '100%',
+                borderTopLeftRadius: '40px',
+                borderTopRightRadius: '40px'
+              }}
+            />
+          ) : (
+            <div style={{ 
+              width: '100%', 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: currentMedia?.isLogo ? 'center' : 'flex-start', 
+              justifyContent: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+              borderTopLeftRadius: '40px',
+              borderTopRightRadius: '40px',
+              margin: 0,
+              padding: 0
+            }}>
+              <img
+                src={currentMedia?.url || product.image}
+                alt={`${product.name} Hot Sauce`}
+                className="premium-product-image"
+                style={{ 
+                  objectFit: currentMedia?.isLogo ? 'contain' : 'cover', 
+                  width: currentMedia?.isLogo ? '70%' : '100%', 
+                  height: currentMedia?.isLogo ? '70%' : '100%', 
+                  filter: currentMedia?.isLogo ? 'none' : 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))',
+                  zIndex: 2,
+                  transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  objectPosition: currentMedia?.isLogo ? 'center' : 'top',
+                  margin: 0,
+                  padding: 0
+                }}
+              />
+            </div>
+          )}
+
+          {/* Nav Arrows */}
+          {media.length > 1 && (
+            <>
+              <button 
+                className="media-nav-btn prev" 
+                onClick={handlePrevMedia}
+                title="Previous"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                className="media-nav-btn next" 
+                onClick={handleNextMedia}
+                title="Next"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </>
+          )}
+
+          {media.length > 1 && (
+            <div className="media-dots">
+              {media.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`media-dot ${i === currentIndex ? 'active' : ''}`}
+                />
+              ))}
+            </div>
+          )}
+
+          <div 
+            className="premium-product-view-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/product/${product.slug}`);
+            }}
+            title="View Product"
+          >
+            <Eye size={24} />
+          </div>
+        </div>
+
+        <div className="premium-product-content">
+          <div className="premium-product-header">
+            <h3 className="premium-product-name">{formatProductName(product.name)}</h3>
+            {product.available && (
+              <div className="premium-product-rating">
+                <Star size={16} fill="currentColor" />
+                <span>4.9</span>
+              </div>
+            )}
+          </div>
+
+          <p className="premium-product-description" title={product.description}>{product.description}</p>
+
+          <div className="premium-product-heat">
+            <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, letterSpacing: '0.5px', marginRight: '6px', whiteSpace: 'nowrap' }}>HEAT LEVEL</span>
+            {renderHeatLevel(product.heatLevel, product.color)}
+          </div>
+
+          <div className="premium-product-features">
+            {product.features.slice(0, 3).map((feature, i) => (
+              <span key={i} className="premium-feature-tag">
+                {feature}
+              </span>
+            ))}
+          </div>
+
+          <div className="premium-product-footer-row">
+            <div className="premium-product-price">
+              {product.price}
+            </div>
+            {product.available ? (
+              inCart && inCart.qty > 0 ? (
+                <div className="quantity-selector">
+                  <button 
+                    className="qty-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateQty(inCart.cartItemId, inCart.qty - 1);
+                    }}
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="qty-count">{inCart.qty}</span>
+                  <button 
+                    className="qty-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product, 1);
+                    }}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="premium-icon-cart-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(product, 1);
+                    if (openCart) openCart();
+                  }}
+                  title="Add to Cart"
+                  style={{ position: "relative" }}
+                >
+                  <ShoppingCart size={18} />
+                </button>
+              )
+            ) : (
+              <div className="premium-coming-soon">Coming Soon</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Products: React.FC<ProductsProps> = ({
   addToCart,
   openCart,
@@ -23,14 +248,19 @@ const Products: React.FC<ProductsProps> = ({
   addBundleToCart,
 }) => {
   const { cart, updateQty } = useCart();
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const [ref, inView] = useInView({
-
-
     triggerOnce: true,
     threshold: 0.1,
   });
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const products = ALL_PRODUCTS.filter(p => p.category === "sauce");
 
@@ -106,250 +336,20 @@ const Products: React.FC<ProductsProps> = ({
           animate={inView ? "visible" : "hidden"}
         >
           {products.map((product) => (
-            <motion.div
+            <ProductCard
               key={product.id}
-              className="premium-product-card"
-              variants={itemVariants}
-              onClick={() => window.location.href = `/product/${product.slug}`}
-            >
-              <div 
-                className="premium-product-glass"
-                style={{ "--product-color": product.color } as any}
-              >
-                <div className="premium-product-image-container">
-                  <div className="premium-product-glow" style={{ background: product.color }} />
-                  <img
-                    src={product.image}
-                    alt={`${product.name} Hot Sauce`}
-                    className="premium-product-image"
-                  />
-                  <div 
-                    className="premium-product-view-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.location.href = `/product/${product.slug}`;
-                    }}
-                  >
-                    <Eye size={24} />
-                  </div>
-                </div>
-
-                <div className="premium-product-content">
-                  <div className="premium-product-header">
-                    <h3 className="premium-product-name">{formatProductName(product.name)}</h3>
-                    {product.available && (
-                      <div className="premium-product-rating">
-                        <Star size={16} fill="currentColor" />
-                        <span>4.9</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <p className="premium-product-description">{product.description}</p>
-
-                  <div className="premium-product-heat">
-                    {renderHeatLevel(product.heatLevel, product.color)}
-                  </div>
-
-                  <div className="premium-product-features">
-                    {product.features.slice(0, 3).map((feature, i) => (
-                      <span key={i} className="premium-feature-tag">
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="premium-product-footer-row">
-                    <div className="premium-product-price">
-                      ₹{product.price}
-                    </div>
-                    {product.available ? (
-                      (() => {
-                        const inCart = cart.find((item) => item.id === product.id);
-                        if (inCart && inCart.qty > 0) {
-                          return (
-                            <div className="quantity-selector">
-                              <button 
-                                className="qty-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateQty(inCart.cartItemId, inCart.qty - 1);
-                                }}
-                              >
-                                <Minus size={14} />
-                              </button>
-                              <span className="qty-count">{inCart.qty}</span>
-                              <button 
-                                className="qty-btn"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addToCart(product, 1);
-                                }}
-                              >
-                                <Plus size={14} />
-                              </button>
-                            </div>
-                          );
-                        }
-                        return (
-                          <button
-                            className="premium-icon-cart-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product, 1);
-                              if (openCart) openCart();
-                            }}
-                            title="Add to Cart"
-                            style={{ position: "relative" }}
-                          >
-                            <ShoppingCart size={18} />
-                          </button>
-                        );
-                      })()
-                    ) : (
-                      <div className="premium-coming-soon">Coming Soon</div>
-                    )}
-
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              product={product}
+              addToCart={addToCart}
+              cart={cart}
+              updateQty={updateQty}
+              openCart={openCart}
+              itemVariants={itemVariants}
+              formatProductName={formatProductName}
+              renderHeatLevel={renderHeatLevel}
+            />
           ))}
         </motion.div>
-
-        {/* Great Deal Panel */}
-        {/* <motion.div
-          className="premium-deal-panel"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-        >
-          <div className="premium-deal-glass">
-            <div className="premium-deal-glow"></div>
-            <div className="premium-deal-content">
-              <div className="premium-deal-badge">Special Offer</div>
-              <h3 className="premium-deal-title">The Ultimate Trio</h3>
-              <p className="premium-deal-desc">
-                Experience our core lineup with the 3-bottle pack (Green, Wild, Glitch).
-              </p>
-              <div className="premium-deal-pricing">
-                <span className="premium-deal-current">₹816.00</span>
-                <span className="premium-deal-original">₹916.00</span>
-                <span className="premium-deal-savings">Save ₹100</span>
-              </div>
-            </div>
-            <button 
-              className="premium-deal-btn"
-              onClick={() => {
-                if(addBundleToCart) {
-                  addToCart(addBundleToCart, 1);
-                  openCart();
-                }
-              }}
-            >
-              <ShoppingCart size={20} />
-              Grab The Bundle
-            </button>
-          </div>
-        </motion.div> */}
       </div>
-
-      {/* Product Modal */}
-      {selectedProduct && (
-        <motion.div
-          className="product-modal"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setSelectedProduct(null)}
-        >
-          <motion.div
-            className="modal-content glass-strong"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-            style={{ 
-              background: 'rgba(18, 18, 18, 0.95)',
-              border: `1px solid ${(selectedProduct as any).color}40`,
-              boxShadow: `0 30px 60px rgba(0,0,0,0.6), 0 0 40px ${(selectedProduct as any).color}20`
-            }}
-          >
-            <button
-              className="premium-modal-close"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedProduct(null);
-              }}
-            >
-              <X size={24} />
-            </button>
-            <div className="modal-product modal-product-grid">
-              <div className="modal-image modal-image-fill">
-                {selectedProduct.video ? (
-                  <video
-                    className="modal-variant-image modal-variant-image-fill"
-                    src={selectedProduct.video}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                  />
-                ) : (
-                  <img
-                    src={selectedProduct.image}
-                    alt={selectedProduct.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '2rem' }}
-                  />
-                )}
-              </div>
-              <div className="modal-details">
-                <h2 style={{ color: (selectedProduct as any).color }}>{formatProductName((selectedProduct as any).name)}</h2>
-                <p style={{ fontSize: '1.1rem', lineHeight: 1.6 }}>{(selectedProduct as any).description}</p>
-                <div className="modal-heat" style={{ marginTop: '2rem' }}>
-                  <div className="heat-level">
-                    {renderHeatLevel((selectedProduct as any).heatLevel, (selectedProduct as any).color)}
-                  </div>
-                </div>
-                <div className="modal-features" style={{ gap: '0.75rem', marginTop: '1.5rem' }}>
-                  {(selectedProduct as any).features.map((feature: string, i: number) => (
-                    <span 
-                      key={i} 
-                      className="premium-feature-tag"
-                      style={{ padding: '8px 16px', fontSize: '0.9rem' }}
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-                <div className="modal-price" style={{ marginTop: '2rem', fontSize: '2.5rem' }}>{(selectedProduct as any).price}</div>
-                {(selectedProduct as any).available ? (
-                  <motion.button
-                    className="premium-add-to-cart-btn"
-                    style={{ width: '100%', marginTop: '1rem', padding: '1rem' }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      addToCart(selectedProduct, 1);
-                      setSelectedProduct(null);
-                      openCart();
-                    }}
-                  >
-                    <ShoppingCart size={20} />
-                    <span>Add to Cart</span>
-                  </motion.button>
-                ) : (
-                  <div className="modal-coming-soon" style={{ padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem' }}>
-                    <span>Launching soon - Stay Tuned!</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
     </section>
   );
 };

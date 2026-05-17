@@ -1,9 +1,9 @@
 // Product images
-const wildImage = "/assets/wild.png";
-const glitchImage = "/assets/glitch.png";
-const greenImage = "/assets/green.png";
-const spikeImage = "/assets/spike.PNG";
-const altImage = "/assets/alt.PNG";
+const wildImage = "/assets/products/wild/primary.png";
+const glitchImage = "/assets/products/glitch/primary.png";
+const greenImage = "/assets/products/green/primary.png";
+const spikeImage = "/assets/products/spike/primary.png";
+const altImage = "/assets/products/alt/primary.png";
 
 // Video paths
 const wildVid = "/assets/wild.mp4";
@@ -27,7 +27,9 @@ export const ALL_PRODUCTS = [
     color: "#548c50",
     features: ["Green chilli", "Lemon", "Balanced Heat", "Versatile"],
     image: greenImage,
-    video: bgVideo,
+    imageFolder: "green",
+    videos: [bgVideo],
+    productLogo: "/assets/green.png",
     available: true,
     premium: false,
     slug: "green-sauce",
@@ -42,7 +44,9 @@ export const ALL_PRODUCTS = [
     color: "#ff3b30",
     features: ["Extra Hot", "Herb Infused", "Smoky Finish"],
     image: wildImage,
-    video: wildVid,
+    imageFolder: "wild",
+    videos: [wildVid],
+    productLogo: "/assets/wild.png",
     available: true,
     premium: true,
     slug: "wild-sauce",
@@ -57,7 +61,9 @@ export const ALL_PRODUCTS = [
     color: "#ff00ff",
     features: ["Exotic Spices", "Complex Heat"],
     image: glitchImage,
-    video: glitchVid,
+    imageFolder: "glitch",
+    videos: [glitchVid],
+    productLogo: "/assets/glitch.png",
     available: true,
     premium: true,
     slug: "glitch-sauce",
@@ -72,6 +78,9 @@ export const ALL_PRODUCTS = [
     color: "#cc4400",
     features: ["Intense Heat", "Bold Flavor", "Spicy Kick"],
     image: spikeImage,
+    imageFolder: "spike",
+    videos: [],
+    productLogo: "/assets/spike.PNG",
     available: true,
     premium: false,
     slug: "spike-sauce",
@@ -80,12 +89,15 @@ export const ALL_PRODUCTS = [
   {
     id: 5,
     name: "ALT (100ml)",
-    description: "Amla chilli",
+    description: "Designed for the Discerning Palate with amla chilli, slow-fused for an unparalleled sensory journey",
     heatLevel: 3,
     price: "₹326.00",
     color: "#8B9B17",
-    features: ["Amla", "Chilli"],
+    features: ["Amla", "Chilli", "slow-fused"],
     image: altImage,
+    imageFolder: "alt",
+    videos: [],
+    productLogo: "/assets/alt.PNG",
     available: true,
     premium: false,
     slug: "alt-sauce",

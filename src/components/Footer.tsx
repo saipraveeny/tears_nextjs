@@ -13,6 +13,14 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ logo }) => {
   const currentYear = new Date().getFullYear();
   const [isFAQOpen, setIsFAQOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const footerData = {
     collections: [
@@ -77,7 +85,6 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
             </div>
             <p className="brand-description">
               Crafting premium, health-conscious hot sauces that redefine the culinary landscape. 
-              Pure concentration. Zero fat. Infinite flavor.
             </p>
             <div className="footer-contact-info">
               <div className="info-item">
@@ -89,57 +96,65 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
             </div>
           </div>
 
-          {/* Links Columns */}
+          {/* Accordion Columns for Mobile, Normal for Desktop */}
           <div className="footer-column">
-            <h4>Collections</h4>
-            <ul className="footer-link-list">
-              {footerData.collections.map((link, i) => (
-                <li key={i}>
-                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <details open={!isMobile}>
+              <summary><h4>Collections</h4></summary>
+              <ul className="footer-link-list">
+                {footerData.collections.map((link, i) => (
+                  <li key={i}>
+                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
 
           <div className="footer-column">
-            <h4>Merchandise</h4>
-            <ul className="footer-link-list">
-              {footerData.merchandise.map((link, i) => (
-                <li key={i}>
-                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <details open={!isMobile}>
+              <summary><h4>Merchandise</h4></summary>
+              <ul className="footer-link-list">
+                {footerData.merchandise.map((link, i) => (
+                  <li key={i}>
+                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
 
           <div className="footer-column">
-            <h4>Company</h4>
-            <ul className="footer-link-list">
-              {footerData.company.map((link, i) => (
-                <li key={i}>
-                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <details open={!isMobile}>
+              <summary><h4>Company</h4></summary>
+              <ul className="footer-link-list">
+                {footerData.company.map((link, i) => (
+                  <li key={i}>
+                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
 
           <div className="footer-column">
-            <h4>Support</h4>
-            <ul className="footer-link-list">
-              {footerData.support.map((link, i) => (
-                <li key={i}>
-                  <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                    {link.name} <ArrowUpRight size={12} className="hover-arrow" />
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <details open={!isMobile}>
+              <summary><h4>Support</h4></summary>
+              <ul className="footer-link-list">
+                {footerData.support.map((link, i) => (
+                  <li key={i}>
+                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
+                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
         </div>
 
