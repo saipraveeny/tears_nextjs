@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import NextImage from "next/image";
 
 const DEFAULT_IMAGES = [
   "/assets/landing page/NDN04145.jpg",
@@ -22,13 +23,29 @@ const LandingBgSlideshow: React.FC = () => {
           const data = await response.json();
           if (data.images && data.images.length > 0) {
             setImages(data.images);
+            
+            // Silently preload other background images to browser disk cache after a small delay
+            // so they render instantly with absolutely zero transition latency!
+            setTimeout(() => {
+              data.images.forEach((src: string) => {
+                const img = new Image();
+                img.src = src;
+              });
+            }, 1000);
           }
         }
       } catch (error) {
         console.error("Failed to load landing images dynamically:", error);
       }
     };
-    fetchImages();
+
+    // Wait 1.5 seconds before processing heavy background slides!
+    // This leaves the network connection completely free for logos, menu items, and variant images to load instantly.
+    const delayTimer = setTimeout(() => {
+      fetchImages();
+    }, 1500);
+
+    return () => clearTimeout(delayTimer);
   }, []);
 
   useEffect(() => {
@@ -81,12 +98,23 @@ const LandingBgSlideshow: React.FC = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundImage: `url('${images[index]}')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
             filter: "brightness(45%) contrast(110%)", // Dark editorial cinematic filter
           }}
-        />
+        >
+          {/* Use NextImage to automatically compress 8.3MB images to 150KB WebP files on-the-fly */}
+          <NextImage
+            src={images[index]}
+            alt="Cinematic background culinary slide"
+            fill
+            priority={index === 0} // Instantly prioritize and load the very first slide
+            sizes="100vw"
+            quality={75} // High quality with optimized compression ratio
+            style={{
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+          />
+        </motion.div>
       </AnimatePresence>
 
       {/* Deep premium dark radial vignette to smoothly fade the edges and blend with page sections */}
