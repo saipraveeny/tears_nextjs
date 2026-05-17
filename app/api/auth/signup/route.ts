@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         await existingUser.save();
 
         await setAuthCookies(token, refreshToken);
-        return NextResponse.json({ success: true, user: { id: existingUser._id, name: existingUser.name, email: existingUser.email, role: existingUser.role } });
+        return NextResponse.json({ success: true, user: { id: existingUser._id, name: existingUser.name, email: existingUser.email, phone: existingUser.phone, role: existingUser.role } });
       }
       return NextResponse.json({ error: "Account already exists. Please sign in instead." }, { status: 400 });
     }
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: newUser._id, name: newUser.name, email: newUser.email, role: newUser.role } 
+      user: { id: newUser._id, name: newUser.name, email: newUser.email, phone: newUser.phone, role: newUser.role } 
     }, { status: 201 });
 
   } catch (err) {
