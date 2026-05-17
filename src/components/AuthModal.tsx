@@ -508,6 +508,23 @@ const AuthModal = () => {
             {/* ========== LOGIN/SIGNUP FLOWS ========== */}
             {(activeTab === 'login' || activeTab === 'signup') && (
               <>
+                {/* Google Login */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                   <GoogleLogin
+                     onSuccess={handleGoogleSuccess}
+                     onError={() => setError('Google Login Failed')}
+                     theme="filled_black"
+                     shape="pill"
+                   />
+                </div>
+
+                {/* OR divider */}
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20, opacity: 0.5 }}>
+                  <div style={{ flex: 1, height: 1, background: '#fff' }}></div>
+                  <span style={{ margin: '0 10px', fontSize: 12 }}>OR</span>
+                  <div style={{ flex: 1, height: 1, background: '#fff' }}></div>
+                </div>
+
                 {/* Method tabs */}
                 <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
                   <button 
@@ -623,23 +640,6 @@ const AuthModal = () => {
                     </motion.button>
                   </form>
                 )}
-
-                {/* OR divider */}
-                <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', opacity: 0.5 }}>
-                  <div style={{ flex: 1, height: 1, background: '#fff' }}></div>
-                  <span style={{ margin: '0 10px', fontSize: 12 }}>OR</span>
-                  <div style={{ flex: 1, height: 1, background: '#fff' }}></div>
-                </div>
-
-                {/* Google Login */}
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                   <GoogleLogin
-                     onSuccess={handleGoogleSuccess}
-                     onError={() => setError('Google Login Failed')}
-                     theme="filled_black"
-                     shape="pill"
-                   />
-                </div>
 
                 {/* Toggle Login/Signup */}
                 <div style={{ marginTop: 25, marginBottom: 20, textAlign: 'center', fontSize: 14, opacity: 0.8 }}>
