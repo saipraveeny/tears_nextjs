@@ -23,6 +23,7 @@ export const metadata = {
 };
 
 const logo = "/assets/logo.png";
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-E7M2GZ1T96";
 
 export default function RootLayout({
   children,
@@ -32,6 +33,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        {/* Google Analytics (GA4) */}
+        {gaId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaId}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
+
         {/* Highcharts scripts for Admin Dashboard */}
         <Script src="https://code.highcharts.com/highcharts.js" />
         <Script src="https://code.highcharts.com/highcharts-more.js" />
