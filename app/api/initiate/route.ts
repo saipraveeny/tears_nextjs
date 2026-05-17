@@ -25,10 +25,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Products required.", requestId }, { status: 400 });
     }
 
+    const clientId = process.env.PHONEPE_CLIENT_ID;
+    const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
+    if (!clientId || !clientSecret) {
+      return NextResponse.json({
+        error: "PhonePe Integration is incomplete.",
+        details: "PHONEPE_CLIENT_ID or PHONEPE_CLIENT_SECRET environment variables are missing on the server. Please configure them in your hosting provider's dashboard.",
+        requestId
+      }, { status: 500 });
+    }
+
     const merchantOrderId = client.generateOrderId("TRS");
 
-    const redirectUrl = process.env.PHONEPE_REDIRECT_URL || "https://tears.co.in/api/redirect";
-    const webhookUrl = process.env.WEBHOOK_URL || "https://tears.co.in/api/webhook";
+    const origin = req.headers.get("origin") || "https://tears.co.in";
+    const redirectUrl = process.env.PHONEPE_REDIRECT_URL || `${origin}/api/redirect`;
+    const webhookUrl = process.env.WEBHOOK_URL || `${origin}/api/webhook`;
 
     const result = await client.initiatePayment({
       amount: finalAmount,
