@@ -52,7 +52,9 @@ class PhonePeClient {
         body,
       });
 
-      if (!response.ok) throw new Error(`OAuth token request failed: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`OAuth token request failed: ${response.status} (Target Env: ${this.env}, Endpoint: ${this.oauthUrl})`);
+      }
 
       const data = await response.json();
       this.accessToken = data.access_token;

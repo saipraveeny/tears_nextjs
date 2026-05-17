@@ -1,8 +1,8 @@
 // Product images
-const wildImage = "/assets/products/wild/primary.png";
-const glitchImage = "/assets/products/glitch/primary.png";
-const greenImage = "/assets/products/green/primary.png";
-const spikeImage = "/assets/products/spike/primary.png";
+const wildImage = "/assets/products/wild/1.jpg";
+const glitchImage = "/assets/products/glitch/1.jpg";
+const greenImage = "/assets/products/green/1.jpg";
+const spikeImage = "/assets/products/spike/DSC_3679.JPG";
 const altImage = "/assets/products/alt/primary.png";
 
 // Video paths
