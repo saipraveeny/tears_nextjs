@@ -80,6 +80,15 @@ export default function ProductDetailPage() {
     }
   }, [product?.imageFolder]);
 
+  useEffect(() => {
+    if (product?.id) {
+      fetch(`/api/reviews?productId=${product.id}`)
+        .then(res => res.json())
+        .then(data => setReviews(data.reviews || []))
+        .catch(() => setReviews([]));
+    }
+  }, [product?.id]);
+
   if (!product) {
     return (
       <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "20px" }}>
@@ -112,16 +121,31 @@ export default function ProductDetailPage() {
     e.preventDefault();
     if (!newReview.user) return;
     
-    const review = {
-      ...newReview,
-      comment: newReview.comment || "Rated but no comment provided.",
-      id: Date.now(),
-      date: new Date().toISOString().split('T')[0]
+    const payload = {
+      productId: product.id,
+      user: newReview.user,
+      rating: newReview.rating,
+      comment: newReview.comment || "Rated but no comment provided."
     };
     
-    setReviews([...reviews, review]);
-    setNewReview({ user: "", rating: 5, comment: "" });
-    setIsReviewModalOpen(false);
+    fetch('/api/reviews', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.review) {
+          setReviews(prev => [data.review, ...prev]);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setNewReview({ user: "", rating: 5, comment: "" });
+        setIsReviewModalOpen(false);
+      });
   };
 
   const renderHeatLevel = (level, color) => {

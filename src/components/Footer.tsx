@@ -88,7 +88,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
             </p>
             <div className="footer-contact-info">
               <div className="info-item">
-                <Mail size={16} /> <span>hello@tears.in</span>
+                <Mail size={16} /> <span>tearshxd@gmail.com</span>
               </div>
               <div className="info-item">
                 <MapPin size={16} /> <span>Hyderabad, India</span>

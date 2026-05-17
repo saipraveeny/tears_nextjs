@@ -17,7 +17,7 @@ interface ProductsProps {
   addBundleToCart?: any;
 }
 
-const ProductCard = ({ product, addToCart, cart, updateQty, openCart, itemVariants, formatProductName, renderHeatLevel }) => {
+const ProductCard = ({ product, addToCart, cart, updateQty, openCart, itemVariants, formatProductName, renderHeatLevel, rating = 0 }) => {
   const router = useRouter();
   const [folderImages, setFolderImages] = useState<string[]>([]);
   
@@ -169,8 +169,8 @@ const ProductCard = ({ product, addToCart, cart, updateQty, openCart, itemVarian
             <h3 className="premium-product-name">{formatProductName(product.name)}</h3>
             {product.available && (
               <div className="premium-product-rating">
-                <Star size={12} fill="currentColor" />
-                <span>{product.rating || "4.9"}</span>
+                <Star size={12} fill={rating > 0 ? "currentColor" : "none"} stroke="currentColor" />
+                <span>{rating > 0 ? rating.toFixed(1) : "0"}</span>
               </div>
             )}
           </div>
@@ -249,12 +249,29 @@ const Products: React.FC<ProductsProps> = ({
 }) => {
   const { cart, updateQty } = useCart();
   const [isMobile, setIsMobile] = useState(false);
+  const [ratings, setRatings] = React.useState<Record<number, number>>({});
 
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  React.useEffect(() => {
+    fetch("/api/reviews")
+      .then(res => res.json())
+      .then(data => {
+        const newRatings: Record<number, number> = {};
+        if (data.stats) {
+          Object.keys(data.stats).forEach(pidStr => {
+            const pid = parseInt(pidStr);
+            newRatings[pid] = data.stats[pid].avgRating;
+          });
+        }
+        setRatings(newRatings);
+      })
+      .catch(() => {});
   }, []);
 
   const [ref, inView] = useInView({
@@ -346,6 +363,7 @@ const Products: React.FC<ProductsProps> = ({
               itemVariants={itemVariants}
               formatProductName={formatProductName}
               renderHeatLevel={renderHeatLevel}
+              rating={ratings[product.id] || 0}
             />
           ))}
         </motion.div>
