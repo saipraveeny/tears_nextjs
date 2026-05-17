@@ -131,6 +131,7 @@ export const getResetPasswordTemplate = (name: string, code: string) => `
 `;
 
 export const getPromotionalTemplate = (name: string, subject: string, message: string, imageUrl: string | null = null) => {
+  const cleanImageUrl = imageUrl ? imageUrl.trim() : null;
   const formattedMessage = message
     .split(/\r?\n/)
     .map(line => {
@@ -153,7 +154,7 @@ export const getPromotionalTemplate = (name: string, subject: string, message: s
         <div class="content" style="text-align: center;">
           <h2 style="color: #ff3b30; font-size: 24px; margin-bottom: 20px;">${subject}</h2>
           
-          ${imageUrl ? `<div style="margin-bottom: 25px;"><img src="${imageUrl}" alt="Promo" style="width: 100%; max-width: 540px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" /></div>` : ''}
+          ${cleanImageUrl ? `<div style="margin-bottom: 25px;"><img src="${cleanImageUrl}" alt="Promo" style="width: 100%; max-width: 540px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" /></div>` : ''}
 
           <p style="font-size: 16px; color: #666;">Hi ${name},</p>
           
