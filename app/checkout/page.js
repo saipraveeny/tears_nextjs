@@ -27,6 +27,15 @@ export default function CheckoutPage() {
     validateCheckoutForm,
   } = useCheckoutForm();
 
+  // Redirect to home if not logged in or cart is empty
+  useEffect(() => {
+    if (!currentUser) {
+      router.replace("/");
+    } else if (cart.length === 0 && !orderSuccess) {
+      router.replace("/");
+    }
+  }, [currentUser, cart, orderSuccess, router]);
+
   // Auto-fill form when user logs in
   useEffect(() => {
     if (currentUser) {

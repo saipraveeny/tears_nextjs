@@ -24,55 +24,131 @@ const useCartInternal = () => {
     quantity: 1,
   });
 
+  const [isLoaded, setIsLoaded] = useState(false);
+  const isSyncing = React.useRef(false);
   const { currentUser } = useAuth();
 
+  // Load and merge cart on login / session restore; clear on logout
   useEffect(() => {
-    if (!currentUser) return;
-    
-    // Sync cart with backend once logged in
-    const syncWithBackend = async () => {
+    if (!currentUser) {
+      setIsLoaded(false);
+      setCart([]);
+      return;
+    }
+
+    let cancelled = false;
+    isSyncing.current = true;
+
+    const loadAndMergeCart = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/cart/sync`, {
+          method: "GET",
+          credentials: 'include'
+        });
+
+        if (cancelled) return;
+
+        if (res.ok) {
+          const data = await res.json();
+          const dbItems = data.items || [];
+          
+          // Map database items to frontend format
+          const mappedDbItems = dbItems.map((bItem: any) => ({
+            id: bItem.productId,
+            name: bItem.name,
+            size: bItem.size || null,
+            qty: bItem.quantity,
+            price: `₹${bItem.price}`,
+            image: bItem.image || "",
+            cartItemId: bItem.size ? `${bItem.productId}-${bItem.size}` : bItem.productId
+          }));
+
+          setCart((prevCart) => {
+            // If there are guest cart items from before login, merge them
+            if (prevCart.length > 0) {
+              const merged = [...mappedDbItems];
+              prevCart.forEach((localItem: any) => {
+                const existing = merged.find(
+                  (item) => item.id === localItem.id && item.size === localItem.size
+                );
+                if (existing) {
+                  existing.qty += localItem.qty;
+                } else {
+                  merged.push(localItem);
+                }
+              });
+
+              // POST the merged cart to backend
+              const payload = merged.map(item => ({
+                productId: String(item.id),
+                name: item.name,
+                size: item.size || "",
+                quantity: item.qty,
+                price: typeof item.price === "string" 
+                  ? parseFloat(item.price.replace(/[^\d.]/g, "")) 
+                  : Number(item.price),
+                image: item.image || "",
+              }));
+
+              fetch(`${API_BASE}/api/cart/sync`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ items: payload }),
+                credentials: 'include'
+              }).catch(err => console.error("Merge POST failed:", err));
+
+              return merged;
+            }
+            // No local guest items, just load from database
+            return mappedDbItems;
+          });
+        }
+      } catch (err) {
+        console.error("Cart load failed:", err);
+      } finally {
+        if (!cancelled) {
+          isSyncing.current = false;
+          setIsLoaded(true);
+        }
+      }
+    };
+
+    loadAndMergeCart();
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
+
+  // Sync cart modifications to backend (only after initial load is done)
+  useEffect(() => {
+    if (!currentUser || !isLoaded || isSyncing.current) return;
+
+    const saveCartToBackend = async () => {
       try {
         const payload = cart.map(item => ({
           productId: String(item.id),
           name: item.name,
           size: item.size || "",
           quantity: item.qty,
-          price: parseFloat(item.price.replace(/[^\d.]/g, "")),
+          price: typeof item.price === "string" 
+            ? parseFloat(item.price.replace(/[^\d.]/g, "")) 
+            : Number(item.price),
           image: item.image || "",
         }));
 
-        const res = await fetch(`${API_BASE}/api/cart/sync`, {
+        await fetch(`${API_BASE}/api/cart/sync`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ items: payload }),
           credentials: 'include'
         });
-        
-        if (res.ok) {
-          const data = await res.json();
-          if (data.items && data.items.length > 0) {
-             // Map backend cart structure back to frontend state
-             // The backend uses Schema: productId, name, size, quantity, price, image
-             const merged = data.items.map(bItem => ({
-               id: bItem.productId,
-               name: bItem.name,
-               size: bItem.size || null,
-               qty: bItem.quantity,
-               price: `₹${bItem.price}`,
-               image: bItem.image || "",
-               cartItemId: bItem.size ? `${bItem.productId}-${bItem.size}` : bItem.productId
-             }));
-             setCart(merged);
-          }
-        }
       } catch (err) {
-        console.error("Cart sync failed:", err);
+        console.error("Failed to save cart to backend:", err);
       }
     };
 
-    syncWithBackend();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+    saveCartToBackend();
+  }, [cart, currentUser, isLoaded]);
 
   const addToCart = (product) => {
     const cartItemId = product.size ? `${product.id}-${product.size}` : product.id;

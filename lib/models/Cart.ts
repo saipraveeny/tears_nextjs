@@ -13,6 +13,8 @@ export interface ICart extends Document {
   userId: mongoose.Types.ObjectId;
   items: ICartItem[];
   totalAmount: number;
+  abandonedEmailSent?: boolean;
+  abandonedEmailSentAt?: Date;
 }
 
 const CartItemSchema = new Schema<ICartItem>({
@@ -32,7 +34,9 @@ const CartSchema = new Schema<ICart>({
     unique: true 
   },
   items: [CartItemSchema],
-  totalAmount: { type: Number, default: 0 }
+  totalAmount: { type: Number, default: 0 },
+  abandonedEmailSent: { type: Boolean, default: false },
+  abandonedEmailSentAt: { type: Date, required: false }
 }, { timestamps: true });
 
 const Cart: Model<ICart> = mongoose.models.Cart || mongoose.model<ICart>("Cart", CartSchema);

@@ -242,3 +242,57 @@ export const getPartnerInquiryTemplate = (businessName: string, contactName: str
     </body>
   </html>
 `;
+
+export const getAbandonedCartTemplate = (name: string, items: any[], cartLink: string) => `
+  <!DOCTYPE html>
+  <html>
+    <head><style>${baseStyles}</style></head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="cid:logo" alt="TEARS" style="height: 50px; width: auto;" />
+        </div>
+        <div class="content" style="text-align: center;">
+          <h2 style="font-size: 24px; font-weight: 800; color: #000; margin-top: 0; text-transform: uppercase; letter-spacing: 1px;">Did you leave something behind? 🔥</h2>
+          <p style="font-size: 16px; color: #555; text-align: left;">Hi ${name},</p>
+          <p style="font-size: 16px; color: #555; text-align: left; line-height: 1.8;">
+            We noticed you added some bottles of Tears Hot Sauce to your cart but haven't checked out yet. Don't let your tastebuds miss out on the ultimate heat!
+          </p>
+          
+          <div class="order-box" style="text-align: left;">
+            <h3 style="margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #1a1a1a; text-transform: uppercase;">Left in Your Cart</h3>
+            ${items.map(item => `
+              <div class="item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center;">
+                  ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px; border-radius: 4px;" />` : ''}
+                  <div>
+                    <div style="font-weight: bold; color: #1a1a1a;">${item.name}</div>
+                    ${item.size ? `<div style="font-size: 12px; color: #777;">Size: ${item.size}</div>` : ''}
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-weight: bold; color: #ff3b30;">₹${(item.price || 0).toLocaleString('en-IN')}</div>
+                  <div style="font-size: 12px; color: #777;">Qty: ${item.quantity}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <p style="font-size: 15px; color: #666; margin-top: 30px;">
+            Ready to claim your heat? Your cart is reserved and waiting for you.
+          </p>
+          
+          <a href="${cartLink}" class="button" style="background: linear-gradient(135deg, #ff3b30 0%, #8b0000 100%); border: none; box-shadow: 0 4px 10px rgba(255, 59, 48, 0.3); text-transform: uppercase; letter-spacing: 1px;">Return to Cart & Checkout</a>
+          
+          <p style="margin-top: 30px; font-size: 13px; color: #888; line-height: 1.6;">
+            If you need any help completing your order or have questions, just reply to this email or contact support at <a href="mailto:tearshxd@gmail.com" style="color: #ff3b30; text-decoration: none;">tearshxd@gmail.com</a>.
+          </p>
+        </div>
+        <div class="footer">
+          <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
+          <p>Spreading the heat, one drop at a time.</p>
+        </div>
+      </div>
+    </body>
+  </html>
+`;

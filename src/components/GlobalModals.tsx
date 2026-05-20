@@ -40,6 +40,20 @@ export default function GlobalModals() {
     return () => clearInterval(timer);
   }, [currentUser, authModalOpen, openAuthModal]);
 
+  // Auto-open cart modal from email redirection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      const cartParam = url.searchParams.get("cart");
+      if (cartParam === "open" || cartParam === "true") {
+        setIsCartOpen(true);
+        // Remove 'cart' query param from the URL bar without reloading
+        url.searchParams.delete("cart");
+        window.history.replaceState({}, "", url.pathname + url.search);
+      }
+    }
+  }, [setIsCartOpen]);
+
   return (
     <>
       <CartModal

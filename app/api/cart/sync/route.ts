@@ -36,7 +36,8 @@ export async function POST(req: Request) {
       const price = typeof item.price === "string" 
         ? parseFloat(item.price.replace(/[^\d.]/g, "")) 
         : Number(item.price);
-      return sum + (price * item.qty);
+      const qty = item.quantity || item.qty || 1;
+      return sum + (price * qty);
     }, 0);
 
     let cart = await Cart.findOne({ userId: user._id });
@@ -45,10 +46,10 @@ export async function POST(req: Request) {
     }
     
     const mappedItems = items.map((t: any) => ({
-      productId: t.id,
+      productId: t.productId || t.id,
       name: t.name,
       size: t.size,
-      quantity: t.qty,
+      quantity: t.quantity || t.qty,
       price: typeof t.price === "string" 
         ? parseFloat(t.price.replace(/[^\d.]/g, "")) 
         : Number(t.price),
@@ -57,6 +58,8 @@ export async function POST(req: Request) {
 
     cart.items = mappedItems;
     cart.totalAmount = totalAmount;
+    cart.abandonedEmailSent = false;
+    cart.abandonedEmailSentAt = undefined;
     await cart.save();
     
     return NextResponse.json({ success: true, items: cart.items });

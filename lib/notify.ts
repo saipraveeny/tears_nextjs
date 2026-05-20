@@ -8,7 +8,8 @@ import {
   getPendingOrderTemplate, 
   getResetPasswordTemplate,
   getPromotionalTemplate,
-  getPartnerInquiryTemplate
+  getPartnerInquiryTemplate,
+  getAbandonedCartTemplate
 } from "./emailTemplates";
 
 const LOGO_PATH = path.join(process.cwd(), "public/assets/logo.png");
@@ -100,6 +101,10 @@ export async function sendEmail(
           payload.message,
           payload.bestTime
         );
+        break;
+      case "ABANDONED_CART":
+        subject = customSubject || "You left something in your cart! 🔥";
+        html = getAbandonedCartTemplate(recipientName, products, payload?.cartLink || "https://tears.co.in");
         break;
       default:
         html = `<p>Hi ${recipientName}, your order status is: ${type}</p>`;
