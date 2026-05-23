@@ -52,6 +52,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
     company: [
       { name: "About Us", href: "#features" },
       { name: "Our Story", href: "/our-story" },
+      { name: "Collaborations", href: "/collabs" },
       { name: "The Process", href: "#features" },
       { name: "Our Benefits", href: "#benefits" },
     ],

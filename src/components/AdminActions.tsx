@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   RefreshCw, Bell, Mail, CheckCircle, AlertTriangle,
-  Send, X, UserCheck, Clock, MessageSquare
+  Send, X, UserCheck, Clock, MessageSquare, Upload
 } from 'lucide-react';
 import { API_BASE } from '../utils/constants';
 
@@ -198,8 +198,57 @@ export const UsersTab = () => {
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   const [promoImageUrl, setPromoImageUrl] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
   const [sending, setSending] = useState(false);
   const [channel, setChannel] = useState('EMAIL'); // 'EMAIL' or 'WHATSAPP'
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      showToast('Please upload an image file', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      
+      const img = new Image();
+      img.src = base64;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 800;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        setPromoImageUrl(compressedBase64);
+        showToast('Image uploaded and processed');
+      };
+    };
+    reader.readAsDataURL(file);
+  };
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -399,13 +448,70 @@ export const UsersTab = () => {
 
               {channel === 'EMAIL' && (
                 <div style={{ marginBottom: 16 }}>
-                  <label>Promo Image URL (Optional)</label>
-                  <input 
-                    type="text" 
-                    value={promoImageUrl} 
-                    onChange={e => setPromoImageUrl(e.target.value)} 
-                    placeholder="https://example.com/image.jpg" 
-                  />
+                  <label>Promo Image (URL or Upload)</label>
+                  {promoImageUrl && promoImageUrl.startsWith('data:image/') ? (
+                    <div style={{ position: 'relative', marginTop: 8, background: '#111', padding: 8, borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)', display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <img src={promoImageUrl} alt="Preview" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: 8, objectFit: 'contain' }} />
+                      <button 
+                        onClick={() => setPromoImageUrl('')} 
+                        style={{ position: 'absolute', top: 4, right: 4, background: '#ff3b30', border: 'none', color: '#fff', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                      >
+                        <X size={12} />
+                      </button>
+                      <span style={{ fontSize: 10, color: '#666', marginTop: 4 }}>Uploaded Image</span>
+                    </div>
+                  ) : (
+                    <div 
+                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => { e.preventDefault(); setIsDragging(false); const file = e.dataTransfer.files?.[0]; if (file) processFile(file); }}
+                      style={{
+                        border: isDragging ? '2px dashed #ff3b30' : '2px dashed rgba(255,255,255,0.15)',
+                        borderRadius: 16,
+                        padding: '24px 16px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: isDragging ? 'rgba(255, 59, 48, 0.05)' : 'rgba(255,255,255,0.01)',
+                        transition: 'all 0.3s ease',
+                        position: 'relative'
+                      }}
+                      onClick={() => document.getElementById('promo-image-file-input')?.click()}
+                    >
+                      <input 
+                        type="file" 
+                        id="promo-image-file-input" 
+                        accept="image/*" 
+                        onChange={handleFileChange} 
+                        style={{ display: 'none' }} 
+                      />
+                      <Upload size={24} style={{ color: '#ff3b30', marginBottom: 8 }} />
+                      <p style={{ margin: 0, fontSize: 13, color: '#ccc', fontWeight: 600 }}>Drag & drop image here or click to browse</p>
+                      <p style={{ margin: '4px 0 0 0', fontSize: 11, color: '#666' }}>Supports JPEG, PNG, WEBP (Autocompressed)</p>
+                      
+                      <div style={{ margin: '12px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                        <span style={{ height: 1, background: 'rgba(255,255,255,0.05)', flex: 1 }}></span>
+                        <span style={{ fontSize: 10, color: '#444', textTransform: 'uppercase' }}>or use URL</span>
+                        <span style={{ height: 1, background: 'rgba(255,255,255,0.05)', flex: 1 }}></span>
+                      </div>
+                      
+                      <input 
+                        type="text" 
+                        value={promoImageUrl} 
+                        onChange={e => setPromoImageUrl(e.target.value)} 
+                        onClick={e => e.stopPropagation()} 
+                        placeholder="https://example.com/image.jpg" 
+                        style={{ 
+                          width: '100%', 
+                          background: 'rgba(0,0,0,0.3)', 
+                          border: '1px solid rgba(255,255,255,0.05)',
+                          borderRadius: 8,
+                          padding: '8px 12px',
+                          color: '#fff',
+                          fontSize: 12
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 

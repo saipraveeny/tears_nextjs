@@ -38,6 +38,7 @@ export default function Home() {
     <>
       <main>
         <Hero logo={logo} />
+        <HomeCollabs />
         <Features />
         <Products
           addToCart={addToCart}
@@ -45,7 +46,6 @@ export default function Home() {
           showConfirmationModal={showConfirmationModal}
           addBundleToCart={BUNDLE_PRODUCT}
         />
-        <HomeCollabs />
         <Benefits />
         <Merchandise 
           addToCart={addToCart} 

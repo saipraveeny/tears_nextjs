@@ -63,6 +63,31 @@ export async function sendEmail(
   try {
     let html = "";
     let subject = customSubject || `Tears Hot Sauce - Order #${orderId}`;
+    const attachments: any[] = [];
+
+    if (fs.existsSync(LOGO_PATH)) {
+      attachments.push({
+        filename: 'logo.png',
+        path: LOGO_PATH,
+        cid: 'logo'
+      });
+    }
+
+    let processedImageUrl = imageUrl;
+    if (imageUrl && imageUrl.startsWith("data:image/")) {
+      const match = imageUrl.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (match) {
+        const contentType = match[1];
+        const base64Data = match[2];
+        const extension = contentType.split("/")[1];
+        attachments.push({
+          filename: `promo.${extension}`,
+          content: Buffer.from(base64Data, 'base64'),
+          cid: 'promo_img'
+        });
+        processedImageUrl = "cid:promo_img";
+      }
+    }
 
     switch (type) {
       case PAYMENT_STATUS.COMPLETED:
@@ -89,7 +114,7 @@ export async function sendEmail(
         break;
       case "PROMOTIONAL":
         subject = customSubject || "A Special Update from TEARS";
-        html = getPromotionalTemplate(recipientName, subject, customMessage!, imageUrl);
+        html = getPromotionalTemplate(recipientName, subject, customMessage!, processedImageUrl);
         break;
       case "PARTNER_INQUIRY":
         subject = `Partnership Inquiry - ${payload.businessName} | TEARS`;
@@ -108,15 +133,6 @@ export async function sendEmail(
         break;
       default:
         html = `<p>Hi ${recipientName}, your order status is: ${type}</p>`;
-    }
-
-    const attachments = [];
-    if (fs.existsSync(LOGO_PATH)) {
-      attachments.push({
-        filename: 'logo.png',
-        path: LOGO_PATH,
-        cid: 'logo'
-      });
     }
 
     const info = await transporter.sendMail({
