@@ -6,6 +6,8 @@ import Webhook from "@/lib/models/Webhook";
 import { sendAllNotifications } from "@/lib/notify";
 import { PAYMENT_STATUS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
+import User from "@/lib/models/User";
+import Cart from "@/lib/models/Cart";
 
 export async function POST(req: Request) {
   const reqId = `Webhook-${Date.now()}`;
@@ -53,6 +55,22 @@ export async function POST(req: Request) {
           payment.webhookPayload = fullPayload;
           payment.updatedAt = new Date();
           await payment.save();
+
+          // Clear user's cart upon successful payment to prevent abandonment emails
+          if (newStatus === PAYMENT_STATUS.COMPLETED && payment.user?.email) {
+            try {
+              const userObj = await User.findOne({ email: payment.user.email });
+              if (userObj) {
+                await Cart.findOneAndUpdate(
+                  { userId: userObj._id },
+                  { $set: { items: [], totalAmount: 0 } }
+                );
+                console.log(`[${reqId}] Webhook cleared cart for user: ${payment.user.email}`);
+              }
+            } catch (cartErr) {
+              console.error(`[${reqId}] Webhook failed to clear cart:`, cartErr);
+            }
+          }
 
           try {
             await sendAllNotifications(

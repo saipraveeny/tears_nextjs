@@ -8,6 +8,8 @@ const heroGlitch = "/assets/hero_glitch.png";
 const heroGreen = "/assets/green.png";
 const heroSpike = "/assets/spike.PNG";
 const heroAlt = "/assets/alt.PNG";
+const heroBlud = "/assets/blud.PNG";
+const heroMM = "/assets/m&m.PNG";
 import StoryViewer from "./StoryViewer";
 import LandingBgSlideshow from "./LandingBgSlideshow";
 
@@ -17,6 +19,8 @@ const heroImages = [
   { src: heroGreen, alt: "Green Variant" },
   { src: heroSpike, alt: "Spike Variant" },
   { src: heroAlt, alt: "ALT Variant" },
+  { src: heroBlud, alt: "Blud Variant" },
+  { src: heroMM, alt: "M△M Variant" },
 ];
 
 interface HeroProps {
@@ -185,7 +189,7 @@ const Hero: React.FC<HeroProps> = ({ logo }) => {
               transition={{ duration: 0.8, delay: 1.2 }}
             >
               <div className="stat">
-                <span className="stat-number">5</span>
+                <span className="stat-number">7</span>
                 <span className="stat-label">Bold Variants</span>
               </div>
               <div className="stat">

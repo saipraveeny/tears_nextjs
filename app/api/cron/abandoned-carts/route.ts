@@ -26,6 +26,8 @@ export async function GET(req: Request) {
       ]
     });
 
+    console.log(`[Abandoned Cart Cron] Found ${abandonedCarts.length} abandoned cart(s) to process`);
+
     const results = [];
 
     const host = req.headers.get("host") || "tears.co.in";
@@ -37,6 +39,13 @@ export async function GET(req: Request) {
       try {
         const user = await User.findById(cart.userId);
         if (!user || !user.email) {
+          console.log(`[Abandoned Cart Cron] Skipping cart ${cart._id}: no user or email`);
+          continue;
+        }
+
+        // Skip synthetic phone-only emails that aren't real addresses
+        if (user.email.endsWith("@tears.local")) {
+          console.log(`[Abandoned Cart Cron] Skipping cart ${cart._id}: synthetic email ${user.email}`);
           continue;
         }
 

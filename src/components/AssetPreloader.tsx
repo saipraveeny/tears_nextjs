@@ -10,6 +10,8 @@ const ASSETS_TO_CACHE = [
   "/assets/glitch.png",
   "/assets/green.png",
   "/assets/logo.png",
+  "/assets/blud.PNG",
+  "/assets/m&m.PNG",
 ];
 
 const CACHE_NAME = "tears-asset-cache-v1";

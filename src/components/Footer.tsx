@@ -27,6 +27,8 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
       { name: "The Wild Edition", href: "#products" },
       { name: "The Glitch Edition", href: "#products" },
       { name: "The Green Edition", href: "#products" },
+      { name: "The Blud Edition", href: "#products" },
+      { name: "The M△M Edition", href: "#products" },
       { name: "Trio Pack", href: "#products" },
     ],
     merchandise: [

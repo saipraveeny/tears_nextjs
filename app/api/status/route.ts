@@ -5,6 +5,8 @@ import Payment from "@/lib/models/Payment";
 import { sendAllNotifications } from "@/lib/notify";
 import { PAYMENT_STATUS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
+import User from "@/lib/models/User";
+import Cart from "@/lib/models/Cart";
 
 async function updatePaymentStatusAndNotify(
   payment: any,
@@ -18,6 +20,22 @@ async function updatePaymentStatusAndNotify(
     payment.webhookPayload = payload;
 
     await payment.save();
+
+    // Clear user's cart upon successful payment to prevent abandonment emails
+    if (newStatus === PAYMENT_STATUS.COMPLETED && payment.user?.email) {
+      try {
+        const userObj = await User.findOne({ email: payment.user.email });
+        if (userObj) {
+          await Cart.findOneAndUpdate(
+            { userId: userObj._id },
+            { $set: { items: [], totalAmount: 0 } }
+          );
+          console.log(`[${requestId}] Status API cleared cart for user: ${payment.user.email}`);
+        }
+      } catch (cartErr) {
+        console.error(`[${requestId}] Status API failed to clear cart:`, cartErr);
+      }
+    }
 
     if ([PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(newStatus as any)) {
       try {

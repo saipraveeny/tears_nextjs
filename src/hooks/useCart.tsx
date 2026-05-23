@@ -26,12 +26,15 @@ const useCartInternal = () => {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const isSyncing = React.useRef(false);
+  const lastSyncedCartRef = React.useRef<string>("");
   const { currentUser } = useAuth();
 
   // Load and merge cart on login / session restore; clear on logout
   useEffect(() => {
     if (!currentUser) {
       setIsLoaded(false);
+      // Don't save the empty cart to backend — just clear local state
+      lastSyncedCartRef.current = "[]";
       setCart([]);
       return;
     }
@@ -64,6 +67,7 @@ const useCartInternal = () => {
           }));
 
           setCart((prevCart) => {
+            let resultCart;
             // If there are guest cart items from before login, merge them
             if (prevCart.length > 0) {
               const merged = [...mappedDbItems];
@@ -97,10 +101,14 @@ const useCartInternal = () => {
                 credentials: 'include'
               }).catch(err => console.error("Merge POST failed:", err));
 
-              return merged;
+              resultCart = merged;
+            } else {
+              // No local guest items, just load from database
+              resultCart = mappedDbItems;
             }
-            // No local guest items, just load from database
-            return mappedDbItems;
+            // Mark this as the last synced state so save-effect doesn't re-POST it
+            lastSyncedCartRef.current = JSON.stringify(resultCart);
+            return resultCart;
           });
         }
       } catch (err) {
@@ -122,6 +130,11 @@ const useCartInternal = () => {
   // Sync cart modifications to backend (only after initial load is done)
   useEffect(() => {
     if (!currentUser || !isLoaded || isSyncing.current) return;
+
+    // Don't save if the cart hasn't changed from what we last synced
+    const cartJson = JSON.stringify(cart);
+    if (cartJson === lastSyncedCartRef.current) return;
+    lastSyncedCartRef.current = cartJson;
 
     const saveCartToBackend = async () => {
       try {

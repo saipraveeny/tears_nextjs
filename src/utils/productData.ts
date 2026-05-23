@@ -2,8 +2,10 @@
 const wildImage = "/assets/products/wild/1.jpg";
 const glitchImage = "/assets/products/glitch/1.jpg";
 const greenImage = "/assets/products/green/1.jpg";
-const spikeImage = "/assets/products/spike/DSC_3679.JPG";
-const altImage = "/assets/products/alt/primary.png";
+const spikeImage = "/assets/products/spike/1.jpg";
+const altImage = "/assets/products/alt/1.jpg";
+const bludImage = "/assets/products/blud/1.jpg";
+const mmImage = "/assets/products/m&m/1.jpg";
 
 // Video paths
 const wildVid = "/assets/wild.mp4";
@@ -106,6 +108,42 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "alt-sauce",
+    category: "sauce"
+  },
+  {
+    id: 6,
+    name: "Blud (100ml)",
+    description: "A dark, earthy fusion of beetroot, coffee, and chilli — bold, smoky, and hauntingly rich",
+    heatLevel: 3,
+    rating: 4.7,
+    price: "₹333.00",
+    color: "#872657",
+    features: ["Beetroot", "Coffee", "Chilli"],
+    image: bludImage,
+    imageFolder: "blud",
+    videos: [],
+    productLogo: "/assets/blud.PNG",
+    available: true,
+    premium: false,
+    slug: "blud-sauce",
+    category: "sauce"
+  },
+  {
+    id: 7,
+    name: "M△M (100ml)",
+    description: "A tropical burst of mango and chilli — sweet, tangy heat with a fruity finish",
+    heatLevel: 1,
+    rating: 4.6,
+    price: "₹333.00",
+    color: "#FFB300",
+    features: ["Mango", "Chilli"],
+    image: mmImage,
+    imageFolder: "m&m",
+    videos: [],
+    productLogo: "/assets/m&m.PNG",
+    available: true,
+    premium: false,
+    slug: "mm-sauce",
     category: "sauce"
   },
   {

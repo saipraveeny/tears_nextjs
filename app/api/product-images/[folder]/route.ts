@@ -12,7 +12,7 @@ export async function GET(
     const { folder } = await params;
     
     // Sanitize folder name to prevent path traversal
-    const safeFolderName = folder.replace(/[^a-zA-Z0-9_-]/g, "");
+    const safeFolderName = folder.replace(/[^a-zA-Z0-9_&-]/g, "");
     const dirPath = path.join(process.cwd(), "public", "assets", "products", safeFolderName);
 
     if (!fs.existsSync(dirPath)) {
