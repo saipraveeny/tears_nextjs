@@ -11,6 +11,7 @@ import Recipes from "@/components/Recipes";
 import Contact from "@/components/Contact";
 import { useCart } from "@/hooks/useCart";
 import { BUNDLE_PRODUCT } from "@/utils/constants";
+import HomeCollabs from "@/components/HomeCollabs";
 const wildImg = "/assets/wild.jpg";
 const glitchImg = "/assets/glitch.jpg";
 const greenImg = "/assets/green.png";
@@ -44,6 +45,7 @@ export default function Home() {
           showConfirmationModal={showConfirmationModal}
           addBundleToCart={BUNDLE_PRODUCT}
         />
+        <HomeCollabs />
         <Benefits />
         <Merchandise 
           addToCart={addToCart} 

@@ -174,15 +174,6 @@ export default function Collabs() {
                   </span>
                   <h2 className="collab-name">{collab.name}</h2>
                   <p className="collab-desc">{details.desc}</p>
-                  
-                  <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-                    <motion.div 
-                      style={{ color: details.themeColor, display: "flex", alignItems: "center", gap: "4px", fontSize: "0.85rem", fontWeight: "700" }}
-                      whileHover={{ x: 3 }}
-                    >
-                      View Partnership <ArrowUpRight size={14} />
-                    </motion.div>
-                  </div>
                 </motion.div>
               );
             })}
