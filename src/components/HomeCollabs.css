@@ -25,7 +25,7 @@
 }
 
 .home-collabs-header {
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .home-collabs-tag {
@@ -55,66 +55,76 @@
   line-height: 1.6;
 }
 
-/* Different UX Style: Sleek Dynamic Grid Showcase */
-.home-collabs-showcase {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 30px;
-  margin: 40px auto 60px;
-  max-width: 900px;
-}
-
-.home-collab-logo-card {
-  width: 220px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
+/* Infinity Marquee Styles for Landing Page (No Boxes, Full Color, Larger) */
+.home-marquee-container {
+  width: 100%;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 50px 0;
+  position: relative;
+  margin-bottom: 40px;
   cursor: pointer;
 }
 
-.home-collab-logo-card::after {
+.home-marquee-container::before,
+.home-marquee-container::after {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 20px;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  width: 200px;
+  height: 100%;
+  z-index: 2;
   pointer-events: none;
 }
 
-.home-collab-logo-card:hover {
-  background: rgba(255, 255, 255, 0.02);
-  transform: scale(1.05);
+.home-marquee-container::before {
+  left: 0;
+  background: linear-gradient(to right, #080808 0%, transparent 100%);
 }
 
-.home-collab-logo-card:hover::after {
-  opacity: 1;
+.home-marquee-container::after {
+  right: 0;
+  background: linear-gradient(to left, #080808 0%, transparent 100%);
 }
 
-.home-collab-img {
-  max-width: 80%;
-  max-height: 80%;
+.home-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: home-marquee-scroll 25s linear infinite;
+  gap: 80px;
+  align-items: center;
+}
+
+.home-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.home-marquee-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px; /* Big, premium size */
+  width: auto;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-marquee-item:hover {
+  transform: scale(1.08);
+}
+
+.home-marquee-img {
+  height: 100%;
+  width: auto;
   object-fit: contain;
-  filter: grayscale(100%) opacity(40%);
-  transition: all 0.4s ease;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
 }
 
-.home-collab-logo-card:hover .home-collab-img {
-  filter: grayscale(0%) opacity(100%);
-  transform: scale(1.05);
+@keyframes home-marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 /* Explore button */
@@ -153,13 +163,17 @@
   .home-collabs-title {
     font-size: 1.8rem;
   }
-  .home-collab-logo-card {
-    width: 140px;
-    height: 90px;
-    padding: 10px;
-    border-radius: 14px;
+  .home-marquee-container {
+    padding: 30px 0;
   }
-  .home-collabs-showcase {
-    gap: 15px;
+  .home-marquee-track {
+    gap: 45px;
+  }
+  .home-marquee-item {
+    height: 70px; /* Mobile size is responsive and looks clean */
+  }
+  .home-marquee-container::before,
+  .home-marquee-container::after {
+    width: 85px;
   }
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Flame } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import "./HomeCollabs.css";
 
 interface Collab {
@@ -29,35 +29,11 @@ export default function HomeCollabs() {
       });
   }, []);
 
-  const getThemeColor = (name: string) => {
-    const lower = name.toLowerCase();
-    if (lower.includes("casa") || lower.includes("loco")) return "#ff3b30";
-    if (lower.includes("enugu")) return "#FFB300";
-    if (lower.includes("kipling")) return "#8B9B17";
-    return "#ff00ff";
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { y: 20, opacity: 0 },
-    show: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100, damping: 15 }
-    }
-  };
-
   if (loading) return null;
   if (collabs.length === 0) return null;
+
+  // Duplicate items 4 times for seamless continuous marquee loop
+  const marqueeItems = [...collabs, ...collabs, ...collabs, ...collabs];
 
   return (
     <section className="home-collabs-section">
@@ -71,35 +47,25 @@ export default function HomeCollabs() {
           </p>
         </div>
 
-        {/* Different UX style: dynamic flex grid list of logos with individual spring hover spotlights */}
-        <motion.div 
-          className="home-collabs-showcase"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
+        {/* Dynamic Infinite Marquee Scroll (No Boxes, Full Color, Larger Logos) */}
+        <div 
+          className="home-marquee-container"
+          onClick={() => window.location.href = "/collabs"}
         >
-          {collabs.map((collab) => {
-            const glowColor = getThemeColor(collab.name);
-            return (
-              <motion.div
-                key={collab.name}
-                className="home-collab-logo-card"
-                variants={cardVariants}
-                onClick={() => window.location.href = "/collabs"}
-                whileHover={{
-                  y: -5,
-                  borderColor: `${glowColor}60`,
-                  boxShadow: `0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px ${glowColor}20`
-                }}
-              >
-                <img src={collab.src} alt={collab.name} className="home-collab-img" />
-              </motion.div>
-            );
-          })}
-        </motion.div>
+          <div className="home-marquee-track">
+            {marqueeItems.map((item, index) => (
+              <div key={index} className="home-marquee-item">
+                <img 
+                  src={item.src} 
+                  alt={item.name} 
+                  className="home-marquee-img" 
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
-        {/* Redirection link */}
+        {/* Redirection button */}
         <div className="home-collabs-btn-wrapper">
           <motion.button
             className="home-collabs-btn"
