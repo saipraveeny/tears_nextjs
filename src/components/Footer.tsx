@@ -41,6 +41,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
       { name: "Gut Health Focus", href: "#benefits" },
       { name: "No Preservatives", href: "#features" },
       { name: "Cinematic Stories", href: "/our-story" },
+      { name: "Collaborations", href: "/collabs" },
     ],
     support: [
       { name: "Order Tracking", href: "/orders" },

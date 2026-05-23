@@ -49,6 +49,19 @@ export default function ProductDetailPage() {
   const { addToCart, isCartOpen, setIsCartOpen, cart, updateQty, removeFromCart, clearCart } = useCart();
   
   const product = ALL_PRODUCTS.find(p => p.slug === slug);
+  const scrollRef = React.useRef(null);
+  
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollAmount = direction === "left" ? -clientWidth * 0.6 : clientWidth * 0.6;
+      scrollRef.current.scrollTo({
+        left: scrollLeft + scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
   const [quantity, setQuantity] = useState(1);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
@@ -495,10 +508,80 @@ export default function ProductDetailPage() {
           <h2 style={{ fontSize: isMobile ? "1.5rem" : "2.5rem", fontWeight: "900", marginBottom: isMobile ? "25px" : "40px", textAlign: "center" }}>
             Discover <span style={{ color: product.color }}>More Flavors</span>
           </h2>
-          <div style={{ display: "flex", overflowX: "auto", gap: "15px", padding: "10px 0", scrollbarWidth: "none" }}>
-            {ALL_PRODUCTS.filter(p => p.id !== product.id && p.category === "sauce").map((p) => (
-              <SuggestionCard key={p.id} p={p} isMobile={isMobile} />
-            ))}
+          <div style={{ position: "relative", width: "100%", padding: "0 10px" }}>
+            {/* Left Scroll Arrow */}
+            <motion.button 
+              whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => scroll('left')}
+              style={{ 
+                position: "absolute", 
+                left: isMobile ? "5px" : "-15px", 
+                top: "50%", 
+                transform: "translateY(-50%)", 
+                zIndex: 10, 
+                width: isMobile ? "36px" : "48px", 
+                height: isMobile ? "36px" : "48px", 
+                borderRadius: "50%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                background: "rgba(255,255,255,0.05)", 
+                border: "1px solid rgba(255,255,255,0.1)", 
+                backdropFilter: "blur(10px)", 
+                cursor: "pointer", 
+                color: "#fff",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
+              }}
+            >
+              <ChevronLeft size={isMobile ? 18 : 24} />
+            </motion.button>
+
+            {/* Scrollable Container */}
+            <div 
+              ref={scrollRef}
+              style={{ 
+                display: "flex", 
+                overflowX: "auto", 
+                gap: "20px", 
+                padding: "15px 0", 
+                scrollbarWidth: "none",
+                scrollBehavior: "smooth",
+                msOverflowStyle: "none"
+              }}
+            >
+              {ALL_PRODUCTS.filter(p => p.id !== product.id && p.category === "sauce").map((p) => (
+                <SuggestionCard key={p.id} p={p} isMobile={isMobile} />
+              ))}
+            </div>
+
+            {/* Right Scroll Arrow */}
+            <motion.button 
+              whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.1)" }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => scroll('right')}
+              style={{ 
+                position: "absolute", 
+                right: isMobile ? "5px" : "-15px", 
+                top: "50%", 
+                transform: "translateY(-50%)", 
+                zIndex: 10, 
+                width: isMobile ? "36px" : "48px", 
+                height: isMobile ? "36px" : "48px", 
+                borderRadius: "50%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center", 
+                background: "rgba(255,255,255,0.05)", 
+                border: "1px solid rgba(255,255,255,0.1)", 
+                backdropFilter: "blur(10px)", 
+                cursor: "pointer", 
+                color: "#fff",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
+              }}
+            >
+              <ChevronRight size={isMobile ? 18 : 24} />
+            </motion.button>
           </div>
         </div>
       </main>
