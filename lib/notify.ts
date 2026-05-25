@@ -161,7 +161,7 @@ export async function sendEmail(
         html = getAbandonedCartTemplate(
           recipientName,
           products,
-          payload?.cartLink || "https://tears.co.in",
+          payload?.cartLink || "https://tears.co.in/checkout",
         );
         break;
       default:
