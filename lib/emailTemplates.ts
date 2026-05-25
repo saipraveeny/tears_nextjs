@@ -24,7 +24,13 @@ const getProductAmount = (product: any) => {
   return typeof value === "number" ? value : Number(value) || 0;
 };
 
-export const getOrderConfirmationTemplate = (name: string, orderId: string, products: any[], totalAmount: number, customerDetails: any) => `
+export const getOrderConfirmationTemplate = (
+  name: string,
+  orderId: string,
+  products: any[],
+  totalAmount: number,
+  customerDetails: any,
+) => `
   <!DOCTYPE html>
   <html>
     <head><style>${baseStyles}</style></head>
@@ -38,29 +44,33 @@ export const getOrderConfirmationTemplate = (name: string, orderId: string, prod
           
           <div class="order-box">
             <h3>Order Summary</h3>
-            ${products.map(p => `
+            ${products
+              .map(
+                (p) => `
               <div class="item">
                 <span>${p.name} (x${p.quantity || 1})</span>
-                <span>₹${getProductAmount(p).toLocaleString('en-IN')}</span>
+                <span>₹${getProductAmount(p).toLocaleString("en-IN")}</span>
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div class="total">
               <span>Total Paid</span>
-              <span>₹${totalAmount.toLocaleString('en-IN')}</span>
+              <span>₹${totalAmount.toLocaleString("en-IN")}</span>
             </div>
           </div>
 
           <div class="order-box">
             <h3>Customer & Shipping Details</h3>
             <div style="font-size: 14px; color: #555; line-height: 1.8;">
-              <div><strong>Email:</strong> ${customerDetails.email || 'N/A'}</div>
-              <div><strong>Phone:</strong> ${customerDetails.phone || 'N/A'}</div>
-              <div><strong>Address:</strong><br/>${customerDetails.address || 'N/A'}</div>
+              <div><strong>Email:</strong> ${customerDetails.email || "N/A"}</div>
+              <div><strong>Phone:</strong> ${customerDetails.phone || "N/A"}</div>
+              <div><strong>Address:</strong><br/>${customerDetails.address || "N/A"}</div>
             </div>
           </div>
 
           <p>We'll notify you as soon as your bottles of fire are on their way.</p>
-          <a href="https://tears.co.in/my-orders" class="button">Track My Order</a>
+          <a href="https://www.tears.co.in/orders" class="button">Track My Order</a>
         </div>
         <div class="footer">
           <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
@@ -106,7 +116,7 @@ export const getPendingOrderTemplate = (name: string, orderId: string) => `
           <p>Hi ${name},</p>
           <p>Your order <strong>#${orderId}</strong> is currently pending. This usually happens while we wait for payment confirmation from your bank or gateway.</p>
           <p>We are monitoring the status and will update you as soon as it's confirmed. No further action is needed from your side right now.</p>
-          <a href="https://tears.co.in/my-orders" class="button">Check Status</a>
+          <a href="https://tears.co.in/orders" class="button">Check Status</a>
         </div>
         <div class="footer">
           <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
@@ -138,19 +148,29 @@ export const getResetPasswordTemplate = (name: string, code: string) => `
   </html>
 `;
 
-export const getPromotionalTemplate = (name: string, subject: string, message: string, imageUrl: string | null = null) => {
+export const getPromotionalTemplate = (
+  name: string,
+  subject: string,
+  message: string,
+  imageUrl: string | null = null,
+) => {
   const cleanImageUrl = imageUrl ? imageUrl.trim() : null;
   const formattedMessage = message
     .split(/\r?\n/)
-    .map(line => {
+    .map((line) => {
       const trimmed = line.trim();
-      if (trimmed.match(/^(https?:\/\/)?.*\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i)) {
-        const url = (trimmed.startsWith('http') || trimmed.startsWith('//')) ? trimmed : `https://${trimmed}`;
+      if (
+        trimmed.match(/^(https?:\/\/)?.*\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i)
+      ) {
+        const url =
+          trimmed.startsWith("http") || trimmed.startsWith("//")
+            ? trimmed
+            : `https://${trimmed}`;
         return `<div style="margin: 20px 0;"><img src="${url}" style="width: 100%; max-width: 500px; border-radius: 8px;" /></div>`;
       }
-      return trimmed === '' ? '&nbsp;' : line;
+      return trimmed === "" ? "&nbsp;" : line;
     })
-    .join('<br/>');
+    .join("<br/>");
 
   return `
   <!DOCTYPE html>
@@ -162,7 +182,7 @@ export const getPromotionalTemplate = (name: string, subject: string, message: s
         <div class="content" style="text-align: center;">
           <h2 style="color: #ff3b30; font-size: 24px; margin-bottom: 20px;">${subject}</h2>
           
-          ${cleanImageUrl ? `<div style="margin-bottom: 25px;"><img src="${cleanImageUrl}" alt="Promo" style="width: 100%; max-width: 540px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" /></div>` : ''}
+          ${cleanImageUrl ? `<div style="margin-bottom: 25px;"><img src="${cleanImageUrl}" alt="Promo" style="width: 100%; max-width: 540px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" /></div>` : ""}
 
           <p style="font-size: 16px; color: #666;">Hi ${name},</p>
           
@@ -182,7 +202,14 @@ export const getPromotionalTemplate = (name: string, subject: string, message: s
 `;
 };
 
-export const getPartnerInquiryTemplate = (businessName: string, contactName: string, contactNumber: string, email: string, message: string, bestTime: string) => `
+export const getPartnerInquiryTemplate = (
+  businessName: string,
+  contactName: string,
+  contactNumber: string,
+  email: string,
+  message: string,
+  bestTime: string,
+) => `
   <!DOCTYPE html>
   <html>
     <head>
@@ -228,7 +255,7 @@ export const getPartnerInquiryTemplate = (businessName: string, contactName: str
             </div>
             <div class="stat-item">
               <div class="stat-label">Best Time to Talk</div>
-              <div class="stat-value">${bestTime || 'Anytime'}</div>
+              <div class="stat-value">${bestTime || "Anytime"}</div>
             </div>
           </div>
 
@@ -251,7 +278,11 @@ export const getPartnerInquiryTemplate = (businessName: string, contactName: str
   </html>
 `;
 
-export const getAbandonedCartTemplate = (name: string, items: any[], cartLink: string) => `
+export const getAbandonedCartTemplate = (
+  name: string,
+  items: any[],
+  cartLink: string,
+) => `
   <!DOCTYPE html>
   <html>
     <head><style>${baseStyles}</style></head>
@@ -269,21 +300,25 @@ export const getAbandonedCartTemplate = (name: string, items: any[], cartLink: s
           
           <div class="order-box" style="text-align: left;">
             <h3 style="margin-top: 0; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #1a1a1a; text-transform: uppercase;">Left in Your Cart</h3>
-            ${items.map(item => `
+            ${items
+              .map(
+                (item) => `
               <div class="item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
                 <div style="display: flex; align-items: center;">
-                  ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px; border-radius: 4px;" />` : ''}
+                  ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px; border-radius: 4px;" />` : ""}
                   <div>
                     <div style="font-weight: bold; color: #1a1a1a;">${item.name}</div>
-                    ${item.size ? `<div style="font-size: 12px; color: #777;">Size: ${item.size}</div>` : ''}
+                    ${item.size ? `<div style="font-size: 12px; color: #777;">Size: ${item.size}</div>` : ""}
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-weight: bold; color: #ff3b30;">₹${((item.amount ?? item.price) || 0).toLocaleString('en-IN')}</div>
+                  <div style="font-weight: bold; color: #ff3b30;">₹${((item.amount ?? item.price) || 0).toLocaleString("en-IN")}</div>
                   <div style="font-size: 12px; color: #777;">Qty: ${item.quantity}</div>
                 </div>
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </div>
 
           <p style="font-size: 15px; color: #666; margin-top: 30px;">
