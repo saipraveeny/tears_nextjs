@@ -18,8 +18,8 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const footerData = {
@@ -68,7 +68,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
   return (
     <footer className="cinematic-footer">
       <div className="footer-top-accent" />
-      
+
       <div className="container">
         {/* Giant Brand Mark */}
         <div className="footer-hero-text">
@@ -85,10 +85,13 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
           {/* Brand Info */}
           <div className="footer-column brand-column">
             <div className="footer-logo-container">
-              {logo && <img src={logo} alt="Tears" className="footer-logo-img" />}
+              {logo && (
+                <img src={logo} alt="Tears" className="footer-logo-img" />
+              )}
             </div>
             <p className="brand-description">
-              Crafting premium, health-conscious hot sauces that redefine the culinary landscape. 
+              Crafting premium, health-conscious hot sauces that redefine the
+              culinary landscape.
             </p>
             <div className="footer-contact-info">
               <div className="info-item">
@@ -103,12 +106,18 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
           {/* Accordion Columns for Mobile, Normal for Desktop */}
           <div className="footer-column">
             <details open={!isMobile}>
-              <summary><h4>Collections</h4></summary>
+              <summary>
+                <h4>Collections</h4>
+              </summary>
               <ul className="footer-link-list">
                 {footerData.collections.map((link, i) => (
                   <li key={i}>
-                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleLinkClick(link, e)}
+                    >
+                      {link.name}{" "}
+                      <ArrowUpRight size={12} className="hover-arrow" />
                     </a>
                   </li>
                 ))}
@@ -118,12 +127,18 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
 
           <div className="footer-column">
             <details open={!isMobile}>
-              <summary><h4>Merchandise</h4></summary>
+              <summary>
+                <h4>Merchandise</h4>
+              </summary>
               <ul className="footer-link-list">
                 {footerData.merchandise.map((link, i) => (
                   <li key={i}>
-                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleLinkClick(link, e)}
+                    >
+                      {link.name}{" "}
+                      <ArrowUpRight size={12} className="hover-arrow" />
                     </a>
                   </li>
                 ))}
@@ -133,12 +148,18 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
 
           <div className="footer-column">
             <details open={!isMobile}>
-              <summary><h4>Company</h4></summary>
+              <summary>
+                <h4>Company</h4>
+              </summary>
               <ul className="footer-link-list">
                 {footerData.company.map((link, i) => (
                   <li key={i}>
-                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleLinkClick(link, e)}
+                    >
+                      {link.name}{" "}
+                      <ArrowUpRight size={12} className="hover-arrow" />
                     </a>
                   </li>
                 ))}
@@ -148,12 +169,18 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
 
           <div className="footer-column">
             <details open={!isMobile}>
-              <summary><h4>Support</h4></summary>
+              <summary>
+                <h4>Support</h4>
+              </summary>
               <ul className="footer-link-list">
                 {footerData.support.map((link, i) => (
                   <li key={i}>
-                    <a href={link.href} onClick={(e) => handleLinkClick(link, e)}>
-                      {link.name} <ArrowUpRight size={12} className="hover-arrow" />
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleLinkClick(link, e)}
+                    >
+                      {link.name}{" "}
+                      <ArrowUpRight size={12} className="hover-arrow" />
                     </a>
                   </li>
                 ))}
@@ -164,10 +191,13 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
 
         {/* Newsletter & Socials */}
         <div className="footer-middle">
-         
-          
           <div className="footer-social-box">
-            <a href="https://www.instagram.com/tearshxd/" target="_blank" rel="noreferrer" className="social-pill">
+            <a
+              href="https://www.instagram.com/tearshxd/"
+              target="_blank"
+              rel="noreferrer"
+              className="social-pill"
+            >
               <Instagram size={24} />
               <span>@tearshxd</span>
             </a>
@@ -180,7 +210,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
             <p>&copy; {currentYear} TEARS SAUCES PVT LTD.</p>
             <span className="gst-tag">GST: 36AAMCT1318F1ZF</span>
           </div>
-          
+
           <div className="bottom-right">
             <div className="footer-legal-links">
               <LegalModals />

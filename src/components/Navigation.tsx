@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, User, LogOut, Package, Shield, Menu, X } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  LogOut,
+  Package,
+  Shield,
+  Menu,
+  X,
+} from "lucide-react";
 
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
@@ -16,14 +24,14 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ logo }) => {
   const { currentUser, openAuthModal, logout } = useAuth();
   const { cart, setIsCartOpen } = useCart();
-  
+
   const cartCount = cart.reduce((total, item) => total + item.qty, 0);
   const onCartClick = () => setIsCartOpen(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  
+
   useEffect(() => {
     setIsMobile(window.innerWidth <= 768);
     const handleScroll = () => setScrollY(window.scrollY);
@@ -46,7 +54,7 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
     setIsDropdownOpen(false);
 
     const isHashLink = item.href.startsWith("#");
-    
+
     if (isHashLink) {
       if (pathname === "/") {
         e.preventDefault();
@@ -55,10 +63,11 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
         if (el) {
           setTimeout(() => {
             const offset = 80;
-            const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+            const elementPosition =
+              el.getBoundingClientRect().top + window.pageYOffset;
             window.scrollTo({
               top: elementPosition - offset,
-              behavior: "smooth"
+              behavior: "smooth",
             });
             window.history.pushState(null, "", item.href);
           }, 50);
@@ -121,9 +130,10 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
 
             {/* User Profile / Auth (Always Visible) */}
             {currentUser ? (
-              <div className="user-profile-dropdown-wrapper"
-                   onMouseEnter={() => !isMobile && setIsDropdownOpen(true)}
-                   onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
+              <div
+                className="user-profile-dropdown-wrapper"
+                onMouseEnter={() => !isMobile && setIsDropdownOpen(true)}
+                onMouseLeave={() => !isMobile && setIsDropdownOpen(false)}
               >
                 <motion.div
                   className="user-avatar-wrapper"
@@ -141,9 +151,11 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                     <path
                       className="profile-progress-bar"
                       strokeDasharray={`${
-                        (!currentUser.email || currentUser.email.includes('temp_') || !currentUser.phone) 
-                        ? '75, 100' 
-                        : '100, 100'
+                        !currentUser.email ||
+                        currentUser.email.includes("temp_") ||
+                        !currentUser.phone
+                          ? "75, 100"
+                          : "100, 100"
                       }`}
                       d="M18 2.0845
                         a 15.9155 15.9155 0 0 1 0 31.831
@@ -151,10 +163,14 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                     />
                   </svg>
                   <div className="user-avatar">
-                    {currentUser.name ? currentUser.name[0].toUpperCase() : <User size={18} />}
+                    {currentUser.name ? (
+                      currentUser.name[0].toUpperCase()
+                    ) : (
+                      <User size={18} />
+                    )}
                   </div>
                 </motion.div>
-                
+
                 <AnimatePresence>
                   {isDropdownOpen && (
                     <motion.div
@@ -164,20 +180,42 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="dropdown-header">
-                        Hi, {currentUser.name?.split(' ')[0] || 'User'}
+                        Hi, {currentUser.name?.split(" ")[0] || "User"}
                       </div>
-                      <button onClick={() => { router.push('/profile'); setIsDropdownOpen(false); }}>
+                      <button
+                        onClick={() => {
+                          router.push("/profile");
+                          setIsDropdownOpen(false);
+                        }}
+                      >
                         <User size={16} /> Profile
                       </button>
-                      <button onClick={() => { router.push('/my-orders'); setIsDropdownOpen(false); }}>
+                      <button
+                        onClick={() => {
+                          router.push("/my-orders");
+                          setIsDropdownOpen(false);
+                        }}
+                      >
                         <Package size={16} /> My Orders
                       </button>
-                      {currentUser.role === 'admin' && (
-                        <button className="admin-link" onClick={() => { router.push('/admin-panel'); setIsDropdownOpen(false); }}>
+                      {currentUser.role === "admin" && (
+                        <button
+                          className="admin-link"
+                          onClick={() => {
+                            router.push("/admin-panel");
+                            setIsDropdownOpen(false);
+                          }}
+                        >
                           <Shield size={16} /> Admin Panel
                         </button>
                       )}
-                      <button className="logout-link" onClick={() => { logout(); setIsDropdownOpen(false); }}>
+                      <button
+                        className="logout-link"
+                        onClick={() => {
+                          logout();
+                          setIsDropdownOpen(false);
+                        }}
+                      >
                         <LogOut size={16} /> Sign Out
                       </button>
                     </motion.div>
@@ -202,7 +240,6 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-
             </button>
           </div>
         </div>
@@ -232,60 +269,166 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                 {item.name}
               </motion.a>
             ))}
-            
-            <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '10px 20px' }}></div>
-            
+
+            <div
+              style={{
+                height: "1px",
+                background: "rgba(255,255,255,0.1)",
+                margin: "10px 20px",
+              }}
+            ></div>
+
             {currentUser ? (
-               <div style={{ background: 'rgba(255,255,255,0.02)', margin: '10px 15px', borderRadius: '12px', padding: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                 <div style={{ padding: '5px 10px', color: '#888', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                   <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#ff3b30', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', fontSize: '12px' }}>
-                     {currentUser.name ? currentUser.name[0].toUpperCase() : 'U'}
-                   </div>
-                   Hi, {currentUser.name?.split(' ')[0] || 'User'}
-                 </div>
-                  <button 
-                    className="mobile-nav-link" 
-                    onClick={() => { router.push('/profile'); setIsMenuOpen(false); }} 
-                    style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', padding: '12px 10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  margin: "10px 15px",
+                  borderRadius: "12px",
+                  padding: "10px",
+                  border: "1px solid rgba(255,255,255,0.05)",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "5px 10px",
+                    color: "#888",
+                    fontSize: "13px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "#ff3b30",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontWeight: "bold",
+                      fontSize: "12px",
+                    }}
                   >
-                    <User size={18} /> My Profile
-                  </button>
-                  <button 
-                    className="mobile-nav-link" 
-                    onClick={() => { router.push('/my-orders'); setIsMenuOpen(false); }} 
-                    style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', padding: '12px 10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    {currentUser.name ? currentUser.name[0].toUpperCase() : "U"}
+                  </div>
+                  Hi, {currentUser.name?.split(" ")[0] || "User"}
+                </div>
+                <button
+                  className="mobile-nav-link"
+                  onClick={() => {
+                    router.push("/profile");
+                    setIsMenuOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: "16px",
+                    padding: "12px 10px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <User size={18} /> My Profile
+                </button>
+                <button
+                  className="mobile-nav-link"
+                  onClick={() => {
+                    router.push("/my-orders");
+                    setIsMenuOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    fontSize: "16px",
+                    padding: "12px 10px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <Package size={18} /> My Orders
+                </button>
+                {currentUser.role === "admin" && (
+                  <button
+                    className="mobile-nav-link"
+                    onClick={() => {
+                      router.push("/admin-panel");
+                      setIsMenuOpen(false);
+                    }}
+                    style={{
+                      width: "100%",
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "#ff9500",
+                      fontSize: "16px",
+                      padding: "12px 10px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
                   >
-                    <Package size={18} /> My Orders
+                    <Shield size={18} /> Admin Panel
                   </button>
-                 {currentUser.role === 'admin' && (
-                   <button 
-                     className="mobile-nav-link" 
-                     onClick={() => { router.push('/admin-panel'); setIsMenuOpen(false); }} 
-                     style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff9500', fontSize: '16px', padding: '12px 10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}
-                   >
-                     <Shield size={18} /> Admin Panel
-                   </button>
-                 )}
-                 <button 
-                   className="mobile-nav-link" 
-                   onClick={() => { logout(); setIsMenuOpen(false); }} 
-                   style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#ff3b30', fontSize: '16px', padding: '12px 10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}
-                 >
-                   <LogOut size={18} /> Sign Out
-                 </button>
-               </div>
+                )}
+                <button
+                  className="mobile-nav-link"
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    background: "transparent",
+                    border: "none",
+                    color: "#ff3b30",
+                    fontSize: "16px",
+                    padding: "12px 10px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                  }}
+                >
+                  <LogOut size={18} /> Sign Out
+                </button>
+              </div>
             ) : (
-               <div style={{ padding: '10px 15px' }}>
-                 <button 
-                   className="btn btn-primary" 
-                   onClick={() => { openAuthModal(); setIsMenuOpen(false); }} 
-                   style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '8px' }}
-                 >
-                   <User size={18} /> Sign In / Create Account
-                 </button>
-               </div>
+              <div style={{ padding: "10px 15px" }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    openAuthModal();
+                    setIsMenuOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "12px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <User size={18} /> Sign In / Create Account
+                </button>
+              </div>
             )}
-            
           </motion.div>
         )}
       </AnimatePresence>
