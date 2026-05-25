@@ -6,7 +6,8 @@ import Payment from "@/lib/models/Payment";
 export async function GET() {
   try {
     const user = await getAuthenticatedUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectToDatabase();
 
@@ -15,12 +16,15 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .lean();
 
-    return NextResponse.json({ 
-      success: true, 
-      orders: orders || [] 
+    return NextResponse.json({
+      success: true,
+      orders: orders || [],
     });
   } catch (err) {
     console.error("Orders fetch error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
