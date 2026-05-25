@@ -2,19 +2,20 @@ import nodemailer from "nodemailer";
 import path from "path";
 import fs from "fs";
 import { PAYMENT_STATUS } from "./constants";
-import { 
-  getOrderConfirmationTemplate, 
-  getPaymentFailedTemplate, 
-  getPendingOrderTemplate, 
+import {
+  getOrderConfirmationTemplate,
+  getPaymentFailedTemplate,
+  getPendingOrderTemplate,
   getResetPasswordTemplate,
   getPromotionalTemplate,
   getPartnerInquiryTemplate,
-  getAbandonedCartTemplate
+  getAbandonedCartTemplate,
 } from "./emailTemplates";
 
 const LOGO_PATH = path.join(process.cwd(), "public/assets/logo.png");
 
-const ENABLE_WHATSAPP = (process.env.ENABLE_NOTIF_WHATSAPP || "false") === "true";
+const ENABLE_WHATSAPP =
+  (process.env.ENABLE_NOTIF_WHATSAPP || "false") === "true";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
@@ -26,18 +27,33 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendAllNotifications(orderId: string, status: string, user: any, payload: any, products: any[]) {
+export async function sendAllNotifications(
+  orderId: string,
+  status: string,
+  user: any,
+  payload: any,
+  products: any[],
+) {
   const messageMap: Record<string, string> = {
-    [PAYMENT_STATUS.COMPLETED]: "🔥 Order Confirmed! Your payment was successful. We'll notify you when your TEARS order ships.",
-    [PAYMENT_STATUS.FAILED]: "⚠️ Payment Failed. Your transaction for order was unsuccessful. Please retry or contact support.",
-    [PAYMENT_STATUS.PENDING]: "⏳ Order Pending. We're waiting for payment confirmation for your TEARS order.",
-    [PAYMENT_STATUS.UNKNOWN]: "ℹ️ Order Update. Your payment status has been updated.",
+    [PAYMENT_STATUS.COMPLETED]:
+      "🔥 Order Confirmed! Your payment was successful. We'll notify you when your TEARS order ships.",
+    [PAYMENT_STATUS.FAILED]:
+      "⚠️ Payment Failed. Your transaction for order was unsuccessful. Please retry or contact support.",
+    [PAYMENT_STATUS.PENDING]:
+      "⏳ Order Pending. We're waiting for payment confirmation for your TEARS order.",
+    [PAYMENT_STATUS.UNKNOWN]:
+      "ℹ️ Order Update. Your payment status has been updated.",
   };
 
-  const whatsappMessage = (messageMap[status] || "Your order status has been updated.") + " Order ID: " + orderId;
+  const whatsappMessage =
+    (messageMap[status] || "Your order status has been updated.") +
+    " Order ID: " +
+    orderId;
 
   await Promise.allSettled([
-    user?.phone ? sendWhatsAppMessage(user.phone, whatsappMessage) : Promise.resolve(null),
+    user?.phone
+      ? sendWhatsAppMessage(user.phone, whatsappMessage)
+      : Promise.resolve(null),
     sendEmail(orderId, status, user, products),
   ]);
 }
@@ -45,14 +61,14 @@ export async function sendAllNotifications(orderId: string, status: string, user
 const ADMIN_EMAIL = "tearshxd@gmail.com";
 
 export async function sendEmail(
-  orderId: string | null, 
-  type: string, 
-  user: any, 
-  products: any[] = [], 
-  customSubject: string | null = null, 
-  customMessage: string | null = null, 
-  imageUrl: string | null = null, 
-  payload: any = null
+  orderId: string | null,
+  type: string,
+  user: any,
+  products: any[] = [],
+  customSubject: string | null = null,
+  customMessage: string | null = null,
+  imageUrl: string | null = null,
+  payload: any = null,
 ) {
   const recipientEmail = user?.email;
   const recipientName = user?.name || "Customer";
@@ -67,9 +83,9 @@ export async function sendEmail(
 
     if (fs.existsSync(LOGO_PATH)) {
       attachments.push({
-        filename: 'logo.png',
+        filename: "logo.png",
         path: LOGO_PATH,
-        cid: 'logo'
+        cid: "logo",
       });
     }
 
@@ -82,8 +98,8 @@ export async function sendEmail(
         const extension = contentType.split("/")[1];
         attachments.push({
           filename: `promo.${extension}`,
-          content: Buffer.from(base64Data, 'base64'),
-          cid: 'promo_img'
+          content: Buffer.from(base64Data, "base64"),
+          cid: "promo_img",
         });
         processedImageUrl = "cid:promo_img";
       }
@@ -92,12 +108,20 @@ export async function sendEmail(
     switch (type) {
       case PAYMENT_STATUS.COMPLETED:
         subject = `Order Confirmed! 🔥 - #${orderId}`;
-        const fullAddress = [user.address, user.city, user.state, user.pincode].filter(Boolean).join(", ");
-        html = getOrderConfirmationTemplate(recipientName, orderId!, products, calculateTotal(products), {
-          email: user.email,
-          phone: user.phone,
-          address: fullAddress,
-        });
+        const fullAddress = [user.address, user.city, user.state, user.pincode]
+          .filter(Boolean)
+          .join(", ");
+        html = getOrderConfirmationTemplate(
+          recipientName,
+          orderId!,
+          products,
+          calculateTotal(products),
+          {
+            email: user.email,
+            phone: user.phone,
+            address: fullAddress,
+          },
+        );
         break;
       case PAYMENT_STATUS.FAILED:
         subject = `Payment Failed ⚠️ - #${orderId}`;
@@ -114,7 +138,12 @@ export async function sendEmail(
         break;
       case "PROMOTIONAL":
         subject = customSubject || "A Special Update from TEARS";
-        html = getPromotionalTemplate(recipientName, subject, customMessage!, processedImageUrl);
+        html = getPromotionalTemplate(
+          recipientName,
+          subject,
+          customMessage!,
+          processedImageUrl,
+        );
         break;
       case "PARTNER_INQUIRY":
         subject = `Partnership Inquiry - ${payload.businessName} | TEARS`;
@@ -124,12 +153,16 @@ export async function sendEmail(
           payload.contactNumber,
           payload.email,
           payload.message,
-          payload.bestTime
+          payload.bestTime,
         );
         break;
       case "ABANDONED_CART":
         subject = customSubject || "You left something in your cart! 🔥";
-        html = getAbandonedCartTemplate(recipientName, products, payload?.cartLink || "https://tears.co.in");
+        html = getAbandonedCartTemplate(
+          recipientName,
+          products,
+          payload?.cartLink || "https://tears.co.in",
+        );
         break;
       default:
         html = `<p>Hi ${recipientName}, your order status is: ${type}</p>`;
@@ -141,7 +174,7 @@ export async function sendEmail(
       cc: ADMIN_EMAIL,
       subject: subject,
       html: html,
-      attachments
+      attachments,
     });
 
     return info;
@@ -151,8 +184,19 @@ export async function sendEmail(
   }
 }
 
+function getProductAmount(product: any) {
+  const value = product?.amount ?? product?.price ?? 0;
+  if (typeof value === "string") {
+    return parseFloat(value.replace(/[^\d.-]/g, "")) || 0;
+  }
+  return typeof value === "number" ? value : Number(value) || 0;
+}
+
 function calculateTotal(products: any[]) {
-  return products.reduce((sum, p) => sum + (p.price || 0) * (p.quantity || 1), 0);
+  return products.reduce(
+    (sum, p) => sum + getProductAmount(p) * (p.quantity || 1),
+    0,
+  );
 }
 
 export async function sendWhatsAppMessage(phone: string, message: string) {

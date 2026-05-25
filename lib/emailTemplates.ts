@@ -16,6 +16,14 @@ const baseStyles = `
   .otp-code { font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #ff3b30; margin: 20px 0; text-align: center; }
 `;
 
+const getProductAmount = (product: any) => {
+  const value = product?.amount ?? product?.price ?? 0;
+  if (typeof value === "string") {
+    return parseFloat(value.replace(/[^0-9.-]/g, "")) || 0;
+  }
+  return typeof value === "number" ? value : Number(value) || 0;
+};
+
 export const getOrderConfirmationTemplate = (name: string, orderId: string, products: any[], totalAmount: number, customerDetails: any) => `
   <!DOCTYPE html>
   <html>
@@ -33,7 +41,7 @@ export const getOrderConfirmationTemplate = (name: string, orderId: string, prod
             ${products.map(p => `
               <div class="item">
                 <span>${p.name} (x${p.quantity || 1})</span>
-                <span>₹${(p.price || 0).toLocaleString('en-IN')}</span>
+                <span>₹${getProductAmount(p).toLocaleString('en-IN')}</span>
               </div>
             `).join('')}
             <div class="total">
@@ -271,7 +279,7 @@ export const getAbandonedCartTemplate = (name: string, items: any[], cartLink: s
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-weight: bold; color: #ff3b30;">₹${(item.price || 0).toLocaleString('en-IN')}</div>
+                  <div style="font-weight: bold; color: #ff3b30;">₹${((item.amount ?? item.price) || 0).toLocaleString('en-IN')}</div>
                   <div style="font-size: 12px; color: #777;">Qty: ${item.quantity}</div>
                 </div>
               </div>
