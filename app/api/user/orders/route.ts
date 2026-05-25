@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth";
-import { connectToDatabase } from "@/lib/db";
+import { connectDB } from "@/lib/db";
 import Payment from "@/lib/models/Payment";
 
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
     if (!user)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    await connectToDatabase();
+    await connectDB();
 
     // Fetch all orders for the authenticated user
     const orders = await Payment.find({ "user.email": user.email })
