@@ -169,7 +169,7 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                       <button onClick={() => { router.push('/profile'); setIsDropdownOpen(false); }}>
                         <User size={16} /> Profile
                       </button>
-                      <button onClick={() => { router.push('/orders'); setIsDropdownOpen(false); }}>
+                      <button onClick={() => { router.push('/my-orders'); setIsDropdownOpen(false); }}>
                         <Package size={16} /> My Orders
                       </button>
                       {currentUser.role === 'admin' && (
@@ -252,7 +252,7 @@ const Navigation: React.FC<NavigationProps> = ({ logo }) => {
                   </button>
                   <button 
                     className="mobile-nav-link" 
-                    onClick={() => { router.push('/orders'); setIsMenuOpen(false); }} 
+                    onClick={() => { router.push('/my-orders'); setIsMenuOpen(false); }} 
                     style={{ width: '100%', textAlign: 'left', background: 'transparent', border: 'none', color: '#fff', fontSize: '16px', padding: '12px 10px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}
                   >
                     <Package size={18} /> My Orders

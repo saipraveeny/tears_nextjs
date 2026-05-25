@@ -44,7 +44,7 @@ const Footer: React.FC<FooterProps> = ({ logo }) => {
       { name: "Collaborations", href: "/collabs" },
     ],
     support: [
-      { name: "Order Tracking", href: "/orders" },
+      { name: "Order Tracking", href: "/my-orders" },
       { name: "Bulk Orders", href: "#contact" },
       { name: "FAQs", href: "#", onClick: () => setIsFAQOpen(true) },
       { name: "Contact Us", href: "#contact" },

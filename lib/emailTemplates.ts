@@ -70,7 +70,7 @@ export const getOrderConfirmationTemplate = (
           </div>
 
           <p>We'll notify you as soon as your bottles of fire are on their way.</p>
-          <a href="https://www.tears.co.in/orders" class="button">Track My Order</a>
+          <a href="https://www.tears.co.in/my-orders" class="button">Track My Order</a>
         </div>
         <div class="footer">
           <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
@@ -116,7 +116,7 @@ export const getPendingOrderTemplate = (name: string, orderId: string) => `
           <p>Hi ${name},</p>
           <p>Your order <strong>#${orderId}</strong> is currently pending. This usually happens while we wait for payment confirmation from your bank or gateway.</p>
           <p>We are monitoring the status and will update you as soon as it's confirmed. No further action is needed from your side right now.</p>
-          <a href="https://tears.co.in/orders" class="button">Check Status</a>
+          <a href="https://tears.co.in/my-orders" class="button">Check Status</a>
         </div>
         <div class="footer">
           <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
