@@ -39,11 +39,11 @@ export default function CheckoutPage() {
   // Auto-fill form when user logs in
   useEffect(() => {
     if (currentUser) {
-      setCheckoutForm(prev => ({
+      setCheckoutForm((prev) => ({
         ...prev,
         name: prev.name || currentUser.name || "",
         email: prev.email || currentUser.email || "",
-        phone: prev.phone || currentUser.phone || ""
+        phone: prev.phone || currentUser.phone || "",
       }));
     }
   }, [currentUser, setCheckoutForm]);
@@ -51,33 +51,36 @@ export default function CheckoutPage() {
   const submitCheckout = async (e) => {
     try {
       console.log("Submit triggered", !!e);
-      if (e && typeof e.preventDefault === 'function') e.preventDefault();
-      
+      if (e && typeof e.preventDefault === "function") e.preventDefault();
+
       const errs = validateCheckoutForm();
       setFormErrors(errs);
-      
+
       const errorCount = Object.keys(errs).length;
       if (errorCount > 0) {
         const firstError = Object.keys(errs)[0];
-        const element = document.querySelector(`[name="${firstError}"]`) || document.querySelector(`input[placeholder*="${firstError}"]`);
+        const element =
+          document.querySelector(`[name="${firstError}"]`) ||
+          document.querySelector(`input[placeholder*="${firstError}"]`);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
           element.focus();
         }
         return;
       }
 
       setSubmitting(true);
-      
+
       const { total } = computeCartTotals(cart);
 
       const productsPayload = cart.map((it) => ({
         productId: String(it.id),
         name: it.name,
         quantity: Number(it.qty),
-        amount: typeof it.price === "string" 
-          ? parseFloat(it.price.replace(/[^\d.]/g, "")) 
-          : Number(it.price),
+        amount:
+          typeof it.price === "string"
+            ? parseFloat(it.price.replace(/[^\d.]/g, ""))
+            : Number(it.price),
         image: it.image || "",
       }));
 
