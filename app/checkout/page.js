@@ -75,7 +75,9 @@ export default function CheckoutPage() {
         productId: String(it.id),
         name: it.name,
         quantity: Number(it.qty),
-        amount: parseFloat(it.price.replace(/[^\d.]/g, "")),
+        amount: typeof it.price === "string" 
+          ? parseFloat(it.price.replace(/[^\d.]/g, "")) 
+          : Number(it.price),
         image: it.image || "",
       }));
 
