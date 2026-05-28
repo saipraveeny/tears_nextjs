@@ -33,6 +33,7 @@ export async function sendAllNotifications(
   user: any,
   payload: any,
   products: any[],
+  paymentAmount?: number,
 ) {
   const messageMap: Record<string, string> = {
     [PAYMENT_STATUS.COMPLETED]:
@@ -54,7 +55,7 @@ export async function sendAllNotifications(
     user?.phone
       ? sendWhatsAppMessage(user.phone, whatsappMessage)
       : Promise.resolve(null),
-    sendEmail(orderId, status, user, products),
+    sendEmail(orderId, status, user, products, null, null, null, payload, paymentAmount),
   ]);
 }
 
@@ -69,6 +70,7 @@ export async function sendEmail(
   customMessage: string | null = null,
   imageUrl: string | null = null,
   payload: any = null,
+  fallbackAmount?: number,
 ) {
   const recipientEmail = user?.email;
   const recipientName = user?.name || "Customer";
@@ -111,11 +113,12 @@ export async function sendEmail(
         const fullAddress = [user.address, user.city, user.state, user.pincode]
           .filter(Boolean)
           .join(", ");
-        html = getOrderConfirmationTemplate(
+        const computedTotal = calculateTotal(products) || fallbackAmount || 0;
+      html = getOrderConfirmationTemplate(
           recipientName,
           orderId!,
           products,
-          calculateTotal(products),
+          computedTotal,
           {
             email: user.email,
             phone: user.phone,

@@ -78,7 +78,8 @@ export async function POST(req: Request) {
               newStatus as any,
               payment.user,
               fullPayload,
-              payment.products
+              payment.products,
+              payment.amount,
             );
           } catch (notifyErr) {
             console.error(`[${reqId}] Notification failed:`, notifyErr);

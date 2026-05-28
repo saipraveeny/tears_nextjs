@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
               if ([PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(newStatus as any)) {
                 try {
-                  await sendAllNotifications(orderId, newStatus, payment.user, {}, payment.products);
+                  await sendAllNotifications(orderId, newStatus, payment.user, {}, payment.products, payment.amount);
                 } catch (_) {}
               }
             }
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         if (!payment) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
         try {
-          await sendAllNotifications(orderId, payment.status, payment.user, {}, payment.products);
+          await sendAllNotifications(orderId, payment.status, payment.user, {}, payment.products, payment.amount);
           return NextResponse.json({ success: true, message: `Notification sent for ${orderId}` });
         } catch (err: any) {
           return NextResponse.json({ error: `Notification failed: ${err.message}` }, { status: 500 });

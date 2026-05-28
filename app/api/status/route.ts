@@ -44,7 +44,8 @@ async function updatePaymentStatusAndNotify(
           newStatus,
           payment.user,
           payload,
-          payment.products
+          payment.products,
+          payment.amount,
         );
       } catch (notifyErr) {
         console.error(`[${requestId}] Notification failed for ${payment.merchantOrderId}:`, notifyErr);

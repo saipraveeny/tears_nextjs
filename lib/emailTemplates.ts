@@ -70,7 +70,7 @@ export const getOrderConfirmationTemplate = (
           </div>
 
           <p>We'll notify you as soon as your bottles of fire are on their way.</p>
-          <a href="https://www.tears.co.in/my-orders" class="button">Track My Order</a>
+          <a href="https://tears.co.in/my-orders" class="button">Track My Order</a>
         </div>
         <div class="footer">
           <p>&copy; 2025 TEARS Hot Sauce. All rights reserved.</p>
