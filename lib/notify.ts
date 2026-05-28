@@ -55,7 +55,17 @@ export async function sendAllNotifications(
     user?.phone
       ? sendWhatsAppMessage(user.phone, whatsappMessage)
       : Promise.resolve(null),
-    sendEmail(orderId, status, user, products, null, null, null, payload, paymentAmount),
+    sendEmail(
+      orderId,
+      status,
+      user,
+      products,
+      null,
+      null,
+      null,
+      payload,
+      paymentAmount,
+    ),
   ]);
 }
 
@@ -114,7 +124,7 @@ export async function sendEmail(
           .filter(Boolean)
           .join(", ");
         const computedTotal = calculateTotal(products) || fallbackAmount || 0;
-      html = getOrderConfirmationTemplate(
+        html = getOrderConfirmationTemplate(
           recipientName,
           orderId!,
           products,

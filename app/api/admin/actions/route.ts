@@ -3,26 +3,36 @@ import { connectDB } from "@/lib/db";
 import { getAuthenticatedUser } from "@/lib/auth";
 import Payment from "@/lib/models/Payment";
 import User from "@/lib/models/User";
-import { sendAllNotifications, sendEmail, sendWhatsAppMessage } from "@/lib/notify";
+import {
+  sendAllNotifications,
+  sendEmail,
+  sendWhatsAppMessage,
+} from "@/lib/notify";
 import { PAYMENT_STATUS } from "@/lib/constants";
 import phonepeClient from "@/lib/phonepeClient";
 
 export async function POST(req: Request) {
   try {
     const user = await getAuthenticatedUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (user.role !== "admin") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (user.role !== "admin")
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     await connectDB();
 
     const { action, payload } = await req.json();
-    if (!action) return NextResponse.json({ error: "Action required" }, { status: 400 });
+    if (!action)
+      return NextResponse.json({ error: "Action required" }, { status: 400 });
 
     switch (action) {
       case "refreshStatus": {
         const { orderIds } = payload || {};
         if (!orderIds || !Array.isArray(orderIds)) {
-          return NextResponse.json({ error: "orderIds array required" }, { status: 400 });
+          return NextResponse.json(
+            { error: "orderIds array required" },
+            { status: 400 },
+          );
         }
 
         const results = [];
@@ -42,7 +52,10 @@ export async function POST(req: Request) {
               else if (state === "FAILED") newStatus = PAYMENT_STATUS.FAILED;
               else if (state === "PENDING") newStatus = PAYMENT_STATUS.PENDING;
             } catch (pgErr: any) {
-              console.error(`Gateway check failed for ${orderId}:`, pgErr.message);
+              console.error(
+                `Gateway check failed for ${orderId}:`,
+                pgErr.message,
+              );
             }
 
             const oldStatus = payment.status;
@@ -51,14 +64,30 @@ export async function POST(req: Request) {
               payment.updatedAt = new Date();
               await payment.save();
 
-              if ([PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(newStatus as any)) {
+              if (
+                [PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(
+                  newStatus as any,
+                )
+              ) {
                 try {
-                  await sendAllNotifications(orderId, newStatus, payment.user, {}, payment.products, payment.amount);
+                  await sendAllNotifications(
+                    orderId,
+                    newStatus,
+                    payment.user,
+                    {},
+                    payment.products,
+                    payment.amount,
+                  );
                 } catch (_) {}
               }
             }
 
-            results.push({ orderId, oldStatus, newStatus, changed: oldStatus !== newStatus });
+            results.push({
+              orderId,
+              oldStatus,
+              newStatus,
+              changed: oldStatus !== newStatus,
+            });
           } catch (err: any) {
             results.push({ orderId, error: err.message });
           }
@@ -68,34 +97,72 @@ export async function POST(req: Request) {
 
       case "resendNotification": {
         const { orderId } = payload || {};
-        if (!orderId) return NextResponse.json({ error: "orderId required" }, { status: 400 });
+        if (!orderId)
+          return NextResponse.json(
+            { error: "orderId required" },
+            { status: 400 },
+          );
 
         const payment = await Payment.findOne({ merchantOrderId: orderId });
-        if (!payment) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        if (!payment)
+          return NextResponse.json(
+            { error: "Order not found" },
+            { status: 404 },
+          );
 
         try {
-          await sendAllNotifications(orderId, payment.status, payment.user, {}, payment.products, payment.amount);
-          return NextResponse.json({ success: true, message: `Notification sent for ${orderId}` });
+          await sendAllNotifications(
+            orderId,
+            payment.status,
+            payment.user,
+            {},
+            payment.products,
+            payment.amount,
+          );
+          return NextResponse.json({
+            success: true,
+            message: `Notification sent for ${orderId}`,
+          });
         } catch (err: any) {
-          return NextResponse.json({ error: `Notification failed: ${err.message}` }, { status: 500 });
+          return NextResponse.json(
+            { error: `Notification failed: ${err.message}` },
+            { status: 500 },
+          );
         }
       }
 
       case "bulkNotify": {
-        const { userIds, subject, message, imageUrl, channel = "EMAIL" } = payload || {};
-        if (!message) return NextResponse.json({ error: "message required" }, { status: 400 });
+        const {
+          userIds,
+          subject,
+          message,
+          imageUrl,
+          channel = "EMAIL",
+        } = payload || {};
+        if (!message)
+          return NextResponse.json(
+            { error: "message required" },
+            { status: 400 },
+          );
 
         let targetUsers;
         if (userIds && Array.isArray(userIds) && userIds.length > 0) {
-          targetUsers = await User.find({ _id: { $in: userIds } }).select("name email phone").lean();
+          targetUsers = await User.find({ _id: { $in: userIds } })
+            .select("name email phone")
+            .lean();
         } else {
           targetUsers = await User.find({
-            role: { $ne: "admin" }
-          }).select("name email phone").lean();
+            role: { $ne: "admin" },
+          })
+            .select("name email phone")
+            .lean();
         }
 
         if (targetUsers.length === 0) {
-          return NextResponse.json({ error: "No users found to notify" }, { status: 400 });
+          return NextResponse.json(
+            { error: "No users found to notify" },
+            { status: 400 },
+          );
         }
 
         let sentCount = 0;
@@ -112,7 +179,15 @@ export async function POST(req: Request) {
               }
             } else {
               if (u.email && !u.email.endsWith("@tears.local")) {
-                await sendEmail(`BULK-${Date.now()}`, "PROMOTIONAL", u, [], subject, message, imageUrl);
+                await sendEmail(
+                  `BULK-${Date.now()}`,
+                  "PROMOTIONAL",
+                  u,
+                  [],
+                  subject,
+                  message,
+                  imageUrl,
+                );
                 sentCount++;
               } else {
                 failCount++;
@@ -175,7 +250,9 @@ export async function POST(req: Request) {
         })
           .sort({ createdAt: -1 })
           .limit(100)
-          .select("merchantOrderId amount status user products createdAt updatedAt")
+          .select(
+            "merchantOrderId amount status user products createdAt updatedAt",
+          )
           .lean();
 
         return NextResponse.json({
@@ -202,16 +279,26 @@ export async function POST(req: Request) {
       case "updateOrderStatus": {
         const { orderId, newStatus } = payload || {};
         if (!orderId || !newStatus) {
-          return NextResponse.json({ error: "orderId and newStatus required" }, { status: 400 });
+          return NextResponse.json(
+            { error: "orderId and newStatus required" },
+            { status: 400 },
+          );
         }
 
         const validStatuses = Object.values(PAYMENT_STATUS);
         if (!validStatuses.includes(newStatus)) {
-          return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+          return NextResponse.json(
+            { error: "Invalid status" },
+            { status: 400 },
+          );
         }
 
         const payment = await Payment.findOne({ merchantOrderId: orderId });
-        if (!payment) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        if (!payment)
+          return NextResponse.json(
+            { error: "Order not found" },
+            { status: 404 },
+          );
 
         const oldStatus = payment.status;
         payment.status = newStatus;
@@ -227,10 +314,16 @@ export async function POST(req: Request) {
       }
 
       default:
-        return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
+        return NextResponse.json(
+          { error: `Unknown action: ${action}` },
+          { status: 400 },
+        );
     }
   } catch (err) {
     console.error("Admin action error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

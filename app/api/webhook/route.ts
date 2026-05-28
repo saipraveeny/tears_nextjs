@@ -11,10 +11,10 @@ import Cart from "@/lib/models/Cart";
 
 export async function POST(req: Request) {
   const reqId = `Webhook-${Date.now()}`;
-  
+
   try {
     const body = await req.json();
-    
+
     let event, merchantOrderId, state, fullPayload;
     try {
       const validationResult = client.validateWebhook(body);
@@ -23,7 +23,10 @@ export async function POST(req: Request) {
       state = validationResult.state;
       fullPayload = validationResult.fullPayload;
     } catch (validationErr: any) {
-      console.error(`[${reqId}] Webhook validation failed:`, validationErr.message);
+      console.error(
+        `[${reqId}] Webhook validation failed:`,
+        validationErr.message,
+      );
       return NextResponse.json({ error: "Invalid webhook" }, { status: 403 });
     }
 
@@ -63,12 +66,17 @@ export async function POST(req: Request) {
               if (userObj) {
                 await Cart.findOneAndUpdate(
                   { userId: userObj._id },
-                  { $set: { items: [], totalAmount: 0 } }
+                  { $set: { items: [], totalAmount: 0 } },
                 );
-                console.log(`[${reqId}] Webhook cleared cart for user: ${payment.user.email}`);
+                console.log(
+                  `[${reqId}] Webhook cleared cart for user: ${payment.user.email}`,
+                );
               }
             } catch (cartErr) {
-              console.error(`[${reqId}] Webhook failed to clear cart:`, cartErr);
+              console.error(
+                `[${reqId}] Webhook failed to clear cart:`,
+                cartErr,
+              );
             }
           }
 
@@ -91,6 +99,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, requestId: reqId });
   } catch (error: any) {
     console.error(`[${reqId}] Webhook processing error:`, error);
-    return NextResponse.json({ error: "Webhook processing failed", requestId: reqId }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook processing failed", requestId: reqId },
+      { status: 500 },
+    );
   }
 }

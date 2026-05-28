@@ -12,7 +12,7 @@ async function updatePaymentStatusAndNotify(
   payment: any,
   newStatus: string,
   payload: any,
-  requestId: string
+  requestId: string,
 ) {
   if (payment.status !== newStatus) {
     payment.status = newStatus;
@@ -28,16 +28,25 @@ async function updatePaymentStatusAndNotify(
         if (userObj) {
           await Cart.findOneAndUpdate(
             { userId: userObj._id },
-            { $set: { items: [], totalAmount: 0 } }
+            { $set: { items: [], totalAmount: 0 } },
           );
-          console.log(`[${requestId}] Status API cleared cart for user: ${payment.user.email}`);
+          console.log(
+            `[${requestId}] Status API cleared cart for user: ${payment.user.email}`,
+          );
         }
       } catch (cartErr) {
-        console.error(`[${requestId}] Status API failed to clear cart:`, cartErr);
+        console.error(
+          `[${requestId}] Status API failed to clear cart:`,
+          cartErr,
+        );
       }
     }
 
-    if ([PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(newStatus as any)) {
+    if (
+      [PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(
+        newStatus as any,
+      )
+    ) {
       try {
         await sendAllNotifications(
           payment.merchantOrderId,
@@ -48,7 +57,10 @@ async function updatePaymentStatusAndNotify(
           payment.amount,
         );
       } catch (notifyErr) {
-        console.error(`[${requestId}] Notification failed for ${payment.merchantOrderId}:`, notifyErr);
+        console.error(
+          `[${requestId}] Notification failed for ${payment.merchantOrderId}:`,
+          notifyErr,
+        );
       }
     }
   }
@@ -56,11 +68,11 @@ async function updatePaymentStatusAndNotify(
 
 export async function POST(req: Request) {
   const reqId = `Status-${Date.now()}`;
-  
+
   try {
     const { searchParams } = new URL(req.url);
     const body = await req.json().catch(() => ({}));
-    
+
     const targetIds = searchParams.get("orderIds") || body.orderIds;
 
     await connectDB();
@@ -70,12 +82,18 @@ export async function POST(req: Request) {
           $or: [
             {
               merchantOrderId: {
-                $in: typeof targetIds === "string" ? targetIds.split(",") : targetIds,
+                $in:
+                  typeof targetIds === "string"
+                    ? targetIds.split(",")
+                    : targetIds,
               },
             },
             {
               transactionId: {
-                $in: typeof targetIds === "string" ? targetIds.split(",") : targetIds,
+                $in:
+                  typeof targetIds === "string"
+                    ? targetIds.split(",")
+                    : targetIds,
               },
             },
           ],
@@ -87,13 +105,21 @@ export async function POST(req: Request) {
 
     for (const payment of paymentsToCheck) {
       try {
-        const statusResponse = await client.getOrderStatus(payment.merchantOrderId);
+        const statusResponse = await client.getOrderStatus(
+          payment.merchantOrderId,
+        );
 
         let newStatus: string = PAYMENT_STATUS.PENDING;
         const gatewayState = statusResponse.state;
-        if (gatewayState === "COMPLETED" || gatewayState === "PAYMENT_SUCCESS") {
+        if (
+          gatewayState === "COMPLETED" ||
+          gatewayState === "PAYMENT_SUCCESS"
+        ) {
           newStatus = PAYMENT_STATUS.COMPLETED;
-        } else if (gatewayState === "FAILED" || gatewayState === "PAYMENT_ERROR") {
+        } else if (
+          gatewayState === "FAILED" ||
+          gatewayState === "PAYMENT_ERROR"
+        ) {
           newStatus = PAYMENT_STATUS.FAILED;
         }
 
@@ -101,24 +127,35 @@ export async function POST(req: Request) {
           payment.transactionId = statusResponse.orderId;
         }
 
-        await updatePaymentStatusAndNotify(payment, newStatus, statusResponse, reqId);
+        await updatePaymentStatusAndNotify(
+          payment,
+          newStatus,
+          statusResponse,
+          reqId,
+        );
         updatedPayments.push({
           merchantOrderId: payment.merchantOrderId,
           status: newStatus,
           amount: payment.amount,
         });
       } catch (e) {
-        console.error(`[${reqId}] Failed to check ${payment.merchantOrderId}:`, e);
+        console.error(
+          `[${reqId}] Failed to check ${payment.merchantOrderId}:`,
+          e,
+        );
       }
     }
 
     return NextResponse.json({ success: true, updated: updatedPayments });
   } catch (err: any) {
     console.error(`[${reqId}] Status check failed:`, err);
-    return NextResponse.json({
-      error: "Status failed",
-      details: err.message,
-      requestId: reqId,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Status failed",
+        details: err.message,
+        requestId: reqId,
+      },
+      { status: 500 },
+    );
   }
 }
