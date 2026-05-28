@@ -26,6 +26,7 @@ export interface IPayment extends Document {
   products: IPaymentProduct[];
   rawResponse?: any;
   webhookPayload?: any;
+  notificationSent?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +61,7 @@ const PaymentSchema = new Schema<IPayment>(
     products: [ProductSchema],
     rawResponse: Schema.Types.Mixed,
     webhookPayload: Schema.Types.Mixed,
+    notificationSent: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

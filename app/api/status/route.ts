@@ -14,10 +14,14 @@ async function updatePaymentStatusAndNotify(
   payload: any,
   requestId: string,
 ) {
-  if (payment.status !== newStatus) {
+  const statusChanged = payment.status !== newStatus;
+  if (statusChanged) {
     payment.status = newStatus;
     payment.updatedAt = new Date();
     payment.webhookPayload = payload;
+    if (newStatus === PAYMENT_STATUS.COMPLETED) {
+      payment.notificationSent = false;
+    }
 
     await payment.save();
 
@@ -41,27 +45,25 @@ async function updatePaymentStatusAndNotify(
         );
       }
     }
+  }
 
-    if (
-      [PAYMENT_STATUS.COMPLETED, PAYMENT_STATUS.FAILED].includes(
-        newStatus as any,
-      )
-    ) {
-      try {
-        await sendAllNotifications(
-          payment.merchantOrderId,
-          newStatus,
-          payment.user,
-          payload,
-          payment.products,
-          payment.amount,
-        );
-      } catch (notifyErr) {
-        console.error(
-          `[${requestId}] Notification failed for ${payment.merchantOrderId}:`,
-          notifyErr,
-        );
-      }
+  if (newStatus === PAYMENT_STATUS.COMPLETED && !payment.notificationSent) {
+    try {
+      await sendAllNotifications(
+        payment.merchantOrderId,
+        newStatus,
+        payment.user,
+        payload,
+        payment.products,
+        payment.amount,
+      );
+      payment.notificationSent = true;
+      await payment.save();
+    } catch (notifyErr) {
+      console.error(
+        `[${requestId}] Notification failed for ${payment.merchantOrderId}:`,
+        notifyErr,
+      );
     }
   }
 }

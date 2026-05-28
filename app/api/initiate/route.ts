@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     const merchantOrderId = client.generateOrderId("TRS");
 
     const origin = req.headers.get("origin") || "https://tears.co.in";
-    const redirectUrl = process.env.PHONEPE_REDIRECT_URL || `${origin}/api/redirect`;
+    const redirectUrl = process.env.PHONEPE_REDIRECT_URL || `${origin}/checkout/result`;
     const webhookUrl = process.env.WEBHOOK_URL || `${origin}/api/webhook`;
 
     const result = await client.initiatePayment({

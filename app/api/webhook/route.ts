@@ -53,9 +53,10 @@ export async function POST(req: Request) {
       const payment = await Payment.findOne({ merchantOrderId });
 
       if (payment) {
-        if (payment.status !== PAYMENT_STATUS.COMPLETED) {
+        if (payment.status !== newStatus) {
           payment.status = newStatus as any;
           payment.webhookPayload = fullPayload;
+          payment.notificationSent = false;
           payment.updatedAt = new Date();
           await payment.save();
 
@@ -80,18 +81,10 @@ export async function POST(req: Request) {
             }
           }
 
-          try {
-            await sendAllNotifications(
-              merchantOrderId,
-              newStatus as any,
-              payment.user,
-              fullPayload,
-              payment.products,
-              payment.amount,
-            );
-          } catch (notifyErr) {
-            console.error(`[${reqId}] Notification failed:`, notifyErr);
-          }
+          // Do not send notifications from the webhook.
+          // The email should wait until the user returns to the site and the frontend polls status.
+          // This avoids the immediate send before the browser redirect completes.
+          // Notifications will be sent later from the status endpoint.
         }
       }
     }
