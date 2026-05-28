@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-import { PAYMENT_STATUS, PaymentStatus } from '../constants';
+import mongoose, { Schema, Document, Model } from "mongoose";
+import { PAYMENT_STATUS, PaymentStatus } from "../constants";
 
 export interface IPaymentProduct {
   productId: string;
@@ -68,6 +68,7 @@ const PaymentSchema = new Schema<IPayment>(
   { timestamps: true },
 );
 
-const Payment: Model<IPayment> = mongoose.models.Payment || mongoose.model<IPayment>("Payment", PaymentSchema);
+const Payment: Model<IPayment> =
+  mongoose.models.Payment || mongoose.model<IPayment>("Payment", PaymentSchema);
 
 export default Payment;

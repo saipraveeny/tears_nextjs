@@ -7,38 +7,52 @@ import { logger } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const requestId = `Init-${Date.now()}`;
-  
+
   try {
     const body = await req.json();
     const { amount, customer, products } = body ?? {};
 
     const finalAmount = Number(amount);
     if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) {
-      return NextResponse.json({ error: "Invalid amount.", requestId }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid amount.", requestId },
+        { status: 400 },
+      );
     }
 
     if (!customer || !customer.phone || !customer.email) {
-      return NextResponse.json({ error: "Customer details required.", requestId }, { status: 400 });
+      return NextResponse.json(
+        { error: "Customer details required.", requestId },
+        { status: 400 },
+      );
     }
 
     if (!products || !Array.isArray(products) || products.length === 0) {
-      return NextResponse.json({ error: "Products required.", requestId }, { status: 400 });
+      return NextResponse.json(
+        { error: "Products required.", requestId },
+        { status: 400 },
+      );
     }
 
     const clientId = process.env.PHONEPE_CLIENT_ID;
     const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
     if (!clientId || !clientSecret) {
-      return NextResponse.json({
-        error: "PhonePe Integration is incomplete.",
-        details: "PHONEPE_CLIENT_ID or PHONEPE_CLIENT_SECRET environment variables are missing on the server. Please configure them in your hosting provider's dashboard.",
-        requestId
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "PhonePe Integration is incomplete.",
+          details:
+            "PHONEPE_CLIENT_ID or PHONEPE_CLIENT_SECRET environment variables are missing on the server. Please configure them in your hosting provider's dashboard.",
+          requestId,
+        },
+        { status: 500 },
+      );
     }
 
     const merchantOrderId = client.generateOrderId("TRS");
 
     const origin = req.headers.get("origin") || "https://tears.co.in";
-    const redirectUrl = process.env.PHONEPE_REDIRECT_URL || `${origin}/checkout/result`;
+    const redirectUrl =
+      process.env.PHONEPE_REDIRECT_URL || `${origin}/checkout/result`;
     const webhookUrl = process.env.WEBHOOK_URL || `${origin}/api/webhook`;
 
     const result = await client.initiatePayment({
@@ -66,13 +80,15 @@ export async function POST(req: Request) {
       redirectUrl: result.redirectUrl,
       requestId,
     });
-
   } catch (err: any) {
     console.error(`[${requestId}] Initiation failed:`, err);
-    return NextResponse.json({
-      error: "Payment initiation failed",
-      details: err.message,
-      requestId,
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Payment initiation failed",
+        details: err.message,
+        requestId,
+      },
+      { status: 500 },
+    );
   }
 }
