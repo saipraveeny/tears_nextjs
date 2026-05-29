@@ -99,7 +99,7 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
               } else if (st === "FAILED") {
                 // Payment failed - show failure message
                 setError(
-                  "❌ Payment Failed\n\nYour payment could not be processed. Please try again or contact support if the problem persists.\n\nYou are still logged in - your cart is saved. Go back and retry payment."
+                  "❌ Payment Failed\n\nYour payment could not be processed. Please try again or contact support if the problem persists.\n\nYou are still logged in - your cart is saved. Go back and retry payment.",
                 );
                 sessionStorage.removeItem("pendingOrderId");
               }
