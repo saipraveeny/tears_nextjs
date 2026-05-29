@@ -55,6 +55,12 @@ export async function POST(req: Request) {
       process.env.PHONEPE_REDIRECT_URL || `${origin}/checkout/result`;
     const webhookUrl = process.env.WEBHOOK_URL || `${origin}/api/webhook`;
 
+    console.log(`[${requestId}] Payment config:`, {
+      redirectUrl,
+      webhookUrl,
+      origin,
+    });
+
     const result = await client.initiatePayment({
       amount: finalAmount,
       user: customer,

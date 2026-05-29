@@ -124,6 +124,18 @@ export async function sendEmail(
           .filter(Boolean)
           .join(", ");
         const computedTotal = calculateTotal(products) || fallbackAmount || 0;
+
+        console.log(`[Notify] Email for order ${orderId}:`, {
+          productCount: products?.length,
+          products: products?.map((p) => ({
+            name: p.name,
+            amount: p.amount,
+            quantity: p.quantity,
+          })),
+          computedTotal,
+          fallbackAmount,
+        });
+
         html = getOrderConfirmationTemplate(
           recipientName,
           orderId!,
@@ -174,7 +186,7 @@ export async function sendEmail(
         html = getAbandonedCartTemplate(
           recipientName,
           products,
-          payload?.cartLink || "https://tears.co.in/checkout",
+          "https://tears.co.in/checkout",
         );
         break;
       default:

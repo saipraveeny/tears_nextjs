@@ -49,16 +49,37 @@ async function updatePaymentStatusAndNotify(
 
   if (newStatus === PAYMENT_STATUS.COMPLETED && !payment.notificationSent) {
     try {
-      await sendAllNotifications(
-        payment.merchantOrderId,
-        newStatus,
-        payment.user,
-        payload,
-        payment.products,
-        payment.amount,
-      );
-      payment.notificationSent = true;
-      await payment.save();
+      // Add delay to ensure all data is properly synced before sending email
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Reload payment to ensure we have latest data including products
+      const latestPayment = await Payment.findOne({
+        merchantOrderId: payment.merchantOrderId,
+      });
+
+      if (
+        latestPayment &&
+        latestPayment.products &&
+        latestPayment.products.length > 0
+      ) {
+        await sendAllNotifications(
+          latestPayment.merchantOrderId,
+          newStatus,
+          latestPayment.user,
+          payload,
+          latestPayment.products,
+          latestPayment.amount,
+        );
+        latestPayment.notificationSent = true;
+        await latestPayment.save();
+        console.log(
+          `[${requestId}] Notification sent successfully for order: ${latestPayment.merchantOrderId}`,
+        );
+      } else {
+        console.warn(
+          `[${requestId}] Cannot send notification - products missing for order: ${payment.merchantOrderId}`,
+        );
+      }
     } catch (notifyErr) {
       console.error(
         `[${requestId}] Notification failed for ${payment.merchantOrderId}:`,
