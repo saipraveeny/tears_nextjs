@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import client from "@/lib/phonepeClient";
+import { mockPaymentClient } from "@/lib/mockPayment";
 import { connectDB } from "@/lib/db";
 import Payment from "@/lib/models/Payment";
 import Webhook from "@/lib/models/Webhook";
@@ -15,9 +16,13 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    // Use mock validation for local testing
+    const useMockPayment = process.env.ENABLE_MOCK_PAYMENT === "true";
+    const paymentClient = useMockPayment ? mockPaymentClient : client;
+
     let event, merchantOrderId, state, fullPayload;
     try {
-      const validationResult = client.validateWebhook(body);
+      const validationResult = paymentClient.validateWebhook(body);
       event = validationResult.event;
       merchantOrderId = validationResult.merchantOrderId;
       state = validationResult.state;
