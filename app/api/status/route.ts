@@ -49,8 +49,27 @@ async function updatePaymentStatusAndNotify(
 
   if (newStatus === PAYMENT_STATUS.COMPLETED && !payment.notificationSent) {
     try {
-      // Add delay to ensure all data is properly synced before sending email
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Check again if email hasn't been sent (prevent duplicate emails from concurrent requests)
+      const checkPayment = await Payment.findOne({
+        merchantOrderId: payment.merchantOrderId,
+      });
+
+      if (checkPayment.notificationSent) {
+        console.log(
+          `[${requestId}] Email already sent for order: ${payment.merchantOrderId}`,
+        );
+        return; // Email already sent, skip
+      }
+
+      // Mark as sent IMMEDIATELY to prevent concurrent requests from sending duplicate emails
+      checkPayment.notificationSent = true;
+      await checkPayment.save();
+      console.log(
+        `[${requestId}] Marked notification as sent for order: ${payment.merchantOrderId}`,
+      );
+
+      // Add 20-second delay to ensure all data is properly synced before sending email
+      await new Promise((resolve) => setTimeout(resolve, 20000));
 
       // Reload payment to ensure we have latest data including products
       const latestPayment = await Payment.findOne({
@@ -70,10 +89,8 @@ async function updatePaymentStatusAndNotify(
           latestPayment.products,
           latestPayment.amount,
         );
-        latestPayment.notificationSent = true;
-        await latestPayment.save();
         console.log(
-          `[${requestId}] Notification sent successfully for order: ${latestPayment.merchantOrderId}`,
+          `[${requestId}] Email notification sent successfully for order: ${latestPayment.merchantOrderId}`,
         );
       } else {
         console.warn(
@@ -160,6 +177,8 @@ export async function POST(req: Request) {
           merchantOrderId: payment.merchantOrderId,
           status: newStatus,
           amount: payment.amount,
+          user: payment.user,
+          products: payment.products,
         });
       } catch (e) {
         console.error(

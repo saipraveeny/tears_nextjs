@@ -30,16 +30,28 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
         params.get("merchantOrderId") ||
         sessionStorage.getItem("pendingOrderId");
 
-      setTransactionId(txnId);
-      setOrderId(oid);
-
-      // Log for debugging
       console.log("CheckoutSuccess - Extracted IDs:", {
         transactionId: txnId,
         orderId: oid,
         urlParams: Object.fromEntries(params),
         sessionOrderId: sessionStorage.getItem("pendingOrderId"),
       });
+
+      setTransactionId(txnId);
+      setOrderId(oid);
+
+      // If we found an ID, start polling immediately
+      if (txnId || oid) {
+        setLoadingStatus(true);
+      } else {
+        // No ID found - show error after a short delay to allow async state updates
+        setTimeout(() => {
+          setLoadingStatus(false);
+          setError(
+            "No Order ID found. Please contact support with your email: tearshxd@gmail.com",
+          );
+        }, 4000);
+      }
     }
   }, []);
 
@@ -49,7 +61,9 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
 
     const fetchStatus = async () => {
       try {
-        if (!orderId && !transactionId) {
+        // Use the current state values or passed props
+        const currentOrderId = orderId || transactionId;
+        if (!currentOrderId) {
           setLoadingStatus(false);
           setError(
             "No Order ID found. Please contact support with your email: tearshxd@gmail.com",
@@ -97,10 +111,9 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
                 onCartClear?.();
                 sessionStorage.removeItem("pendingOrderId");
               } else if (st === "FAILED") {
-                // Payment failed - show failure message
-                setError(
-                  "❌ Payment Failed\n\nYour payment could not be processed. Please try again or contact support if the problem persists.\n\nYou are still logged in - your cart is saved. Go back and retry payment.",
-                );
+                // Payment failed - don't set error, let the page render the failure UI with retry button
+                console.log("❌ Payment failed - rendering failure page");
+                setLoadingStatus(false);
                 sessionStorage.removeItem("pendingOrderId");
               }
             } else {
@@ -129,7 +142,10 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
       }
     };
 
-    fetchStatus();
+    // Only start polling if we have an order ID
+    if (orderId || transactionId) {
+      fetchStatus();
+    }
 
     return () => {
       isMounted = false;
@@ -245,7 +261,7 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
     status === "PAYMENT_SUCCESS";
   const amount = statusData?.amount;
   const txId = statusData?.merchantOrderId || transactionId || orderId || "N/A";
-  const customer = statusData?.customer || {};
+  const customer = statusData?.user || statusData?.customer || {};
 
   return (
     <div
