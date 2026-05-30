@@ -64,7 +64,7 @@ export const ALL_PRODUCTS = [
     description: "Innovative fusion of red chilli and grape fruit",
     heatLevel: 3,
     rating: 4.8,
-    price: "₹1.00",
+    price: "₹333.00",
     color: "#ff00ff",
     features: ["Exotic Spices", "Complex Heat"],
     image: glitchImage,
