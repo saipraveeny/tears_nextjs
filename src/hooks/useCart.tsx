@@ -27,13 +27,14 @@ const useCartInternal = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const isSyncing = React.useRef(false);
   const lastSyncedCartRef = React.useRef<string>("");
+  const mergeAlreadyDone = React.useRef(false);
   const { currentUser } = useAuth();
 
   // Load and merge cart on login / session restore; clear on logout
   useEffect(() => {
     if (!currentUser) {
       setIsLoaded(false);
-      // Don't save the empty cart to backend — just clear local state
+      mergeAlreadyDone.current = false;
       lastSyncedCartRef.current = "[]";
       setCart([]);
       return;
@@ -68,14 +69,24 @@ const useCartInternal = () => {
 
           setCart((prevCart) => {
             let resultCart;
-            // If there are guest cart items from before login, merge them
-            if (prevCart.length > 0) {
+            // Only merge if: 
+            // 1. We have local items AND 
+            // 2. This is the first time merging (not already done)
+            if (prevCart.length > 0 && !mergeAlreadyDone.current) {
+              console.log("Merging cart - local items with database", {
+                localQty: prevCart.length,
+                dbQty: mappedDbItems.length
+              });
+              mergeAlreadyDone.current = true;
+              
               const merged = [...mappedDbItems];
               prevCart.forEach((localItem: any) => {
                 const existing = merged.find(
                   (item) => item.id === localItem.id && item.size === localItem.size
                 );
                 if (existing) {
+                  // Only merge if quantities are reasonable (not doubled)
+                  console.log(`Merging item ${localItem.id}: db=${existing.qty} + local=${localItem.qty}`);
                   existing.qty += localItem.qty;
                 } else {
                   merged.push(localItem);
@@ -104,6 +115,8 @@ const useCartInternal = () => {
               resultCart = merged;
             } else {
               // No local guest items, just load from database
+              // Or merge already happened, so don't merge again
+              mergeAlreadyDone.current = true;
               resultCart = mappedDbItems;
             }
             // Mark this as the last synced state so save-effect doesn't re-POST it
@@ -220,7 +233,10 @@ const useCartInternal = () => {
     );
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+    mergeAlreadyDone.current = false;
+  };
 
   return {
     cart,

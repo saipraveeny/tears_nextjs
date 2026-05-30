@@ -28,30 +28,21 @@ const CheckoutSuccess = ({ onOrderSuccess, onCartClear }) => {
       const oid =
         params.get("orderId") ||
         params.get("merchantOrderId") ||
-        sessionStorage.getItem("pendingOrderId");
+        params.get("merchantTransactionId");
+
+      // Try to get from sessionStorage (will be there if redirect happened immediately)
+      const sessionOid = sessionStorage.getItem("pendingOrderId");
 
       console.log("CheckoutSuccess - Extracted IDs:", {
         transactionId: txnId,
-        orderId: oid,
+        urlOrderId: oid,
+        sessionOrderId: sessionOid,
         urlParams: Object.fromEntries(params),
-        sessionOrderId: sessionStorage.getItem("pendingOrderId"),
       });
 
       setTransactionId(txnId);
-      setOrderId(oid);
-
-      // If we found an ID, start polling immediately
-      if (txnId || oid) {
-        setLoadingStatus(true);
-      } else {
-        // No ID found - show error after a short delay to allow async state updates
-        setTimeout(() => {
-          setLoadingStatus(false);
-          setError(
-            "No Order ID found. Please contact support with your email: tearshxd@gmail.com",
-          );
-        }, 4000);
-      }
+      setOrderId(oid || sessionOid);
+      setLoadingStatus(true);
     }
   }, []);
 

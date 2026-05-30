@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
     const origin = req.headers.get("origin") || "https://tears.co.in";
     const redirectUrl =
-      process.env.PHONEPE_REDIRECT_URL || `${origin}/checkout/result`;
+      process.env.PHONEPE_REDIRECT_URL || `${origin}/api/redirect`;
     const webhookUrl = process.env.WEBHOOK_URL || `${origin}/api/webhook`;
 
     console.log(`[${requestId}] Payment config:`, {
