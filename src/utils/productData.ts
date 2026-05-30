@@ -23,7 +23,8 @@ export const ALL_PRODUCTS = [
   {
     id: 1,
     name: "Green (100ml)",
-    description: "Classic green chilli with citrus undertones, with coriander seeds, black pepper, capsicum and kaffir lime",
+    description:
+      "Classic green chilli with citrus undertones, with coriander seeds, black pepper, capsicum and kaffir lime",
     heatLevel: 2,
     rating: 4.7,
     price: "₹250.00",
@@ -36,12 +37,13 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "green-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 2,
     name: "Wild (100ml)",
-    description: "This is the peak of the Tears spectrum, our spiciest variant yet. Crafted with a heavy-hitting chili base",
+    description:
+      "This is the peak of the Tears spectrum, our spiciest variant yet. Crafted with a heavy-hitting chili base",
     heatLevel: 4,
     rating: 4.9,
     price: "₹333.00",
@@ -54,7 +56,7 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: true,
     slug: "wild-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 3,
@@ -62,7 +64,7 @@ export const ALL_PRODUCTS = [
     description: "Innovative fusion of red chilli and grape fruit",
     heatLevel: 3,
     rating: 4.8,
-    price: "₹333.00",
+    price: "₹1.00",
     color: "#ff00ff",
     features: ["Exotic Spices", "Complex Heat"],
     image: glitchImage,
@@ -72,12 +74,13 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: true,
     slug: "glitch-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 4,
     name: "Spike (100ml)",
-    description: "Sharp, piercing heat with a bold chilli profile. Perfect for heat enthusiasts seeking an intense kick",
+    description:
+      "Sharp, piercing heat with a bold chilli profile. Perfect for heat enthusiasts seeking an intense kick",
     heatLevel: 2,
     rating: 4.6,
     price: "₹301.00",
@@ -90,12 +93,13 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "spike-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 5,
     name: "ALT (100ml)",
-    description: "Designed for the Discerning Palate with amla chilli, slow-fused for an unparalleled sensory journey",
+    description:
+      "Designed for the Discerning Palate with amla chilli, slow-fused for an unparalleled sensory journey",
     heatLevel: 3,
     rating: 4.8,
     price: "₹326.00",
@@ -108,12 +112,13 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "alt-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 6,
     name: "Blud (100ml)",
-    description: "A dark, earthy fusion of beetroot, coffee, and chilli — bold, smoky, and hauntingly rich",
+    description:
+      "A dark, earthy fusion of beetroot, coffee, and chilli — bold, smoky, and hauntingly rich",
     heatLevel: 3,
     rating: 4.7,
     price: "₹333.00",
@@ -126,12 +131,13 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "blud-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 7,
     name: "M△M (100ml)",
-    description: "A tropical burst of mango and chilli — sweet, tangy heat with a fruity finish",
+    description:
+      "A tropical burst of mango and chilli — sweet, tangy heat with a fruity finish",
     heatLevel: 1,
     rating: 4.6,
     price: "₹333.00",
@@ -144,7 +150,7 @@ export const ALL_PRODUCTS = [
     available: true,
     premium: false,
     slug: "mm-sauce",
-    category: "sauce"
+    category: "sauce",
   },
   {
     id: 101,
@@ -164,7 +170,7 @@ export const ALL_PRODUCTS = [
     image: whiteFrontImage,
     available: true,
     category: "apparel",
-    slug: "white-tshirt"
+    slug: "white-tshirt",
   },
   {
     id: 102,
@@ -184,7 +190,7 @@ export const ALL_PRODUCTS = [
     image: blackFrontImage,
     available: true,
     category: "apparel",
-    slug: "black-tshirt"
+    slug: "black-tshirt",
   },
   {
     id: 103,
@@ -199,6 +205,6 @@ export const ALL_PRODUCTS = [
     image: blackCapImage,
     available: true,
     category: "accessories",
-    slug: "black-cap"
+    slug: "black-cap",
   },
 ];
