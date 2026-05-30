@@ -68,8 +68,8 @@ async function updatePaymentStatusAndNotify(
         `[${requestId}] Marked notification as sent for order: ${payment.merchantOrderId}`,
       );
 
-      // Add 20-second delay to ensure all data is properly synced before sending email
-      await new Promise((resolve) => setTimeout(resolve, 20000));
+      // Add 2-second delay to ensure all data is properly synced before sending email
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Reload payment to ensure we have latest data including products
       const latestPayment = await Payment.findOne({
