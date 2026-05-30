@@ -10,7 +10,7 @@ const CartContext = createContext<any>(null);
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context) return context;
-  
+
   // Fallback for isolated use
   return useCartInternal();
 };
@@ -47,7 +47,7 @@ const useCartInternal = () => {
       try {
         const res = await fetch(`${API_BASE}/api/cart/sync`, {
           method: "GET",
-          credentials: 'include'
+          credentials: "include",
         });
 
         if (cancelled) return;
@@ -55,7 +55,7 @@ const useCartInternal = () => {
         if (res.ok) {
           const data = await res.json();
           const dbItems = data.items || [];
-          
+
           // Map database items to frontend format
           const mappedDbItems = dbItems.map((bItem: any) => ({
             id: bItem.productId,
@@ -64,29 +64,34 @@ const useCartInternal = () => {
             qty: bItem.quantity,
             price: `₹${bItem.price}`,
             image: bItem.image || "",
-            cartItemId: bItem.size ? `${bItem.productId}-${bItem.size}` : bItem.productId
+            cartItemId: bItem.size
+              ? `${bItem.productId}-${bItem.size}`
+              : bItem.productId,
           }));
 
           setCart((prevCart) => {
             let resultCart;
-            // Only merge if: 
-            // 1. We have local items AND 
+            // Only merge if:
+            // 1. We have local items AND
             // 2. This is the first time merging (not already done)
             if (prevCart.length > 0 && !mergeAlreadyDone.current) {
               console.log("Merging cart - local items with database", {
                 localQty: prevCart.length,
-                dbQty: mappedDbItems.length
+                dbQty: mappedDbItems.length,
               });
               mergeAlreadyDone.current = true;
-              
+
               const merged = [...mappedDbItems];
               prevCart.forEach((localItem: any) => {
                 const existing = merged.find(
-                  (item) => item.id === localItem.id && item.size === localItem.size
+                  (item) =>
+                    item.id === localItem.id && item.size === localItem.size,
                 );
                 if (existing) {
                   // Only merge if quantities are reasonable (not doubled)
-                  console.log(`Merging item ${localItem.id}: db=${existing.qty} + local=${localItem.qty}`);
+                  console.log(
+                    `Merging item ${localItem.id}: db=${existing.qty} + local=${localItem.qty}`,
+                  );
                   existing.qty += localItem.qty;
                 } else {
                   merged.push(localItem);
@@ -94,14 +99,15 @@ const useCartInternal = () => {
               });
 
               // POST the merged cart to backend
-              const payload = merged.map(item => ({
+              const payload = merged.map((item) => ({
                 productId: String(item.id),
                 name: item.name,
                 size: item.size || "",
                 quantity: item.qty,
-                price: typeof item.price === "string" 
-                  ? parseFloat(item.price.replace(/[^\d.]/g, "")) 
-                  : Number(item.price),
+                price:
+                  typeof item.price === "string"
+                    ? parseFloat(item.price.replace(/[^\d.]/g, ""))
+                    : Number(item.price),
                 image: item.image || "",
               }));
 
@@ -109,8 +115,8 @@ const useCartInternal = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ items: payload }),
-                credentials: 'include'
-              }).catch(err => console.error("Merge POST failed:", err));
+                credentials: "include",
+              }).catch((err) => console.error("Merge POST failed:", err));
 
               resultCart = merged;
             } else {
@@ -136,7 +142,9 @@ const useCartInternal = () => {
 
     loadAndMergeCart();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
@@ -151,14 +159,15 @@ const useCartInternal = () => {
 
     const saveCartToBackend = async () => {
       try {
-        const payload = cart.map(item => ({
+        const payload = cart.map((item) => ({
           productId: String(item.id),
           name: item.name,
           size: item.size || "",
           quantity: item.qty,
-          price: typeof item.price === "string" 
-            ? parseFloat(item.price.replace(/[^\d.]/g, "")) 
-            : Number(item.price),
+          price:
+            typeof item.price === "string"
+              ? parseFloat(item.price.replace(/[^\d.]/g, ""))
+              : Number(item.price),
           image: item.image || "",
         }));
 
@@ -166,7 +175,7 @@ const useCartInternal = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ items: payload }),
-          credentials: 'include'
+          credentials: "include",
         });
       } catch (err) {
         console.error("Failed to save cart to backend:", err);
@@ -177,12 +186,16 @@ const useCartInternal = () => {
   }, [cart, currentUser, isLoaded]);
 
   const addToCart = (product) => {
-    const cartItemId = product.size ? `${product.id}-${product.size}` : product.id;
+    const cartItemId = product.size
+      ? `${product.id}-${product.size}`
+      : product.id;
     setCart((prev) => {
       const found = prev.find((item) => item.cartItemId === cartItemId);
       if (found) {
         return prev.map((item) =>
-          item.cartItemId === cartItemId ? { ...item, qty: item.qty + 1 } : item,
+          item.cartItemId === cartItemId
+            ? { ...item, qty: item.qty + 1 }
+            : item,
         );
       }
       return [...prev, { ...product, cartItemId, qty: 1 }];
@@ -197,12 +210,16 @@ const useCartInternal = () => {
     const { product, quantity } = confirmationModal;
     if (!product) return;
 
-    const cartItemId = product.size ? `${product.id}-${product.size}` : product.id;
+    const cartItemId = product.size
+      ? `${product.id}-${product.size}`
+      : product.id;
     setCart((prev) => {
       const found = prev.find((item) => item.cartItemId === cartItemId);
       if (found) {
         return prev.map((item) =>
-          item.cartItemId === cartItemId ? { ...item, qty: item.qty + quantity } : item,
+          item.cartItemId === cartItemId
+            ? { ...item, qty: item.qty + quantity }
+            : item,
         );
       }
       return [...prev, { ...product, cartItemId, qty: quantity }];
@@ -218,7 +235,11 @@ const useCartInternal = () => {
   };
 
   const removeFromCart = (cartItemId) => {
-    setCart((prev) => prev.filter((item) => item.cartItemId !== cartItemId && item.id !== cartItemId));
+    setCart((prev) =>
+      prev.filter(
+        (item) => item.cartItemId !== cartItemId && item.id !== cartItemId,
+      ),
+    );
   };
 
   const updateQty = (cartItemId, qty) => {
@@ -228,7 +249,9 @@ const useCartInternal = () => {
     }
     setCart((prev) =>
       prev.map((item) =>
-        (item.cartItemId === cartItemId || item.id === cartItemId) ? { ...item, qty } : item,
+        item.cartItemId === cartItemId || item.id === cartItemId
+          ? { ...item, qty }
+          : item,
       ),
     );
   };
