@@ -1,8 +1,28 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { API_BASE } from "../utils/constants";
+import { ALL_PRODUCTS } from "../utils/productData";
 
 const CartContext = createContext<any>(null);
+
+const resolveNumericPrice = (rawPrice: any, id?: any, name?: string): number => {
+  const num =
+    typeof rawPrice === "string"
+      ? parseFloat(rawPrice.replace(/[^\d.]/g, ""))
+      : Number(rawPrice);
+  if (!Number.isNaN(num) && num > 0) return num;
+
+  const catalogMatch = ALL_PRODUCTS.find(
+    (cp) =>
+      String(cp.id) === String(id) ||
+      (name && cp.name.toLowerCase() === String(name).toLowerCase()),
+  );
+  if (catalogMatch?.price) {
+    const catNum = parseFloat(String(catalogMatch.price).replace(/[^\d.]/g, ""));
+    if (!Number.isNaN(catNum) && catNum > 0) return catNum;
+  }
+  return 0;
+};
 
 /**
  * Custom hook for cart management
@@ -57,17 +77,24 @@ const useCartInternal = () => {
           const dbItems = data.items || [];
 
           // Map database items to frontend format
-          const mappedDbItems = dbItems.map((bItem: any) => ({
-            id: bItem.productId,
-            name: bItem.name,
-            size: bItem.size || null,
-            qty: bItem.quantity,
-            price: `₹${bItem.price}`,
-            image: bItem.image || "",
-            cartItemId: bItem.size
-              ? `${bItem.productId}-${bItem.size}`
-              : bItem.productId,
-          }));
+          const mappedDbItems = dbItems.map((bItem: any) => {
+            const validPrice = resolveNumericPrice(
+              bItem.price ?? bItem.amount,
+              bItem.productId,
+              bItem.name,
+            );
+            return {
+              id: bItem.productId,
+              name: bItem.name,
+              size: bItem.size || null,
+              qty: bItem.quantity || 1,
+              price: `₹${validPrice}`,
+              image: bItem.image || "",
+              cartItemId: bItem.size
+                ? `${bItem.productId}-${bItem.size}`
+                : bItem.productId,
+            };
+          });
 
           setCart((prevCart) => {
             let resultCart;
@@ -104,10 +131,7 @@ const useCartInternal = () => {
                 name: item.name,
                 size: item.size || "",
                 quantity: item.qty,
-                price:
-                  typeof item.price === "string"
-                    ? parseFloat(item.price.replace(/[^\d.]/g, ""))
-                    : Number(item.price),
+                price: resolveNumericPrice(item.price, item.id, item.name),
                 image: item.image || "",
               }));
 
@@ -164,10 +188,7 @@ const useCartInternal = () => {
           name: item.name,
           size: item.size || "",
           quantity: item.qty,
-          price:
-            typeof item.price === "string"
-              ? parseFloat(item.price.replace(/[^\d.]/g, ""))
-              : Number(item.price),
+          price: resolveNumericPrice(item.price, item.id, item.name),
           image: item.image || "",
         }));
 

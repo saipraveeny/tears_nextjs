@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db";
 import Payment from "@/lib/models/Payment";
 import { PAYMENT_STATUS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
+import { ALL_PRODUCTS } from "@/utils/productData";
 
 export async function POST(req: Request) {
   const requestId = `Init-${Date.now()}`;
@@ -33,6 +34,46 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    const totalQty =
+      products.reduce(
+        (sum: number, p: any) => sum + (Number(p?.quantity ?? p?.qty ?? 1) || 1),
+        0,
+      ) || 1;
+
+    const normalizedProducts = products.map((p: any) => {
+      const rawVal = p?.amount ?? p?.price ?? 0;
+      let unitAmount =
+        typeof rawVal === "string"
+          ? parseFloat(rawVal.replace(/[^\d.]/g, ""))
+          : Number(rawVal);
+
+      if (!unitAmount || isNaN(unitAmount) || unitAmount <= 0) {
+        const matched = ALL_PRODUCTS.find(
+          (ap) =>
+            String(ap.id) === String(p?.productId ?? p?.id) ||
+            ap.name?.toLowerCase() === String(p?.name || "").toLowerCase(),
+        );
+        if (matched) {
+          unitAmount =
+            parseFloat(String(matched.price).replace(/[^\d.]/g, "")) || 0;
+        }
+      }
+
+      if (!unitAmount || isNaN(unitAmount) || unitAmount <= 0) {
+        unitAmount = Math.round((finalAmount / totalQty) * 100) / 100;
+      }
+
+      const quantity = Number(p?.quantity ?? p?.qty ?? 1) || 1;
+      return {
+        productId: String(p?.productId ?? p?.id ?? "unknown"),
+        name: p?.name || "Tears Hot Sauce",
+        size: p?.size || "",
+        quantity,
+        amount: unitAmount,
+        price: unitAmount,
+      };
+    });
 
     const clientId = process.env.PHONEPE_CLIENT_ID;
     const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
@@ -74,7 +115,7 @@ export async function POST(req: Request) {
       merchantOrderId,
       amount: finalAmount,
       user: customer,
-      products: products,
+      products: normalizedProducts,
       status: PAYMENT_STATUS.INITIATED,
       rawResponse: result.raw,
     });

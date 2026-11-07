@@ -10,6 +10,7 @@ import {
   getPromotionalTemplate,
   getPartnerInquiryTemplate,
   getAbandonedCartTemplate,
+  getProductAmount,
 } from "./emailTemplates";
 
 const LOGO_PATH = path.join(process.cwd(), "public/assets/logo.png");
@@ -123,15 +124,22 @@ export async function sendEmail(
         const fullAddress = [user.address, user.city, user.state, user.pincode]
           .filter(Boolean)
           .join(", ");
-        const computedTotal = calculateTotal(products) || fallbackAmount || 0;
+        const productsTotal = calculateTotal(products, fallbackAmount);
+        const computedTotal =
+          (fallbackAmount && fallbackAmount > 0 ? fallbackAmount : productsTotal) ||
+          productsTotal ||
+          0;
 
         console.log(`[Notify] Email for order ${orderId}:`, {
           productCount: products?.length,
-          products: products?.map((p) => ({
-            name: p.name,
-            amount: p.amount,
-            quantity: p.quantity,
-          })),
+          products: products?.map((p) => {
+            const doc = p?._doc || p || {};
+            return {
+              name: doc.name ?? p?.name,
+              amount: getProductAmount(p),
+              quantity: doc.quantity ?? doc.qty ?? p?.quantity ?? 1,
+            };
+          }),
           computedTotal,
           fallbackAmount,
         });
@@ -209,19 +217,25 @@ export async function sendEmail(
   }
 }
 
-function getProductAmount(product: any) {
-  const value = product?.amount ?? product?.price ?? 0;
-  if (typeof value === "string") {
-    return parseFloat(value.replace(/[^\d.-]/g, "")) || 0;
+function calculateTotal(products: any[], fallbackAmount?: number) {
+  if (!Array.isArray(products) || products.length === 0) {
+    return fallbackAmount || 0;
   }
-  return typeof value === "number" ? value : Number(value) || 0;
-}
+  const totalQty =
+    products.reduce((s, p) => {
+      const doc = p?._doc || p || {};
+      return s + (Number(doc.quantity ?? doc.qty ?? p?.quantity ?? 1) || 1);
+    }, 0) || 1;
+  const fallbackUnit =
+    fallbackAmount && fallbackAmount > 0
+      ? Math.round((fallbackAmount / totalQty) * 100) / 100
+      : 0;
 
-function calculateTotal(products: any[]) {
-  return products.reduce(
-    (sum, p) => sum + getProductAmount(p) * (p.quantity || 1),
-    0,
-  );
+  return products.reduce((sum, p) => {
+    const doc = p?._doc || p || {};
+    const qty = Number(doc.quantity ?? doc.qty ?? p?.quantity ?? 1) || 1;
+    return sum + getProductAmount(p, fallbackUnit) * qty;
+  }, 0);
 }
 
 export async function sendWhatsAppMessage(phone: string, message: string) {

@@ -1,6 +1,7 @@
 /**
  * Premium HTML Email Templates for Tears Hot Sauce
  */
+import { ALL_PRODUCTS } from "../src/utils/productData";
 
 const baseStyles = `
   body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9f9f9; }
@@ -16,12 +17,41 @@ const baseStyles = `
   .otp-code { font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #ff3b30; margin: 20px 0; text-align: center; }
 `;
 
-const getProductAmount = (product: any) => {
-  const value = product?.amount ?? product?.price ?? 0;
-  if (typeof value === "string") {
-    return parseFloat(value.replace(/[^0-9.-]/g, "")) || 0;
+export const getProductAmount = (product: any, fallbackUnitAmount = 0): number => {
+  const doc = product?._doc || product || {};
+  const raw =
+    doc.amount ??
+    doc.price ??
+    product?.amount ??
+    product?.price ??
+    0;
+
+  let parsed = 0;
+  if (typeof raw === "string") {
+    parsed = parseFloat(raw.replace(/[^0-9.-]/g, "")) || 0;
+  } else {
+    parsed = typeof raw === "number" ? raw : Number(raw) || 0;
   }
-  return typeof value === "number" ? value : Number(value) || 0;
+
+  if (!parsed || isNaN(parsed) || parsed <= 0) {
+    const pid = String(doc.productId ?? doc.id ?? product?.productId ?? product?.id ?? "");
+    const pname = String(doc.name ?? product?.name ?? "").trim().toLowerCase();
+    const catalogMatch = ALL_PRODUCTS.find(
+      (ap) =>
+        (pid && String(ap.id) === pid) ||
+        (pname && ap.name.toLowerCase() === pname) ||
+        (pname && ap.name.toLowerCase().includes(pname)),
+    );
+    if (catalogMatch) {
+      parsed = parseFloat(String(catalogMatch.price).replace(/[^0-9.-]/g, "")) || 0;
+    }
+  }
+
+  if ((!parsed || isNaN(parsed) || parsed <= 0) && fallbackUnitAmount > 0) {
+    return fallbackUnitAmount;
+  }
+
+  return parsed > 0 ? parsed : 0;
 };
 
 export const getOrderConfirmationTemplate = (
@@ -30,7 +60,24 @@ export const getOrderConfirmationTemplate = (
   products: any[],
   totalAmount: number,
   customerDetails: any,
-) => `
+) => {
+  const safeProducts = Array.isArray(products) ? products : [];
+  const totalQty =
+    safeProducts.reduce((sum, p) => {
+      const doc = p?._doc || p || {};
+      return sum + (Number(doc.quantity ?? doc.qty ?? p?.quantity ?? p?.qty ?? 1) || 1);
+    }, 0) || 1;
+  const fallbackUnit = totalAmount > 0 ? Math.round((totalAmount / totalQty) * 100) / 100 : 0;
+
+  const computedSum = safeProducts.reduce((sum, p) => {
+    const doc = p?._doc || p || {};
+    const qty = Number(doc.quantity ?? doc.qty ?? p?.quantity ?? p?.qty ?? 1) || 1;
+    return sum + getProductAmount(p, fallbackUnit) * qty;
+  }, 0);
+
+  const finalTotal = totalAmount && totalAmount > 0 ? totalAmount : computedSum;
+
+  return `
   <!DOCTYPE html>
   <html>
     <head><style>${baseStyles}</style></head>
@@ -44,19 +91,25 @@ export const getOrderConfirmationTemplate = (
           
           <div class="order-box">
             <h3>Order Summary</h3>
-            ${products
-              .map(
-                (p) => `
-              <div class="item">
-                <span>${p.name} (x${p.quantity || 1})</span>
-                <span>₹${getProductAmount(p).toLocaleString("en-IN")}</span>
+            ${safeProducts
+              .map((p) => {
+                const doc = p?._doc || p || {};
+                const pName = doc.name ?? p?.name ?? "Tears Hot Sauce";
+                const pSize = doc.size ?? p?.size ?? "";
+                const qty = Number(doc.quantity ?? doc.qty ?? p?.quantity ?? p?.qty ?? 1) || 1;
+                const unitPrice = getProductAmount(p, fallbackUnit);
+                const lineTotal = unitPrice * qty;
+                return `
+              <div class="item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px;">
+                <span>${pName}${pSize ? ` (${pSize})` : ""} (x${qty})</span>
+                <span style="font-weight: 600;">₹${lineTotal.toLocaleString("en-IN")}</span>
               </div>
-            `,
-              )
+            `;
+              })
               .join("")}
-            <div class="total">
+            <div class="total" style="display: flex; justify-content: space-between; align-items: center;">
               <span>Total Paid</span>
-              <span>₹${totalAmount.toLocaleString("en-IN")}</span>
+              <span>₹${finalTotal.toLocaleString("en-IN")}</span>
             </div>
           </div>
 
@@ -80,6 +133,7 @@ export const getOrderConfirmationTemplate = (
     </body>
   </html>
 `;
+};
 
 export const getPaymentFailedTemplate = (name: string, orderId: string) => `
   <!DOCTYPE html>
@@ -312,8 +366,8 @@ export const getAbandonedCartTemplate = (
                   </div>
                 </div>
                 <div style="text-align: right;">
-                  <div style="font-weight: bold; color: #ff3b30;">₹${((item.amount ?? item.price) || 0).toLocaleString("en-IN")}</div>
-                  <div style="font-size: 12px; color: #777;">Qty: ${item.quantity}</div>
+                  <div style="font-weight: bold; color: #ff3b30;">₹${getProductAmount(item).toLocaleString("en-IN")}</div>
+                  <div style="font-size: 12px; color: #777;">Qty: ${item.quantity || item.qty || 1}</div>
                 </div>
               </div>
             `,

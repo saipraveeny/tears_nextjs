@@ -7,6 +7,7 @@ export interface IPaymentProduct {
   size?: string;
   quantity?: number;
   amount: number;
+  price?: number;
 }
 
 export interface IPayment extends Document {
@@ -37,6 +38,7 @@ const ProductSchema = new Schema<IPaymentProduct>({
   size: { type: String, required: false },
   quantity: { type: Number, required: false },
   amount: { type: Number, required: true },
+  price: { type: Number, required: false },
 });
 
 const PaymentSchema = new Schema<IPayment>(

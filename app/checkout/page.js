@@ -8,6 +8,7 @@ import { useCart } from "@/hooks/useCart";
 import { useCheckoutForm } from "@/hooks/useCheckoutForm";
 import { API_BASE } from "@/utils/constants";
 import { computeCartTotals } from "@/utils/cartUtils";
+import { ALL_PRODUCTS } from "@/utils/productData";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -73,16 +74,36 @@ export default function CheckoutPage() {
 
       const { total } = computeCartTotals(cart);
 
-      const productsPayload = cart.map((it) => ({
-        productId: String(it.id),
-        name: it.name,
-        quantity: Number(it.qty),
-        amount:
-          typeof it.price === "string"
-            ? parseFloat(it.price.replace(/[^\d.]/g, ""))
-            : Number(it.price),
-        image: it.image || "",
-      }));
+      const productsPayload = cart.map((it) => {
+        const rawPrice = it.price ?? it.amount ?? 0;
+        let parsedPrice =
+          typeof rawPrice === "string"
+            ? parseFloat(rawPrice.replace(/[^\d.]/g, ""))
+            : Number(rawPrice);
+
+        if (!parsedPrice || isNaN(parsedPrice) || parsedPrice <= 0) {
+          const catalogItem = ALL_PRODUCTS.find(
+            (p) =>
+              String(p.id) === String(it.id || it.productId) ||
+              p.name?.toLowerCase() === String(it.name || "").toLowerCase(),
+          );
+          if (catalogItem) {
+            parsedPrice =
+              parseFloat(String(catalogItem.price).replace(/[^\d.]/g, "")) || 0;
+          }
+        }
+
+        const qty = Number(it.qty ?? it.quantity ?? 1) || 1;
+        return {
+          productId: String(it.id ?? it.productId ?? ""),
+          name: it.name,
+          size: it.size || "",
+          quantity: qty,
+          amount: parsedPrice,
+          price: parsedPrice,
+          image: it.image || "",
+        };
+      });
 
       const payload = {
         amount: Number(total.toFixed(2)),
@@ -91,6 +112,9 @@ export default function CheckoutPage() {
           phone: checkoutForm.phone,
           email: checkoutForm.email,
           address: checkoutForm.address,
+          city: checkoutForm.city || "",
+          state: checkoutForm.state || "",
+          pincode: checkoutForm.pincode || "",
         },
         products: productsPayload,
         callbackUrl: `${window.location.origin}/checkout/result`,

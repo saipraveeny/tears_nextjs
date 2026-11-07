@@ -2,22 +2,27 @@
 
 ## Issues Resolved
 
-### 1. ✅ Email Showing ₹0 Price
+### 1. ✅ Email Showing ₹0 Price (Payload & Schema Mismatch Fixed)
 
-**Problem**: Emails were being sent with product prices showing as ₹0.
+**Problem**: Emails were being sent with product prices showing as ₹0 upon order confirmation.
 
-**Root Cause**: Timing issue where email notification was triggered before products data was fully synced from the database.
+**Root Cause**:
+1. **Payload & Schema Mismatch (`price` vs `amount`)**:
+   - The `Cart` schema (`lib/models/Cart.ts`) and frontend cart (`src/hooks/useCart.tsx`) store item prices under `.price`.
+   - The `Payment` schema (`lib/models/Payment.ts` and `backup/tears-api/models/payment.js`) defined `ProductSchema` with **only** `amount: Number` (stripping `price` on save), while the legacy webhook service (`backup/tears-api/utils/notify.js` and `backup/tears-api/utils/emailTemplates.js`) read `p.price || 0` (`₹0`).
+   - Additionally, Mongoose subdocuments passed to email templates needed `p._doc || p` unwrapping or `.lean()` queries, and catalog fallback lookup (`ALL_PRODUCTS`) if an item's price was missing or 0.
+2. **Webhook vs. Status Polling Synchronization**:
+   - Previously, `app/api/webhook/route.ts` had notification sending disabled, relying exclusively on the user's browser redirecting to `/checkout/result` and calling `/api/status`. If the user closed the browser or if the legacy webhook fired first, either no email was sent from Next.js or `tears-api` sent the email using `p.price || 0` (`₹0`).
 
 **Solution Applied**:
-
-- Added 2-second delay in `/api/status` endpoint before sending email
-- Added data reload to fetch latest payment record with all product details
-- Added validation to ensure products array exists and has items before sending email
-- Added logging to trace product amounts through the pipeline
-
-**Files Modified**:
-
-- `app/api/status/route.ts` - Added delay, data reload, and validation
+- **Schema & Payload Alignment**:
+  - Added both `amount` and `price` fields to `ProductSchema` in `lib/models/Payment.ts` and `backup/tears-api/models/payment.js`.
+  - Updated `app/checkout/page.js` and `app/api/initiate/route.ts` to normalize every product with both `amount` and `price`, falling back to `ALL_PRODUCTS` catalog prices or `finalAmount / totalQty` if needed.
+  - Updated `src/hooks/useCart.tsx` and `app/api/cart/sync/route.ts` to validate and fallback cart item prices against `ALL_PRODUCTS`.
+- **Resilient Email Price Resolution**:
+  - Enhanced `getProductAmount` in `lib/emailTemplates.ts` and `lib/notify.ts` (as well as `backup/tears-api/utils/emailTemplates.js` and `backup/tears-api/utils/notify.js`) to unwrap Mongoose subdocuments (`p?._doc || p`), check `amount ?? price`, fallback to `ALL_PRODUCTS` by `productId`/`name`, and fallback to `payment.amount` (`fallbackAmount`).
+- **Atomic Notification Lock Across Status & Webhook**:
+  - Updated both `app/api/status/route.ts` and `app/api/webhook/route.ts` to use `Payment.findOneAndUpdate({ merchantOrderId, notificationSent: { $ne: true } }, { $set: { notificationSent: true } }, { new: true }).lean()` so confirmation emails are reliably sent once with accurate product values whether triggered by browser redirect or PhonePe webhook.
 
 ### 2. ✅ 404 Page After Payment Completion
 

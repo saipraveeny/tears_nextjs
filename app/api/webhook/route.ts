@@ -81,10 +81,54 @@ export async function POST(req: Request) {
             }
           }
 
-          // Do not send notifications from the webhook.
-          // The email should wait until the user returns to the site and the frontend polls status.
-          // This avoids the immediate send before the browser redirect completes.
-          // Notifications will be sent later from the status endpoint.
+          // Send notifications safely with atomic lock so orders still get confirmation emails
+          // even if the user closes their browser before returning to /checkout/result.
+          if (newStatus === PAYMENT_STATUS.COMPLETED) {
+            try {
+              // Brief delay to allow frontend status check or DB writes to settle
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+
+              const latestPayment: any = await Payment.findOneAndUpdate(
+                {
+                  merchantOrderId,
+                  notificationSent: { $ne: true },
+                },
+                { $set: { notificationSent: true } },
+                { new: true },
+              ).lean();
+
+              if (
+                latestPayment &&
+                latestPayment.products &&
+                latestPayment.products.length > 0
+              ) {
+                const fallbackAmount =
+                  latestPayment.amount ||
+                  (fullPayload?.payload?.amount
+                    ? fullPayload.payload.amount / 100
+                    : 0) ||
+                  payment.amount ||
+                  0;
+
+                await sendAllNotifications(
+                  latestPayment.merchantOrderId,
+                  newStatus,
+                  latestPayment.user,
+                  fullPayload,
+                  latestPayment.products,
+                  fallbackAmount,
+                );
+                console.log(
+                  `[${reqId}] Webhook sent confirmation notification for order: ${merchantOrderId}`,
+                );
+              }
+            } catch (notifyErr) {
+              console.error(
+                `[${reqId}] Webhook notification error for ${merchantOrderId}:`,
+                notifyErr,
+              );
+            }
+          }
         }
       }
     }

@@ -49,45 +49,44 @@ async function updatePaymentStatusAndNotify(
 
   if (newStatus === PAYMENT_STATUS.COMPLETED && !payment.notificationSent) {
     try {
-      // Check again if email hasn't been sent (prevent duplicate emails from concurrent requests)
-      const checkPayment = await Payment.findOne({
-        merchantOrderId: payment.merchantOrderId,
-      });
+      // Add 1-second delay to ensure all data is properly synced before claiming notification lock
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (checkPayment.notificationSent) {
+      // Atomically claim notification lock and retrieve latest plain object
+      const latestPayment: any = await Payment.findOneAndUpdate(
+        {
+          merchantOrderId: payment.merchantOrderId,
+          notificationSent: { $ne: true },
+        },
+        { $set: { notificationSent: true } },
+        { new: true },
+      ).lean();
+
+      if (!latestPayment) {
         console.log(
           `[${requestId}] Email already sent for order: ${payment.merchantOrderId}`,
         );
-        return; // Email already sent, skip
+        return; // Email already sent by concurrent request or webhook, skip
       }
 
-      // Mark as sent IMMEDIATELY to prevent concurrent requests from sending duplicate emails
-      checkPayment.notificationSent = true;
-      await checkPayment.save();
       console.log(
         `[${requestId}] Marked notification as sent for order: ${payment.merchantOrderId}`,
       );
 
-      // Add 2-second delay to ensure all data is properly synced before sending email
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const fallbackAmount =
+        latestPayment.amount ||
+        (payload?.amount ? payload.amount / 100 : 0) ||
+        payment.amount ||
+        0;
 
-      // Reload payment to ensure we have latest data including products
-      const latestPayment = await Payment.findOne({
-        merchantOrderId: payment.merchantOrderId,
-      });
-
-      if (
-        latestPayment &&
-        latestPayment.products &&
-        latestPayment.products.length > 0
-      ) {
+      if (latestPayment.products && latestPayment.products.length > 0) {
         await sendAllNotifications(
           latestPayment.merchantOrderId,
           newStatus,
           latestPayment.user,
           payload,
           latestPayment.products,
-          latestPayment.amount,
+          fallbackAmount,
         );
         console.log(
           `[${requestId}] Email notification sent successfully for order: ${latestPayment.merchantOrderId}`,
